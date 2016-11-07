@@ -1,51 +1,60 @@
-# My Project Title
+# OCR Accounting application
 
-This is a template for CA400 projects.  Please read these instructions carefully.
+##General area covered by the project
+Image Processing
+Budgeting
+Management of income
 
-This file is written in
-[markdown](https://guides.github.com/features/mastering-markdown/).  Markdown
-is a suitable format for documents stored in git repositories.
+##Description
 
-## Instructions
 
-You *must* do the following:
+###Background:
+Found budgeting applications online
+None were too accurate as they required inputting the data manually.
+Had the idea of adding an OCR element to make input quicker and more efficient.
 
-1 - Fork this repo.
+###Achievements: What functions it provides, who its users will be
+Processes information on receipts/invoices/tickets
+Uses device camera and Optical Character Recognition with error correcting algorithms to capture obscured text for smoother input – user can capture image data more fluidly without having to worry if capture is perfect.
 
-2 - Rename your fork using the format
+Stores information in external SQL database to be manipulated in various ways
+Pulls information from emails for online purchases
+               
+Calendar view:
+               Display purchase information/statistics by day, month or year
+               e.g. Amount spent on food on the 6th of August
+               OR
+               Difference in spending patterns since previous week
 
-    2017-ca400-USERNAME
+Aimed at: Men and Women above 18 that would like to control and manage spending more effectively
 
-replacing `USERNAME` with your School of Computing login name.
+###Justification
+Allows users to monitor their spending habits on a day to day basis
+Gain control and manage income more effectively 
 
-For example, if Stephen Blott were to be doing a fourth-year project, he would rename
-his repo as:
+         
+##Programming Languages to be used
+Java - as it is the main platform for android app development
+XML - for the UI layout
+SQL - for querying and updating the database
+PHP - Bridge connection between app and external SQL database
+     
+##Programming tools to be used
+Android studio
 
- 2017-ca400-sblott
+Image Processor:
+with error correcting algorithms to capture obscured text for smoother input – user can capture receipt image quicker without having to worry if receipt is
 
-You can rename your repo by selecting *Edit Project* from the drop-down menu
-(with a gear icon) on the top right of your project's home page.  Change the
-*Project name* field.
+Database: Online database (SQL Server - rent Amazon server free for 12 months)
+       
+##Learning Challenges
+Main new technology I will have to learn is the image processing aspect of the project
+Learn how image correcting algorithms function to improve recognition of 
+I will also need to improve my knowledge of PHP.
 
-You should also update the *Project description*.
-
-3 - This directory has two sub-directories.
-
-- All of your source code should be placed in the `src` sub-directory.
-
-- All of your documentation should be placed in the `docs` sub-directory.
-
-4 - There is further important documentation in the `docs` directory.  Read that next.
-
-When you are have followed all of these instructions and are sure that you
-understand what is expected, you may replace the contents of this file with a
-brief description of your project (two or three paragraphs).
-
-## Additional Resources
-
-- Git [cheat sheet](https://gitlab.computing.dcu.ie/sblott/local-gitlab-documentation/blob/master/cheat-sheet.md)
-- Gitlab [CI environment](https://gitlab.computing.dcu.ie/sblott/docker-ci-environment) and it's [available software](https://gitlab.computing.dcu.ie/sblott/docker-ci-environment/blob/master/Dockerfile)
-- Example projects with CI configured:
-   * [Python](https://gitlab.computing.dcu.ie/sblott/test-project-python)
-   * [Java](https://gitlab.computing.dcu.ie/sblott/test-project-java)
-   * [MySql](https://gitlab.computing.dcu.ie/sblott/test-project-mysql)
+##Hardware/Software platform
+Developing the app for Android devices running 4.4 or higher
+Approximately 80% of users use 4.4 or higher
+This allows the app to function on a majority of populations devices
+WHILE 
+still keeping a majority of features.
