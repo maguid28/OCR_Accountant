@@ -14,7 +14,7 @@
 #### Background:
   Found budgeting applications online
 
-  None were too accurate as they required inputting the data manually.
+  None were very accurate as they required inputting the data manually.
 
   Had the idea of adding an OCR element to make input quicker and more efficient.
 
@@ -29,15 +29,11 @@
 
                
   Calendar view:
-  
-    Display purchase information/statistics by day, month or year
-      e.g. Amount spent on food on the 6th of August
 
-      OR
+  Display purchase information/statistics by day, month or year
+  e.g. Amount spent on food on the 6th of August or difference in spending patterns since previous week.
 
-      Difference in spending patterns since previous week
-
-      Aimed at: Men and Women above 18 that would like to control and manage spending more effectively
+  Aimed at: Men and Women above 18 that would like to control and manage spending more effectively
 
 #### Justification
   Allows users to monitor their spending habits on a day to day basis
