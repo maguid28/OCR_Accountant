@@ -2,17 +2,21 @@
 
 ## General area covered by the project
 
-Image Processing
-Budgeting
-Management of income
+  Image Processing
+
+  Budgeting
+
+  Management of income
 
 ## Description
 
 
 ### Background:
-Found budgeting applications online
-None were too accurate as they required inputting the data manually.
-Had the idea of adding an OCR element to make input quicker and more efficient.
+  Found budgeting applications online
+
+  None were too accurate as they required inputting the data manually.
+
+  Had the idea of adding an OCR element to make input quicker and more efficient.
 
 ### Achievements: What functions it provides, who its users will be
 Processes information on receipts/invoices/tickets
