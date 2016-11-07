@@ -27,10 +27,7 @@
 
   Pulls information from emails for online purchases
 
-               
-  Calendar view:
-
-  Display purchase information/statistics by day, month or year
+  Calendar view: Display purchase information/statistics by day, month or year
   e.g. Amount spent on food on the 6th of August or difference in spending patterns since previous week.
 
   Aimed at: Men and Women above 18 that would like to control and manage spending more effectively

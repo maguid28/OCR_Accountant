@@ -17,5 +17,14 @@
         android:layout_marginTop="141dp"
         android:id="@+id/ocrscan_button"
         android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:onClick="onButtonClick" />
+
+    <Button
+        android:text="Calander View"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/calendar_view_button"
+        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 </RelativeLayout>
