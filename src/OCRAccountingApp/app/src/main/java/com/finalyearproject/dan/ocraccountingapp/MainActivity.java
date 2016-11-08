@@ -1,9 +1,14 @@
 package com.finalyearproject.dan.ocraccountingapp;
 
 import android.content.Intent;
+import android.media.ExifInterface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+
+import com.googlecode.tesseract.android.TessBaseAPI;
+
 
 public class MainActivity extends AppCompatActivity {
 
