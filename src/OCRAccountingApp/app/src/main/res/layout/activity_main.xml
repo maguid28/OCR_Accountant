@@ -25,6 +25,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/calendar_view_button"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:text="OCR SCAN 2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ocrscan2_button"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 </RelativeLayout>
