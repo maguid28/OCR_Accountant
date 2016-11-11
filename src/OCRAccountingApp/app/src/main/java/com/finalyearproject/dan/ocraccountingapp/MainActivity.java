@@ -26,11 +26,11 @@ public class MainActivity extends AppCompatActivity {
             startActivity(i);
         }
 
-        if(v.getId() == R.id.ocrscan2_button){
+        if(v.getId() == R.id.OCR2BUTTON){
             //this is the activity we need to launch
-            Intent i = new Intent(this, OCRScan.class);
+            Intent i = new Intent(this, OCRScan2.class);
             startActivity(i);
         }
-    }
 
+    }
 }

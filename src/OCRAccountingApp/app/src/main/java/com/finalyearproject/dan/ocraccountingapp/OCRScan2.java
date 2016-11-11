@@ -69,7 +69,7 @@ public class OCRScan2 extends AppCompatActivity {
 
 
 
-
+//------------------------------------------------OCR---------------------------------------------//
 
 
     //copy training data to device
@@ -120,7 +120,6 @@ public class OCRScan2 extends AppCompatActivity {
     }
 
 
-
     public void processImage(View v) {
         mTess.setImage(imageBitmap);
         String OCRresult = mTess.getUTF8Text();
@@ -133,7 +132,7 @@ public class OCRScan2 extends AppCompatActivity {
 
 
 
-
+//--------------------------------------TAKE PICTURE----------------------------------------------//
 
 
 
