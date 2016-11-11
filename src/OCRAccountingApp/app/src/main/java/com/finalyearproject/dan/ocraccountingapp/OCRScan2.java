@@ -27,7 +27,7 @@ import java.util.List;
 import android.view.View;
 
 
-public class OCRScan extends AppCompatActivity {
+public class OCRScan2 extends AppCompatActivity {
 
     Bitmap imageBitmap;
     private TessBaseAPI mTess;
