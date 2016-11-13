@@ -82,14 +82,8 @@ public class OCRScan2 extends AppCompatActivity {
             mAlbumStorageDirFactory = new BaseAlbumDirFactory();
         }
 
-
-        mImageView = (ImageView) findViewById(R.id.mImageView);
-        mImageBitmap = null;
-
-        //mAlbumStorageDirFactory = new BaseAlbumDirFactory();
-
         //init image
-        imageBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.test2);
+        mImageBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.test2);
         datapath = getFilesDir() + "/tesseract/";
 
         //make sure training data has been copied
@@ -156,7 +150,7 @@ public class OCRScan2 extends AppCompatActivity {
 
 
     public void processImage(View v) {
-        mTess.setImage(imageBitmap);
+        mTess.setImage(mImageBitmap);
         String OCRresult = mTess.getUTF8Text();
         TextView OCRTextView = (TextView) findViewById(R.id.OCRTextView);
         OCRTextView.setText(OCRresult);
