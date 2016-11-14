@@ -37,4 +37,14 @@
         android:layout_marginTop="51dp"
         android:id="@+id/OCR2BUTTON"
         android:onClick="onButtonClick" />
+
+    <Button
+        android:text="OCR 3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignEnd="@+id/OCR2BUTTON"
+        android:layout_marginBottom="28dp"
+        android:id="@+id/ocr_button_3"
+        android:onClick="onButtonClick" />
 </RelativeLayout>

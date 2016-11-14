@@ -68,7 +68,7 @@ public class OCRScan extends AppCompatActivity {
 
 
 
-
+//-------------------------------------------OCR-------------------------------------------------//
 
 
 
@@ -134,7 +134,7 @@ public class OCRScan extends AppCompatActivity {
 
 
 
-
+//---------------------------------capture image-------------------------------------------------//
 
 
 

@@ -62,11 +62,6 @@ public class OCRScan2 extends AppCompatActivity {
         setContentView(R.layout.activity_ocrscan);
 
 
-
-        mImageView = (ImageView) findViewById(R.id.mImageView);
-        mImageBitmap = null;
-
-
         Button picBtn = (Button) findViewById(R.id.photo_button);
         setBtnListenerOrDisable(
                 picBtn,
@@ -82,8 +77,10 @@ public class OCRScan2 extends AppCompatActivity {
             mAlbumStorageDirFactory = new BaseAlbumDirFactory();
         }
 
+        mImageView = (ImageView) findViewById(R.id.mImageView);
+
         //init image
-        mImageBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.test2);
+        //mImageBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.test2);
         datapath = getFilesDir() + "/tesseract/";
 
         //make sure training data has been copied
@@ -246,7 +243,7 @@ public class OCRScan2 extends AppCompatActivity {
 
 		/* Associate the Bitmap to the ImageView */
         mImageView.setImageBitmap(bitmap);
-        mImageView.setVisibility(View.VISIBLE);
+        //mImageView.setVisibility(View.VISIBLE);
     }
 
     private void galleryAddPic() {
@@ -308,9 +305,7 @@ public class OCRScan2 extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (resultCode == RESULT_OK) {
             handleBigCameraPhoto();
-        }
     }
 
     // Some lifecycle callbacks so that the image can survive orientation change
