@@ -59,10 +59,9 @@ public class OCRScan extends AppCompatActivity {
         checkFile(new File(datapath + "tessdata/"));
 
         //init Tesseract API
-        String lang = "eng";
 
         mTess = new TessBaseAPI();
-        mTess.init(datapath, lang);
+        mTess.init(datapath, "eng");
     }
 
 
@@ -134,7 +133,7 @@ public class OCRScan extends AppCompatActivity {
 
 
 
-//---------------------------------capture image-------------------------------------------------//
+
 
 
 

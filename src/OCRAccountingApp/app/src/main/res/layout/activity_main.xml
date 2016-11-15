@@ -14,37 +14,37 @@
         android:text="OCR Scan"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="141dp"
+        android:layout_marginTop="36dp"
         android:id="@+id/ocrscan_button"
+        android:onClick="onButtonClick"
         android:layout_alignParentTop="true"
+        android:layout_toStartOf="@+id/calendar_view_button" />
+
+    <Button
+        android:text="OCR 3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ocr_button_3"
+        android:onClick="onButtonClick"
+        android:layout_alignBottom="@+id/calendar_view_button"
         android:layout_centerHorizontal="true"
-        android:onClick="onButtonClick" />
+        android:layout_marginBottom="65dp" />
 
     <Button
         android:text="Calander View"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/calendar_view_button"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="133dp" />
 
     <Button
         android:text="OCR 2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/calendar_view_button"
-        android:layout_alignStart="@+id/ocrscan_button"
-        android:layout_marginTop="51dp"
-        android:id="@+id/OCR2BUTTON"
-        android:onClick="onButtonClick" />
-
-    <Button
-        android:text="OCR 3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignEnd="@+id/OCR2BUTTON"
-        android:layout_marginBottom="28dp"
-        android:id="@+id/ocr_button_3"
+        android:layout_alignBottom="@+id/ocrscan_button"
+        android:layout_toEndOf="@+id/calendar_view_button"
+        android:id="@+id/ocr_button_2"
         android:onClick="onButtonClick" />
 </RelativeLayout>
