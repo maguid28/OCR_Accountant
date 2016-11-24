@@ -71,12 +71,14 @@ public class OCRScan2 extends AppCompatActivity {
             prepareDirectory(IMGS_PATH);
             Log.i(TAG, "IMGS_PATH IS NOW " +IMGS_PATH);
 
-            //path to image is
+            //path to image is /storage/emulated/0/Android/data/com.finalyearproject.dan.ocraccountingapp/files/Pictures/TesseractSample/imgs/ocr.jpg
             String img_path = IMGS_PATH + "/ocr.jpg";
 
             outputFileUri = Uri.fromFile(new File(img_path));
 
+            //launch camera intent
             final Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            //store image at .../TesseractSample/imgs/ocr.jpg
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
 
             if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -92,11 +94,12 @@ public class OCRScan2 extends AppCompatActivity {
 
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode,
-                                 Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         //making photo
         if (requestCode == PHOTO_REQUEST_CODE && resultCode == RESULT_OK) {
+            //create folder and store tessdata here
             prepareTesseract();
+
             startOCR(outputFileUri);
         } else {
             Toast.makeText(this, "ERROR: Image was not obtained.", Toast.LENGTH_SHORT).show();
@@ -105,12 +108,11 @@ public class OCRScan2 extends AppCompatActivity {
         }
     }
 
-    /**
-     * Prepare directory on external storage
-     *
-     * @param path
-     * @throws Exception
-     */
+
+
+
+
+    //Prepare directory on external storage
     private void prepareDirectory(String path) {
 
         File dir = new File(path);
@@ -124,6 +126,8 @@ public class OCRScan2 extends AppCompatActivity {
     }
 
 
+
+
     private void prepareTesseract() {
         try {
             prepareDirectory(DATA_PATH + TESSDATA);
@@ -134,11 +138,7 @@ public class OCRScan2 extends AppCompatActivity {
         copyTessDataFiles(TESSDATA);
     }
 
-    /**
-     * Copy tessdata files (located on assets/tessdata) to destination directory
-     *
-     * @param path - name of directory with .traineddata files
-     */
+    //Copy tessdata files (located on assets/tessdata) to destination directory
     private void copyTessDataFiles(String path) {
         try {
             String fileList[] = getAssets().list(path);
@@ -176,8 +176,6 @@ public class OCRScan2 extends AppCompatActivity {
     /**
      * don't run this code in main thread - it stops UI thread. Create AsyncTask instead.
      * http://developer.android.com/intl/ru/reference/android/os/AsyncTask.html
-     *
-     * @param imgUri
      */
     private void startOCR(Uri imgUri) {
         try {
@@ -236,6 +234,9 @@ public class OCRScan2 extends AppCompatActivity {
     }
 
 
+
+
+
     private String extractText(Bitmap bitmap) {
         try {
             tessBaseApi = new TessBaseAPI();
@@ -248,13 +249,14 @@ public class OCRScan2 extends AppCompatActivity {
 
         tessBaseApi.init(DATA_PATH, lang);
 
-//       //EXTRA SETTINGS
-//        //For example if we only want to detect numbers
+        //If we only want to detect digits, uppercase and lowercase
         tessBaseApi.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM");
-//
-//        //blackList Example
-//        tessBaseApi.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "!@#$%^&*()_+=-qwertyuiop[]}{POIU" +
-//                "YTRWQasdASDfghFGHjklJKLl;L:'\"\\|~`xcvXCVbnmBNM,./<>?");
+
+
+        //       //EXTRA SETTINGS
+        //        //blackList Example
+        //        tessBaseApi.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "!@#$%^&*()_+=-qwertyuiop[]}{POIU" +
+        //                "YTRWQasdASDfghFGHjklJKLl;L:'\"\\|~`xcvXCVbnmBNM,./<>?");
 
         Log.d(TAG, "Training file loaded");
         tessBaseApi.setImage(bitmap);
