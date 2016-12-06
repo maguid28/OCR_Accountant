@@ -16,4 +16,45 @@ I have discovered a set of tools that will hopefully help me with the image proc
 Once I have gotten used to these tools I plan to implement them in my application to prepare images prior to running tesseract.
 
 ## Blog Entry 4
+I have been experimenting with OpenCVs Canny edge detection tool and have success with it once calibrated correctly. Below is an example receipt to demonstrate how it functions as of now.
+
+#Source image
 ![alt tag](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4.jpg)
+
+First we need to prepare the image so edge detection will be more accurate.
+
+We convert the source image to greyscale:
+```java
+Imgproc.cvtColor(rgbImage, imageGrey, Imgproc.COLOR_BGR2GRAY);
+```
+
+resize it to 30% of its original size
+```java
+Size sz = new Size((imageGray.width() * 30) / 100, (imageGray.height() * 30) / 100);
+Imgproc.resize(imageGrey, imageGrey, sz);
+```
+
+apply gaussian blur to image
+```java
+int gBlurSize = 5;
+Imgproc.GaussianBlur(imageGrey, imageGrey, new Size(gBlurSize, gBlurSize), 0);
+```
+
+Apply erosion and dilation to image
+```java
+int erosion_size = 5;
+Mat element = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(erosion_size, erosion_size));
+Imgproc.erode(imageGrey, imageGrey, element);
+
+int dilation_size = 5;
+Mat element1 = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(dilation_size, dilation_size));
+Imgproc.dilate(imageGrey, imageGrey, element1);
+```
+
+We then apply canny edge detection
+```java
+Imgproc.Canny(imageGrey, imageCny, 75, 200, 3, true);
+```
+
+Below is the processed image:
+![alt tag](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4_canny.jpg)
