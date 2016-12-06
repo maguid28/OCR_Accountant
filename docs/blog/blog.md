@@ -12,14 +12,14 @@ I have discovered due to the size of the image being captured it was causing the
 The next step I am going to attempt is to improve the accuracy of the application as the current result accuracy is quite low.
 
 ## Blog Entry 3
-I have discovered a set of tools that will hopefully help me with the image processing aspect of app, OpenCV. I have been experimenting with some of their tools and managed to build a program in java that finds the finds the 4 corners of a receipt and rotates it, and enhances the image accordingly. I have been having issues with receipts tilted to the right but I seem to be on the right track.
+I have discovered a set of tools that will hopefully help me with the image processing aspect of app, OpenCV. I have been experimenting with some of their tools and managed to build a program in java that finds the finds the 4 corners of a receipt and rotates it, and enhances the image accordingly. I have been having issues with images tilted to the right but I seem to be on the right track.
 Once I have gotten used to these tools I plan to implement them in my application to prepare images prior to running tesseract.
 
 ## Blog Entry 4
-I have been experimenting with OpenCVs Canny edge detection tool and have success with it once calibrated correctly. Below is an example receipt to demonstrate how it functions as of now.
+I have been experimenting with OpenCVs Canny edge detection tool and have had success with it once calibrated correctly. Below is an example receipt to demonstrate how it functions as of now.
 
-#Source image
-![alt tag](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4.jpg)
+# Source image
+![source receipt image](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4.jpg)
 
 First we need to prepare the image so edge detection will be more accurate.
 
@@ -57,4 +57,4 @@ Imgproc.Canny(imageGrey, imageCny, 75, 200, 3, true);
 ```
 
 Below is the processed image:
-![alt tag](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4_canny.jpg)
+![Image with canny edge detection applied](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4_canny.jpg)
