@@ -16,4 +16,4 @@ I have discovered a set of tools that will hopefully help me with the image proc
 Once I have gotten used to these tools I plan to implement them in my application to prepare images prior to running tesseract.
 
 ## Blog Entry 4
-<pre>![Source Image](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4.jpg)</pre>
+![alt tag](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4.jpg)
