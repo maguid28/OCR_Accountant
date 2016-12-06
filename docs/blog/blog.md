@@ -18,7 +18,7 @@ Once I have gotten used to these tools I plan to implement them in my applicatio
 ## Blog Entry 4
 I have been experimenting with OpenCVs Canny edge detection tool and have had success with it once calibrated correctly. Below is an example receipt to demonstrate how it functions as of now.
 
-# Source image
+### Source image
 ![source receipt image](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4.jpg)
 
 First we need to prepare the image so edge detection will be more accurate.
