@@ -192,7 +192,7 @@ public class OCRScan3 extends AppCompatActivity {
                 imageBitmap = Bitmap.createBitmap(imageBitmap,0,0, imageBitmap.getWidth(), imageBitmap.getHeight(), matrix, true);
 
             }catch(IOException ex){
-                Log.e("Failed to get Exif data", "ex");
+                Log.e("Faile to get Exif data", "ex");
             }
 
             mImageView.setImageBitmap(imageBitmap);
