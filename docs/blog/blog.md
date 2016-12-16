@@ -58,3 +58,7 @@ Imgproc.Canny(imageGrey, imageCny, 75, 200, 3, true);
 
 Below is the processed image:
 ![Image with canny edge detection applied](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4_canny.jpg)
+
+
+## Blog Entry 5
+After some testing with various receipts the values previously used for canny edge detections threshold
