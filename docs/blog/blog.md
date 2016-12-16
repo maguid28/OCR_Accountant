@@ -68,12 +68,12 @@ The current settings used for canny edge detection are as follows:
 Imgproc.Canny(imageGrey, imageCny, 50, 140, 5, true);
 ```
 Below is the image with the updated canny settings applied:
-[Image with updated canny edge detection applied](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4_canny2.jpg)
+![Image with updated canny edge detection applied](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4_canny2.jpg)
 
 
 The next step was to detect the largest contour in the image. Once edge detection has been applied correctly finding the largest contour is not a difficult task. We just find the area of each contour and compare it to the previous area, if area of the current contour is larger we then hold that as the largest contour and compare it the next contour area. For debugging purposes I have drawn the largest contour onto the source image. This can be seen below:
 
-[Source image with largest contour visualised. ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4_contour.jpg)
+![Source image with largest contour visualised. ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4_contour.jpg)
 
 For debugging purposes I have added coloured points to the image to visualise where each point is being detected. I also colour coded each point so I can differentiate them from each other.
 
@@ -83,4 +83,4 @@ P3 = red
 P4 = green
 
 Below is the image with the points applied.
-[Image with circled points applied to image](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4_circled_points.jpg)
+![Image with circled points applied to image](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4_circled_points.jpg)
