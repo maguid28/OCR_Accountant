@@ -67,7 +67,7 @@ The current settings used for canny edge detection are as follows:
 ```java
 Imgproc.Canny(imageGrey, imageCny, 50, 140, 5, true);
 ```
-###Below is the image with the updated canny settings applied:
+### Below is the image with the updated canny settings applied:
 ![Image with updated canny edge detection applied](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4_canny2.jpg)
 
 
@@ -83,7 +83,7 @@ P2 = blue
 P3 = red
 P4 = green
 
-###Below is the image with the points applied.
+### Below is the image with the points applied.
 ![Image with circled points applied to image](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4_circled_points.jpg)
 
 The final step is to extract the receipt from the rest of the image and rotate it accordingly. The final results are as follows:
