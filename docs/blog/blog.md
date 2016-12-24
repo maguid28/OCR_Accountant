@@ -91,7 +91,9 @@ The final step is to extract the receipt from the rest of the image and rotate i
 ![Receipt image extracted and rotated accordingly ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4_outputtest.jpg)
 
 
-##Blog Entry 6 - Image cleaning
+
+## Blog Entry 6 - Image cleaning
+
 The next step to clean the image to make it easier for the OCR software to read.
 I achieved this by removing first passing the processed the rotated and cropped receipt image to the function.
 I then convert the image to greyscale:
