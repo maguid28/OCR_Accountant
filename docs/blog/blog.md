@@ -89,3 +89,9 @@ P4 = green
 The final step is to extract the receipt from the rest of the image and rotate it accordingly. The final results are as follows:
 
 ![Receipt image extracted and rotated accordingly ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4_outputtest.jpg)
+
+
+##Blog Entry 6
+Issues arose when
+
+![Comparing circled point images](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/circled_points_compare.jpg)
