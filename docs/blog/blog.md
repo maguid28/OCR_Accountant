@@ -91,7 +91,21 @@ The final step is to extract the receipt from the rest of the image and rotate i
 ![Receipt image extracted and rotated accordingly ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4_outputtest.jpg)
 
 
-##Blog Entry 6
-Issues arose when
+##Blog Entry 6 - Image cleaning
+The next step to clean the image to make it easier for the OCR software to read.
+I achieved this by removing first passing the processed the rotated and cropped receipt image to the function.
+I then convert the image to greyscale:
+```java
+Imgproc.cvtColor(srcImage, srcImage, Imgproc.COLOR_BGR2GRAY);
+```
+I remove noise from the image:
+```java
+Photo.fastNlMeansDenoising(srcImage, srcImage);
+```
+I then apply an adaptive gaussian c threshold to the image. I chose an adaptive threshold as it balances out darker and brighter areas of the image.
+```java
+Imgproc.adaptiveThreshold(srcImage,srcImage, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, 55, 2);
+```
 
-![Comparing circled point images](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/circled_points_compare.jpg)
+This image cleaning operation results in the following image:
+![Receipt after being processed through image cleaning function ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4_output_greyscale.jpg)
