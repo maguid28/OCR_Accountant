@@ -1,256 +1,270 @@
 package com.finalyearproject.dan.ocraccountingapp;
 
 
-import org.bytedeco.javacpp.*;
+import org.opencv.core.*;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.utils.Converters;
+import org.opencv.photo.Photo;
 
-import java.io.File;
-import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
-import static org.bytedeco.javacpp.lept.pixDestroy;
-import static org.bytedeco.javacpp.lept.pixRead;
-import static org.bytedeco.javacpp.opencv_core.IPL_DEPTH_8U;
-import static org.bytedeco.javacpp.opencv_core.cvCreateImage;
-import static org.bytedeco.javacpp.opencv_core.cvGetSize;
-import static org.bytedeco.javacpp.opencv_core.cvSize;
-import static org.bytedeco.javacpp.opencv_imgcodecs.cvLoadImage;
-import static org.bytedeco.javacpp.opencv_imgcodecs.cvSaveImage;
-import static org.bytedeco.javacpp.opencv_imgproc.cvResize;
-import org.bytedeco.javacv.*;
-import org.bytedeco.javacpp.*;
-import org.bytedeco.javacpp.indexer.*;
-import static org.bytedeco.javacpp.opencv_core.*;
-import static org.bytedeco.javacpp.opencv_imgproc.*;
-import static org.bytedeco.javacpp.opencv_calib3d.*;
-import static org.bytedeco.javacpp.opencv_objdetect.*;
+import static org.opencv.core.CvType.*;
+import static org.opencv.imgproc.Imgproc.*;
 
+public class ReceiptScannerImpl {
 
-/**
- * Created by daniel on 15/11/2016.
- */
+    private static String jpg = ".jpg";
+    private static String pathname = "/Users/daniel/IdeaProjects/opcvtest/src/main/resources/receipt12";
+    private static String path = pathname + jpg;
 
-public class ReceiptScannerImpl implements ReceiptScanner {
-
-    @Override
-    public String getTextFromReceiptImage(final String receiptFileImagePath) {
-        final File receiptImageFile = new File(receiptFileImagePath);
-        //path to receipt image
-        final String receiptImagePathFile = receiptImageFile.getAbsolutePath();
-        System.out.println(receiptImagePathFile);
-        //IplImage of receipt to be processed by JAVACV methods
-        IplImage receiptImage = cvLoadImage(receiptImagePathFile);
-
-        IplImage cannyEdgeImage = applyCannySquareEdgeDetectionOnImage(receiptImage,30);
-
-        CvSeq largestSquare = findLargestSquareOnCannyDetectedImage(cannyEdgeImage);
-
-        receiptImage = applyPerspectiveTransformThresholdOnOriginalImage(receiptImage, largestSquare, 30);
-
-        receiptImage = cleanImageSmoothingForOCR(receiptImage);
-
-        final File cleanedReceiptFile = new File(receiptFileImagePath);
-        final String cleanedReceiptPathFile = cleanedReceiptFile.getAbsolutePath();
-        cvSaveImage(cleanedReceiptPathFile, receiptImage);
-        System.out.println(cleanedReceiptPathFile);
-
-        cvReleaseImage(cannyEdgeImage);
-        cannyEdgeImage = null;
-        cvReleaseImage(receiptImage);
-        receiptImage = null;
-
-        return  getStringFromImage(cleanedReceiptPathFile);
+    public static void main(String[] args) {
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        ReceiptScannerImpl rec = new ReceiptScannerImpl();
+        Mat test = rec.correctReceipt(path);
+        Imgcodecs.imwrite(pathname + "_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.jpg", test);
     }
 
+    private Mat correctReceipt(String path) {
 
-    /*
-     * Resizes the image given a percent
-     */
-    private IplImage downScaleImage(IplImage srcImage, int percent) {
+        Mat srcImage = Imgcodecs.imread(path);
 
-        System.out.println("srcImage - height - " + srcImage.height() + ", width - " + srcImage.width());
+        Mat canny = ApplyCanny(srcImage);
+        Imgcodecs.imwrite(pathname + "_aaaaaaaaaaaaaaaa.jpg", canny);
 
-        IplImage destImage = cvCreateImage(cvSize((srcImage.width()*percent)/100, (srcImage.height()*percent)/100), srcImage.depth(), srcImage.nChannels());
-        cvResize(srcImage,destImage);
+        Mat transform = imageTransform(canny, srcImage);
+        Imgcodecs.imwrite(pathname + "_aaaaaaaaaaaaaaaaaaaa.jpg", transform);
 
-        System.out.println("destImage - height - " + destImage.height() + ", width - " + destImage.width());
-        return destImage;
+        Mat clean = imageClean(transform);
+        Imgcodecs.imwrite(pathname + "_aaaaaaaaaaaaaaaaaaaaaaa.jpg", clean);
+
+        Mat artifact = removeArtifacts(clean);
+        Imgcodecs.imwrite(pathname + "_aaaaaaaaaaaaaaaaaaaaaaaaaa.jpg", artifact);
+
+        return artifact;
     }
 
+    private Mat ApplyCanny(Mat rgbImage) {
+        //mat gray image holder
+        Mat imageGrey = new Mat();
+        //mat canny image
+        Mat imageCanny = new Mat();
 
+        //convert to greyscale
+        Imgproc.cvtColor(rgbImage, imageGrey, Imgproc.COLOR_BGR2GRAY);
 
-    /*
-     * Detect the edges of an image using the canny edge detect method given a percent in order to
-     * reduce the size of the image and be able to process it better
-     */
-    private IplImage applyCannySquareEdgeDetectionOnImage(IplImage srcImage, int percent) {
-        IplImage destImage = downScaleImage(srcImage, percent);
-        IplImage greyImage = cvCreateImage(cvGetSize(destImage), IPL_DEPTH_8U, 1);
+        //resize image to 30% of original image
+        Size sz = new Size((imageGrey.width() * 30) / 100, (imageGrey.height() * 30) / 100);
+        Imgproc.resize(imageGrey, imageGrey, sz);
 
-        //convert to grey
-        cvCvtColor(destImage, greyImage, CV_BGR2GRAY);
-        OpenCVFrameConverter.ToMat converterToMat = new OpenCVFrameConverter.ToMat();
-        Frame greyImageFrame = converterToMat.convert(greyImage);
-        Mat greyImageMat = converterToMat.convert(greyImageFrame);
+        //Set gaussian blur
+        int gBlurSize = 9;
+        Imgproc.GaussianBlur(imageGrey, imageGrey, new Size(gBlurSize, gBlurSize), 0);
 
-        //Apply gaussuan blur
-        GaussianBlur(greyImageMat, greyImageMat, new Size(5, 5), 0.0, 0.0, BORDER_DEFAULT);
+        //Set erosion values
+        int erosion_size = 5;
+        Mat element = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(erosion_size, erosion_size));
+        Imgproc.erode(imageGrey, imageGrey, element);
 
-        destImage = converterToMat.convertToIplImage(greyImageFrame);
+        //Set dilation values
+        int dilation_size = 5;
+        Mat element1 = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(dilation_size, dilation_size));
+        Imgproc.dilate(imageGrey, imageGrey, element1);
 
-        //clean it for better detection
-        cvErode(destImage, destImage);
-        cvDilate(destImage, destImage);
+        //apply canny edge detection
+        Imgproc.Canny(imageGrey, imageCanny, 50, 140, 5, true);
 
-        //apply the canny edge detection method
-        cvCanny(destImage,destImage, 75.0, 200.0);
-
-        File f = new File(System.getProperty("user.home") + File.separator + "receipt-canny-detect.jpeg");
-        cvSaveImage(f.getAbsolutePath(), destImage);
-        return destImage;
+        return imageCanny;
     }
 
 
 
-    /*
-     * Once applied canny edge to the image, we can find the largest square
-     * using the find contours (square) method and asking for the largest one
-     * that will be the on the image hopefully
-     */
-    private CvSeq findLargestSquareOnCannyDetectedImage(IplImage cannyEdgeDetectedImage) {
-        IplImage foundedContoursImage = cvCloneImage(cannyEdgeDetectedImage);
-        CvMemStorage memory = CvMemStorage.create();
-        CvSeq contours = new CvSeq();
-        cvFindContours(foundedContoursImage, memory,contours, Loader.sizeof(CvContour.class), CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE, cvPoint(0,0));
-        int maxWidth = 0;
-        int maxHeight = 0;
-        CvRect contour = null;
-        CvSeq seqFounded = null;
-        CvSeq nextSeq = new CvSeq();
+    private Mat imageTransform(Mat cannyImage, Mat sourceImage) {
 
-        for(nextSeq = contours; nextSeq != null; nextSeq = nextSeq.h_next()) {
-            contour = cvBoundingRect(nextSeq, 0);
-            if((contour.width()>=maxWidth) && (contour.height() >= maxHeight)) {
-                maxWidth = contour.width();
-                maxHeight = contour.height();
-                seqFounded = nextSeq;
+        //resize image back to original size
+        Size sz = new Size((cannyImage.width() * 100) / 30, (cannyImage.height() * 100) / 30);
+        Imgproc.resize(cannyImage, cannyImage, sz);
+
+        //find the contours
+        List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+        Imgproc.findContours(cannyImage, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+
+        double maxArea = -1;
+        MatOfPoint temp_contour = contours.get(0);
+        MatOfPoint largest_contour = contours.get(0);
+
+        MatOfPoint2f approxCurve = new MatOfPoint2f();
+
+        for (int i = 0; i < contours.size(); i++) {
+            temp_contour = contours.get(i);
+            double contourarea = Imgproc.contourArea(temp_contour);
+            //compare this contour to the previous largest contour found
+            if (contourarea > maxArea) {
+                // find out if this is a rectangle
+                MatOfPoint2f new_mat = new MatOfPoint2f(temp_contour.toArray());
+                int contourSize = (int) temp_contour.total();
+                MatOfPoint2f approxCurve_temp = new MatOfPoint2f();
+                Imgproc.approxPolyDP(new_mat, approxCurve_temp, contourSize * 0.2, true);
+                if (approxCurve_temp.total() == 4) {
+                    maxArea = contourarea;
+                    largest_contour = temp_contour;
+                    approxCurve = approxCurve_temp;
+                }
             }
         }
 
-        CvSeq result = cvApproxPoly(seqFounded, Loader.sizeof(CvContour.class), memory, CV_POLY_APPROX_DP, cvContourPerimeter(seqFounded) * 0.02, 0);
+        List<MatOfPoint> largest_contours = new ArrayList<MatOfPoint>();
+        largest_contours.add(0, largest_contour);
+        //convert the image to color
+        Imgproc.cvtColor(cannyImage, cannyImage, Imgproc.COLOR_BayerBG2RGB);
 
-        for(int i = 0; i < result.total(); i++) {
-            CvPoint v = new CvPoint(cvGetSeqElem(result, i));
-            cvDrawCircle(foundedContoursImage, v, 5, CvScalar.BLUE, 20, 8, 0);
-            System.out.println("found point(" + v.x() + "," + v.y() + ")");
+        double[] temp_double;
+        temp_double = approxCurve.get(0,0);
+        Point p1 = new Point(temp_double[0], temp_double[1]);
+        temp_double = approxCurve.get(1,0);
+        Point p2 = new Point(temp_double[0], temp_double[1]);
+        temp_double = approxCurve.get(2,0);
+        Point p3 = new Point(temp_double[0], temp_double[1]);
+        temp_double = approxCurve.get(3,0);
+        Point p4 = new Point(temp_double[0], temp_double[1]);
+        List<Point> source = new ArrayList<Point>();
+
+        source.add(p1);
+        source.add(p2);
+        source.add(p3);
+        source.add(p4);
+
+
+        int distp1p2=(int) Math.sqrt((p2.x-p1.x)*(p2.x-p1.x) + (p2.y-p1.y)*(p2.y-p1.y));
+        int distp2p3=(int) Math.sqrt((p3.x-p2.x)*(p3.x-p2.x) + (p3.y-p2.y)*(p3.y-p2.y));
+
+        Mat startM = Converters.vector_Point2f_to_Mat(source);
+        Mat result=extract(sourceImage,startM, distp1p2, distp2p3);
+        Imgcodecs.imwrite(pathname + "_circled_points.jpg", cannyImage);
+
+        if(p1.x > p4.x){
+            Core.flip(result, result,1);
         }
 
-        File f = new File(System.getProperty("user.home") + File.separator + "receipt-find-contours.jpeg");
-        cvSaveImage(f.getAbsolutePath(), foundedContoursImage);
-
+        Imgcodecs.imwrite(pathname + "_outputtest.jpg", result);
         return result;
     }
 
+    private Mat extract(Mat inputMat, Mat startM, int height, int width) {
 
-    /*
-     * Finally we apply a tranformation on the original image to obtain a
-     * top down image of the receipt from the same original image using the
-     * points detected earlier.
-     */
-    private IplImage applyPerspectiveTransformThresholdOnOriginalImage(IplImage srcImage, CvSeq contour, int percent) {
-        IplImage warpImage = cvCloneImage(srcImage);
+        Mat outputMat = new Mat(width, height, CvType.CV_8UC4);
 
-        //first, given the percentage, adjust to the original image
-        for( int i = 0; i < contour.total(); i++) {
-            CvPoint point = new CvPoint(cvGetSeqElem(contour,i));
-            point.x((int) (point.x() * 100) / percent);
-            point.y((int) (point.y() * 100) / percent);
+        Point ocvPOut1 = new Point(0, 0);
+        Point ocvPOut2 = new Point(0, height);
+        Point ocvPOut3 = new Point(width, height);
+        Point ocvPOut4 = new Point(width, 0);
+        List<Point> dest = new ArrayList<Point>();
+        dest.add(ocvPOut1);
+        dest.add(ocvPOut2);
+        dest.add(ocvPOut3);
+        dest.add(ocvPOut4);
+        Mat endM = Converters.vector_Point2f_to_Mat(dest);
+
+        Mat perspectiveTransform = Imgproc.getPerspectiveTransform(startM, endM);
+
+        Imgproc.warpPerspective(inputMat,
+                outputMat,
+                perspectiveTransform,
+                new Size(width, height),
+                Imgproc.INTER_CUBIC);
+
+        if(outputMat.size().width > outputMat.size().height){
+            Core.transpose(outputMat, outputMat);
+            Core.flip(outputMat, outputMat, 1);
         }
 
-        //get each corner point of the image
-        CvPoint topRightPoint = new CvPoint(cvGetSeqElem(contour,0));
-        CvPoint topLeftPoint = new CvPoint(cvGetSeqElem(contour, 1));
-        CvPoint bottomLeftPoint = new CvPoint(cvGetSeqElem(contour, 2));
-        CvPoint bottomRightPoint = new CvPoint(cvGetSeqElem(contour, 3));
-
-        int resultWidth = (int) (topRightPoint.x() - topLeftPoint.x());
-        int bottomWidth = (int) (bottomRightPoint.x() - bottomLeftPoint.x());
-        if(bottomWidth > resultWidth){
-            resultWidth = bottomWidth;
-        }
-        int resultHeight = (int) (bottomLeftPoint.y() - topLeftPoint.y());
-        int bottomHeight = (int) (bottomRightPoint.y() - topRightPoint.y());
-        if(bottomHeight > resultHeight) {
-            resultHeight = bottomHeight;
-        }
-
-        float[] sourcePoints = { topLeftPoint.x(), topLeftPoint.y(), topRightPoint.x(), topRightPoint.y(),
-                                bottomLeftPoint.x(), bottomLeftPoint.y(), bottomRightPoint.x(), bottomRightPoint.y() };
-        float[] destinationPoints = { 0, 0, resultWidth, 0, 0, resultHeight, resultWidth, resultHeight};
-        CvMat homography = cvCreateMat(3, 3, CV_32FC1);
-        cvGetPerspectiveTransform(sourcePoints,destinationPoints,homography);
-        System.out.println(homography.toString());
-        IplImage destImage = cvCloneImage(warpImage);
-        cvWarpPerspective(warpImage, destImage, homography, CV_INTER_LINEAR, CvScalar.ZERO);
-
-        return cropImage(destImage, 0, 0, resultWidth, resultHeight);
+        return outputMat;
     }
 
 
-    /*
-     * Crops a square from an image to the new width and height from the 0,0 position
-     */
-    private IplImage cropImage(IplImage srcImage, int fromX, int fromY, int toWidth, int toHeight) {
-        cvSetImageROI(srcImage, cvRect(fromX, fromY, toWidth, toHeight));
-        IplImage destImage = cvCloneImage(srcImage);
-        cvCopy(srcImage, destImage);
-        return destImage;
+
+
+
+
+
+    private Mat imageClean(Mat srcImage){
+        //convert to grey
+        Imgproc.cvtColor(srcImage, srcImage, Imgproc.COLOR_BGR2GRAY);
+        //remove noise from image
+        Photo.fastNlMeansDenoising(srcImage, srcImage);
+        //apply adaptive threshold
+        Imgproc.adaptiveThreshold(srcImage,srcImage, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, 55, 2);
+
+        Imgcodecs.imwrite(pathname + "_output_greyscale.jpg", srcImage);
+
+        Imgproc.cvtColor(srcImage, srcImage, Imgproc.COLOR_BayerBG2RGB);
+
+        return srcImage;
     }
 
 
-    /*
-     * Cleans the inage of noise converting to grey smoothing and applying Otsu
-     * threshold to the image and leabing the image with white background and
-     * black foreground (letters).
-     */
-    private IplImage cleanImageSmoothingForOCR(IplImage srcImage) {
-        IplImage destImage = cvCreateImage(cvGetSize(srcImage), IPL_DEPTH_8U, 1);
-        cvCvtColor(srcImage, destImage, CV_BGR2GRAY);
-        cvSmooth(destImage, destImage, CV_MEDIAN, 3, 0, 0, 0);
-        cvThreshold(destImage, destImage, 0, 255, CV_THRESH_OTSU);
-        return destImage;
-    }
 
-    /*
-     * Call tesseract with the receipt image and return the text found.
-     */
-    private String getStringFromImage(final String pathToReceiptImageFile) {
-        try {
-            final URL tessDataResource = getClass().getResource("/");
-            final File tessFolder = new File(tessDataResource.toURI());
-            final String tessFolderPath = tessFolder.getAbsolutePath();
-            System.out.println(tessFolderPath);
-            BytePointer outText;
-            tesseract.TessBaseAPI api = new tesseract.TessBaseAPI();
-            api.SetVariable("tessedit_char_whitelist", "0123456789,/ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-            //initialize tesseract-ocr with eng
-            if(api.Init(tessFolderPath, "eng") != 0) {
-                System.err.println("Could not initialise tesseract.");
+    private Mat removeArtifacts(Mat srcImage){
+        Mat rgbImg = new Mat();
+
+        Size sz = new Size((srcImage.width() * 40) / 100, (srcImage.height() * 40) / 100);
+        Imgproc.resize(srcImage, rgbImg, sz);
+
+        Mat small = new Mat();
+        Imgproc.cvtColor(rgbImg, small, Imgproc.COLOR_RGB2GRAY);
+        Mat grad = new Mat();
+        Mat morphKernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(3,3));
+        Imgproc.morphologyEx(small, grad, Imgproc.MORPH_GRADIENT , morphKernel);
+        Imgcodecs.imwrite(pathname + "_check1.jpg", grad);
+
+
+        Mat bw = new Mat();
+        Imgproc.threshold(grad, bw, 0.0, 255.0, Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);
+        Mat connected = new Mat();
+        Imgcodecs.imwrite(pathname + "_check1_1.jpg", bw);
+
+        morphKernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(13,1));
+        Imgproc.morphologyEx(bw, connected, Imgproc.MORPH_CLOSE  , morphKernel);
+        Imgcodecs.imwrite(pathname + "_check2.jpg", connected);
+
+        morphKernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(7,1));
+        Imgproc.morphologyEx(connected, connected, Imgproc.MORPH_OPEN  , morphKernel);
+        Imgcodecs.imwrite(pathname + "_check3.jpg", connected);
+
+
+        Mat mask2 = Mat.zeros(bw.size(), CvType.CV_8UC1);
+
+        List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+        Imgproc.findContours(connected, contours, new Mat(), Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE, new Point(0, 0));
+
+        Mat mask = Mat.zeros(bw.size(), CvType.CV_8UC1);
+        for(int idx = 0; idx < contours.size(); idx++) {
+            Rect rect = Imgproc.boundingRect(contours.get(idx));
+            Mat maskROI = new Mat(mask, rect);
+            Imgproc.drawContours(mask, contours, idx, new Scalar(255, 255, 255), Core.FILLED);
+            double r = (double)Core.countNonZero(maskROI)/(rect.width*rect.height);
+
+            if (r > .45 && (rect.height > 10 && rect.width > 10)) {
+                //rectangle(rgbImg, rect.br() , new Point( rect.br().x-rect.width ,rect.br().y-rect.height),  new Scalar(0, 255, 0));
+                rectangle(mask2, rect.br() , new Point( rect.br().x-rect.width ,rect.br().y-rect.height),  new Scalar(255, 255, 255),Core.FILLED);
             }
-            //Open input image with leptonica library
-            lept.PIX image = pixRead(pathToReceiptImageFile);
-            api.SetImage(image);
-            //Get OCR result
-            outText = api.GetUTF8Text();
-            String string = outText.getString();
-            //Destroy used object and release memory.
-            api.End();
-
-            outText.deallocate();
-            pixDestroy(image);
-            return string;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
         }
+
+        Mat imageROI = new Mat(srcImage.size(), CV_8UC3);
+        imageROI.setTo(new Scalar(255,255,255));
+        Imgcodecs.imwrite(pathname + "_ROI123.jpg", imageROI);
+
+        sz = new Size(srcImage.width(), srcImage.height());
+        Imgproc.resize(mask2, mask2, sz);
+
+        srcImage.copyTo(imageROI, mask2);
+
+        Imgproc.cvtColor(imageROI, imageROI, Imgproc.COLOR_RGB2GRAY);
+
+        return imageROI;
     }
 }
+
+
+

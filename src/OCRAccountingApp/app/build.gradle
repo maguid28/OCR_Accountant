@@ -28,8 +28,9 @@ dependencies {
     compile 'com.rmtheis:tess-two:6.0.4'
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'
-    compile group: 'org.bytedeco', name:'javacv', version: '1.1'
-    compile group: 'org.bytedeco.javacpp-presets', name:'tesseract', version: '3.04-1.1'
-    compile group: 'org.bytedeco.javacpp-presets', name: 'leptonica', version: '1.72-1.1'
+    compile 'org.bytedeco:javacv:1.1'
+    compile 'org.bytedeco.javacpp-presets:tesseract:3.04-1.1'
+    compile 'org.bytedeco.javacpp-presets:leptonica:1.72-1.1'
     testCompile 'junit:junit:4.12'
+    compile project(':openCVLibrary320')
 }
