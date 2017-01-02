@@ -1,6 +1,5 @@
 package com.finalyearproject.dan.ocraccountingapp;
 
-
 import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
@@ -23,7 +22,6 @@ public class ReceiptScannerImpl {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         ReceiptScannerImpl rec = new ReceiptScannerImpl();
         Mat test = rec.correctReceipt(path);
-        Imgcodecs.imwrite(pathname + "_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.jpg", test);
     }
 
     private Mat correctReceipt(String path) {
@@ -31,16 +29,12 @@ public class ReceiptScannerImpl {
         Mat srcImage = Imgcodecs.imread(path);
 
         Mat canny = ApplyCanny(srcImage);
-        Imgcodecs.imwrite(pathname + "_aaaaaaaaaaaaaaaa.jpg", canny);
 
         Mat transform = imageTransform(canny, srcImage);
-        Imgcodecs.imwrite(pathname + "_aaaaaaaaaaaaaaaaaaaa.jpg", transform);
 
         Mat clean = imageClean(transform);
-        Imgcodecs.imwrite(pathname + "_aaaaaaaaaaaaaaaaaaaaaaa.jpg", clean);
 
         Mat artifact = removeArtifacts(clean);
-        Imgcodecs.imwrite(pathname + "_aaaaaaaaaaaaaaaaaaaaaaaaaa.jpg", artifact);
 
         return artifact;
     }
@@ -196,8 +190,6 @@ public class ReceiptScannerImpl {
         //apply adaptive threshold
         Imgproc.adaptiveThreshold(srcImage,srcImage, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, 55, 2);
 
-        Imgcodecs.imwrite(pathname + "_output_greyscale.jpg", srcImage);
-
         Imgproc.cvtColor(srcImage, srcImage, Imgproc.COLOR_BayerBG2RGB);
 
         return srcImage;
@@ -216,22 +208,16 @@ public class ReceiptScannerImpl {
         Mat grad = new Mat();
         Mat morphKernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(3,3));
         Imgproc.morphologyEx(small, grad, Imgproc.MORPH_GRADIENT , morphKernel);
-        Imgcodecs.imwrite(pathname + "_check1.jpg", grad);
-
 
         Mat bw = new Mat();
         Imgproc.threshold(grad, bw, 0.0, 255.0, Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);
         Mat connected = new Mat();
-        Imgcodecs.imwrite(pathname + "_check1_1.jpg", bw);
 
         morphKernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(13,1));
         Imgproc.morphologyEx(bw, connected, Imgproc.MORPH_CLOSE  , morphKernel);
-        Imgcodecs.imwrite(pathname + "_check2.jpg", connected);
 
         morphKernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(7,1));
         Imgproc.morphologyEx(connected, connected, Imgproc.MORPH_OPEN  , morphKernel);
-        Imgcodecs.imwrite(pathname + "_check3.jpg", connected);
-
 
         Mat mask2 = Mat.zeros(bw.size(), CvType.CV_8UC1);
 
@@ -253,7 +239,6 @@ public class ReceiptScannerImpl {
 
         Mat imageROI = new Mat(srcImage.size(), CV_8UC3);
         imageROI.setTo(new Scalar(255,255,255));
-        Imgcodecs.imwrite(pathname + "_ROI123.jpg", imageROI);
 
         sz = new Size(srcImage.width(), srcImage.height());
         Imgproc.resize(mask2, mask2, sz);
