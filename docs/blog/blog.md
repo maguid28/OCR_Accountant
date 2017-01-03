@@ -183,3 +183,6 @@ Here is the receipt image after being processed through this function:
 It is not perfect, but after comparing the receipt image before and after, a significant improvement can be seen.
 
 ![Receipt image before and after artifact removal function applied ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/beforeandafter.jpg)
+
+Here is another example:
+![Another example of a receipt image before and after artifact removal function applied ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/beforeandafter2.jpg)
