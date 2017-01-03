@@ -164,7 +164,7 @@ for(int idx = 0; idx < contours.size(); idx++) {
 ```
 
 The example results of this of the bounding boxes can been seen below:
-![Receipt after being processed through morphological transformations ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4_check3.jpg)
+![Receipt after being processed through morphological transformations ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4_check6.jpg)
 
 The masked areas are then added to a new white image the same size as the source image.
 ```java
