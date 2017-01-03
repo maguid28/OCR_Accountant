@@ -176,3 +176,6 @@ Imgproc.resize(mask2, mask2, sz);
 
 srcImage.copyTo(imageROI, mask2);
 ```
+
+Here is the receipt image after being processed through this function:
+![Receipt image after being processed through artifact removal function ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4_ROI.jpg)
