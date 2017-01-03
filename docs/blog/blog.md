@@ -179,3 +179,5 @@ srcImage.copyTo(imageROI, mask2);
 
 Here is the receipt image after being processed through this function:
 ![Receipt image after being processed through artifact removal function ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4_ROI.jpg)
+
+It is not perfect, but comparing the receipt image before and after there has been an significant improvement.
