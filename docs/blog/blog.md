@@ -111,3 +111,68 @@ Imgproc.adaptiveThreshold(srcImage,srcImage, 255, Imgproc.ADAPTIVE_THRESH_GAUSSI
 
 This image cleaning operation results in the following image:
 ![Receipt after being processed through image cleaning function ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4_output_greyscale.jpg)
+
+
+## Blog Entry 7 - Image cleaning 2: Artifact removal
+
+The next step was to remove any artifacts that were left in the image after the cleaning in the previous step.
+To do this I first shrink the image to 40% of its original size.
+```java
+Size sz = new Size((srcImage.width() * 40) / 100, (srcImage.height() * 40) / 100);
+Imgproc.resize(srcImage, rgbImg, sz);
+```
+
+A series of morphological transformations are then applied along with OTSU threshold to improve accuracy when locating areas of text in the image.
+```java
+Mat grad = new Mat();
+Mat morphKernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(3,3));
+Imgproc.morphologyEx(small, grad, Imgproc.MORPH_GRADIENT , morphKernel);
+
+Mat bw = new Mat();
+Imgproc.threshold(grad, bw, 0.0, 255.0, Imgproc.THRESH_OTSU);
+Mat connected = new Mat();
+
+morphKernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(13,1));
+Imgproc.morphologyEx(bw, connected, Imgproc.MORPH_CLOSE  , morphKernel);
+
+morphKernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(7,1));
+Imgproc.morphologyEx(connected, connected, Imgproc.MORPH_OPEN  , morphKernel);
+```
+Below is the resulting image.
+![Receipt after being processed through morphological transformations ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4_check3.jpg)
+
+We then set conditions to create bounding boxes around text and use these boxes as a mask. We only keep anything detected within this boxes. Using this technique I was able to remove a majority of artifacts from images while keeping text.
+
+```java
+Mat mask2 = Mat.zeros(bw.size(), CvType.CV_8UC1);
+List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+Imgproc.findContours(connected, contours, new Mat(), Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE, new Point(0, 0));
+
+Mat mask = Mat.zeros(bw.size(), CvType.CV_8UC1);
+for(int idx = 0; idx < contours.size(); idx++) {
+
+  Rect rect = Imgproc.boundingRect(contours.get(idx));
+  Mat maskROI = new Mat(mask, rect);
+  Imgproc.drawContours(mask, contours, idx, new Scalar(255, 255, 255), Core.FILLED);
+
+  double r = (double)Core.countNonZero(maskROI)/(rect.width*rect.height);
+
+  if (r > .45 && (rect.height > 10 && rect.width > 10)) {
+    rectangle(mask2, rect.br() , new Point( rect.br().x-rect.width ,rect.br().y-rect.height),  new Scalar(255, 255, 255),Core.FILLED);
+  }
+}
+```
+
+The example results of this of the bounding boxes can been seen below:
+![Receipt after being processed through morphological transformations ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/receipt4_check3.jpg)
+
+The masked areas are then added to a new white image the same size as the source image.
+```java
+Mat imageROI = new Mat(srcImage.size(), CV_8UC3);
+imageROI.setTo(new Scalar(255,255,255));
+
+sz = new Size(srcImage.width(), srcImage.height());
+Imgproc.resize(mask2, mask2, sz);
+
+srcImage.copyTo(imageROI, mask2);
+```
