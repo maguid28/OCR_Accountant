@@ -186,3 +186,6 @@ It is not perfect, but after comparing the receipt image before and after, a sig
 
 Here is another example:
 ![Another example of a receipt image before and after artifact removal function applied ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/beforeandafter2.jpg)
+
+## Blog Entry 8 - User Login
+I have added user sign up and login to my application. I have used Amazon Web Services Mobile Hub to host the database that will store the users login credentials. I allowed users to sign up through email and password or using Facebook by taking advantage of the Facebook SDK to authenticate users. This uses Facebook lite which means the user does not need to have Facebook app installed to authenticate. The IdentityManager class within the application keeps track of the current sign-in provider and is responsible for caching credentials. This is in preparation to configure a database that will store the users receipt data. I plan on using Amazons NoSQL database to store this data.

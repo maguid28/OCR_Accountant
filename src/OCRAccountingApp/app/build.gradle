@@ -28,5 +28,47 @@ dependencies {
     compile 'com.rmtheis:tess-two:6.0.4'
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'
+    compile 'com.android.support:support-v4:24.1.0'
+    compile 'com.android.support:multidex:1.0.0'
     testCompile 'junit:junit:4.12'
+    compile project(':openCVLibrary310')
+
+    compile 'com.amazonaws:aws-android-sdk-core:2.3.8'
+    compile ('com.amazonaws:aws-android-sdk-cognitoidentityprovider:2.3.8')
+    compile 'com.facebook.android:facebook-android-sdk:4.6.0'
+    compile 'com.google.code.gson:gson:2.7'
+
+
+    // the sample uses more advanced functions of the fastadapter
+    // https://github.com/mikepenz/FastAdapter/
+    compile 'com.mikepenz:fastadapter-commons:2.1.0@aar'
+    // used to generate the Open Source section
+    // https://github.com/mikepenz/AboutLibraries
+    compile('com.mikepenz:aboutlibraries:5.9.0@aar') {
+        transitive = true
+        exclude module: "fastadapter"
+    }
+    //used to provide different itemAnimators for the RecyclerView
+    //https://github.com/mikepenz/ItemAnimators
+    compile 'com.mikepenz:itemanimators:0.5.0@aar'
+    // used to provide the MiniDrawer to normal Drawer crossfade effect via a SlidingPane layout
+    // --> https://github.com/mikepenz/MaterialDrawer/blob/develop/app/src/main/java/com/mikepenz/materialdrawer/app/MiniDrawerActivity.java
+    // https://github.com/mikepenz/Crossfader
+    compile 'com.mikepenz:crossfader:1.5.0@aar'
+    // used to provide the two step crossfade DrawerLayout. Which allows to have a mini layout which transforms to a normal layout within the drawer
+    // --> https://github.com/mikepenz/MaterialDrawer/blob/develop/app/src/main/java/com/mikepenz/materialdrawer/app/CrossfadeDrawerLayoutActvitiy.java
+    // https://github.com/mikepenz/CrossfadeDrawerLayout
+    compile('com.mikepenz:crossfadedrawerlayout:1.0.0@aar')
+    compile 'com.mikepenz:octicons-typeface:3.0.0.1@aar'
+    compile 'com.mikepenz:google-material-typeface:2.2.0.1@aar'
+    compile 'com.mikepenz:fontawesome-typeface:4.6.0.3@aar'
+    compile('com.mikepenz:materialdrawer:5.8.1@aar') {
+        transitive = true
+    }
+}
+
+repositories{
+    flatDir{
+        dirs 'libs'
+    }
 }

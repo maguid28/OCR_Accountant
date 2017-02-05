@@ -10,13 +10,19 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.finalyearproject.dan.ocraccountingapp.nav.NavDrawerInstaller;
 import com.googlecode.tesseract.android.TessBaseAPI;
+
+import org.opencv.core.Mat;
+import org.opencv.imgcodecs.Imgcodecs;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -24,9 +30,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class OCRScan2 extends AppCompatActivity {
+public class ReceiptCaptureActivity extends AppCompatActivity {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = Sandbox.class.getSimpleName();
     static final int PHOTO_REQUEST_CODE = 1;
     private TessBaseAPI tessBaseApi;
     TextView textView;
@@ -37,6 +43,11 @@ public class OCRScan2 extends AppCompatActivity {
     String DATA_PATH = "";
     private static final String TESSDATA = "tessdata";
 
+    ImageView mImageView;
+    String IMGS_PATH;
+    String img_path;
+    Bitmap imageBitmap;
+
 
 
 
@@ -44,7 +55,18 @@ public class OCRScan2 extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ocrscan2);
+        setContentView(R.layout.activity_receiptcapture);
+
+        // Handle Toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        // Add nav drawer
+        NavDrawerInstaller navDrawerInstaller = new NavDrawerInstaller();
+        navDrawerInstaller.installOnActivity(this, toolbar);
+
+        mImageView = (ImageView) findViewById(R.id.mImageView);
+
+        //imageBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.test2);
 
         DATA_PATH = getFilesDir() + "/TesseractSample/";
         Button captureImg = (Button) findViewById(R.id.action_btn);
@@ -56,7 +78,7 @@ public class OCRScan2 extends AppCompatActivity {
                 }
             });
         }
-        textView = (TextView) findViewById(R.id.textResult);
+        //textView = (TextView) findViewById(R.id.textResult);
     }
 
 
@@ -67,12 +89,12 @@ public class OCRScan2 extends AppCompatActivity {
     private void startCameraActivity() {
         try {
             //Path to image is set to /storage/emulated/0/Android/data/com.finalyearproject.dan.ocraccountingapp/files/Pictures/TesseractSample/imgs
-            String IMGS_PATH = getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/TesseractSample/imgs";
+            IMGS_PATH = getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/TesseractSample/imgs";
             prepareDirectory(IMGS_PATH);
             Log.i(TAG, "IMGS_PATH IS NOW " +IMGS_PATH);
 
             //path to image is /storage/emulated/0/Android/data/com.finalyearproject.dan.ocraccountingapp/files/Pictures/TesseractSample/imgs/ocr.jpg
-            String img_path = IMGS_PATH + "/ocr.jpg";
+            img_path = IMGS_PATH + "/ocr.jpg";
 
             outputFileUri = Uri.fromFile(new File(img_path));
 
@@ -97,6 +119,52 @@ public class OCRScan2 extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         //making photo
         if (requestCode == PHOTO_REQUEST_CODE && resultCode == RESULT_OK) {
+
+            ReceiptScannerImpl rec = new ReceiptScannerImpl();
+            //Mat test = rec.correctReceipt(img_path);
+            //Imgcodecs.imwrite(img_path, test);
+
+            Mat test2 = rec.receiptPic(img_path);
+            Imgcodecs.imwrite(img_path, test2);
+
+
+
+            //Get the dimensions of the view
+            int targetW = mImageView.getWidth();
+            int targetH = mImageView.getHeight();
+
+            //Get the dimensions of the bitmap
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            bmOptions.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(img_path, bmOptions);
+
+            int photoW = bmOptions.outWidth;
+            int photoH = bmOptions.outHeight;
+
+            //determine how much to scale down the image
+            int scalefactor = Math.min(photoW/targetW, photoH/targetH);
+
+            //decode the image file into a bitmap sized to fill the view
+            bmOptions.inJustDecodeBounds = false;
+            bmOptions.inSampleSize = scalefactor;
+
+            imageBitmap = BitmapFactory.decodeFile(img_path, bmOptions);
+
+            try {
+                //Display image in the correct orientation
+                ExifInterface exif = new ExifInterface(img_path);
+                int rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+                int rotationInDegrees = exifToDegrees(rotation);
+                Matrix matrix = new Matrix();
+                if (rotation != 0f) {matrix.preRotate(rotationInDegrees);}
+                imageBitmap = Bitmap.createBitmap(imageBitmap,0,0, imageBitmap.getWidth(), imageBitmap.getHeight(), matrix, true);
+
+            }catch(IOException ex){
+                Log.e("Failed to get Exif data", "ex");
+            }
+
+            mImageView.setImageBitmap(imageBitmap);
+
             //create folder and store tessdata here
             prepareTesseract();
 
@@ -106,6 +174,13 @@ public class OCRScan2 extends AppCompatActivity {
             Toast.makeText(this, "Activity.RESULT_OK" + RESULT_OK, Toast.LENGTH_SHORT).show();
             Toast.makeText(this, "PHOTO_REQUEST_CODE" + requestCode, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private static int exifToDegrees(int exifOrientation) {
+        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) { return 90; }
+        else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {  return 180; }
+        else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {  return 270; }
+        return 0;
     }
 
 

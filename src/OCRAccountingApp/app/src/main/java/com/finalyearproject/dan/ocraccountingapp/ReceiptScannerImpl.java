@@ -1,5 +1,7 @@
 package com.finalyearproject.dan.ocraccountingapp;
 
+import android.graphics.Bitmap;
+
 import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
@@ -18,25 +20,30 @@ public class ReceiptScannerImpl {
     private static String pathname = "/Users/daniel/IdeaProjects/opcvtest/src/main/resources/receipt12";
     private static String path = pathname + jpg;
 
+
+
     public static void main(String[] args) {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         ReceiptScannerImpl rec = new ReceiptScannerImpl();
         Mat test = rec.correctReceipt(path);
     }
 
-    private Mat correctReceipt(String path) {
+
+
+    public Mat correctReceipt(String path) {
+
+        Mat getReceipt = receiptPic(path);
+        Mat clean = imageClean(getReceipt);
+        Mat artifact = removeArtifacts(clean);
+        return artifact;
+    }
+
+    public Mat receiptPic(String path) {
 
         Mat srcImage = Imgcodecs.imread(path);
-
         Mat canny = ApplyCanny(srcImage);
-
         Mat transform = imageTransform(canny, srcImage);
-
-        Mat clean = imageClean(transform);
-
-        Mat artifact = removeArtifacts(clean);
-
-        return artifact;
+        return transform;
     }
 
     private Mat ApplyCanny(Mat rgbImage) {
@@ -124,6 +131,11 @@ public class ReceiptScannerImpl {
         Point p4 = new Point(temp_double[0], temp_double[1]);
         List<Point> source = new ArrayList<Point>();
 
+        //circle(sourceImage,p1,100,new Scalar(255,255,255), 20, 8, 0);
+        //circle(sourceImage,p2,100,new Scalar(255,0,0), 20, 8, 0);
+        //circle(sourceImage,p3,100,new Scalar(0,0,255), 20, 8, 0);
+        //circle(sourceImage,p4,100,new Scalar(0,255,0), 20, 8, 0);
+
         source.add(p1);
         source.add(p2);
         source.add(p3);
@@ -135,13 +147,14 @@ public class ReceiptScannerImpl {
 
         Mat startM = Converters.vector_Point2f_to_Mat(source);
         Mat result=extract(sourceImage,startM, distp1p2, distp2p3);
-        Imgcodecs.imwrite(pathname + "_circled_points.jpg", cannyImage);
 
-        if(p1.x > p4.x){
+        //Imgcodecs.imwrite("/storage/emulated/0/Android/data/com.finalyearproject.dan.ocraccountingapp/files/Pictures/TesseractSample/imgs/ocr"+ "_circled_points.jpg", sourceImage);
+
+        if(p2.x > p1.x){
             Core.flip(result, result,1);
         }
 
-        Imgcodecs.imwrite(pathname + "_outputtest.jpg", result);
+        Imgcodecs.imwrite("/storage/emulated/0/Android/data/com.finalyearproject.dan.ocraccountingapp/files/Pictures/TesseractSample/imgs/ocr" + "_receiptimage.jpg", result);
         return result;
     }
 
@@ -198,58 +211,107 @@ public class ReceiptScannerImpl {
 
 
     private Mat removeArtifacts(Mat srcImage){
+
         Mat rgbImg = new Mat();
+
 
         Size sz = new Size((srcImage.width() * 40) / 100, (srcImage.height() * 40) / 100);
         Imgproc.resize(srcImage, rgbImg, sz);
 
+
         Mat small = new Mat();
+
         Imgproc.cvtColor(rgbImg, small, Imgproc.COLOR_RGB2GRAY);
+
         Mat grad = new Mat();
+
+        Imgcodecs.imwrite(pathname + "_check0.jpg", grad);
+
         Mat morphKernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(3,3));
+
         Imgproc.morphologyEx(small, grad, Imgproc.MORPH_GRADIENT , morphKernel);
 
+        Imgcodecs.imwrite(pathname + "_check1.jpg", grad);
+
+
+
         Mat bw = new Mat();
+
         Imgproc.threshold(grad, bw, 0.0, 255.0, Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);
+
         Mat connected = new Mat();
 
+        Imgcodecs.imwrite(pathname + "_check1_1.jpg", bw);
+/*
         morphKernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(13,1));
+
         Imgproc.morphologyEx(bw, connected, Imgproc.MORPH_CLOSE  , morphKernel);
 
-        morphKernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(7,1));
+        Imgcodecs.imwrite(pathname + "_check2.jpg", connected);
+
+/*
+        morphKernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(4,1));
+
         Imgproc.morphologyEx(connected, connected, Imgproc.MORPH_OPEN  , morphKernel);
+
+        Imgcodecs.imwrite(pathname + "_check3.jpg", connected);
+
+
+        morphKernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(10,10));
+
+        Imgproc.morphologyEx(connected, connected, Imgproc.MORPH_CLOSE  , morphKernel);
+
+        Imgcodecs.imwrite(pathname + "_check4.jpg", connected);
+
+        morphKernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(10,1));
+
+        Imgproc.morphologyEx(connected, connected, Imgproc.MORPH_OPEN  , morphKernel);
+
+        Imgcodecs.imwrite(pathname + "_check5.jpg", connected);
+*/
+
+
 
         Mat mask2 = Mat.zeros(bw.size(), CvType.CV_8UC1);
 
+
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-        Imgproc.findContours(connected, contours, new Mat(), Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE, new Point(0, 0));
+        Imgproc.findContours(bw, contours, new Mat(), Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE, new Point(0, 0));
 
         Mat mask = Mat.zeros(bw.size(), CvType.CV_8UC1);
         for(int idx = 0; idx < contours.size(); idx++) {
+
             Rect rect = Imgproc.boundingRect(contours.get(idx));
+
             Mat maskROI = new Mat(mask, rect);
+
             Imgproc.drawContours(mask, contours, idx, new Scalar(255, 255, 255), Core.FILLED);
+
             double r = (double)Core.countNonZero(maskROI)/(rect.width*rect.height);
 
-            if (r > .45 && (rect.height > 10 && rect.width > 10)) {
-                //rectangle(rgbImg, rect.br() , new Point( rect.br().x-rect.width ,rect.br().y-rect.height),  new Scalar(0, 255, 0));
+            if (r > .10 && (rect.height > 10 && rect.width > 5) && rect.height < 65 && rect.width < 80) {
+                rectangle(rgbImg, rect.br() , new Point( rect.br().x-rect.width ,rect.br().y-rect.height),  new Scalar(0, 255, 0));
                 rectangle(mask2, rect.br() , new Point( rect.br().x-rect.width ,rect.br().y-rect.height),  new Scalar(255, 255, 255),Core.FILLED);
             }
         }
 
         Mat imageROI = new Mat(srcImage.size(), CV_8UC3);
         imageROI.setTo(new Scalar(255,255,255));
+        //Imgcodecs.imwrite(pathname + "_ROI123.jpg", imageROI);
 
         sz = new Size(srcImage.width(), srcImage.height());
         Imgproc.resize(mask2, mask2, sz);
 
         srcImage.copyTo(imageROI, mask2);
 
-        Imgproc.cvtColor(imageROI, imageROI, Imgproc.COLOR_RGB2GRAY);
+
+        //Imgcodecs.imwrite(pathname + "_check6.jpg", rgbImg);
+        //Imgcodecs.imwrite(pathname + "_ROI.jpg", imageROI);
+        //Imgcodecs.imwrite(pathname + "_MASK2.jpg", mask2);
+        //Imgcodecs.imwrite(pathname + "_MASK.jpg", mask);
 
         return imageROI;
     }
+
+
 }
-
-
-
