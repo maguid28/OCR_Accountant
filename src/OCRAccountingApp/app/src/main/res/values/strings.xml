@@ -2,6 +2,12 @@
 
     <string name="facebook_app_id">383115155397134</string>
 
+    <!-- Suffix after '-' must be the app package name as specified in the build.gradle file. This
+       is used by the com.amazonaws.mobile.downloader.query.DownloadQueueProvider class. -->
+    <string name="download_queue_provider_authority">com.amazonaws.mobile.downloader-com.finalyearproject.dan.ocraccountingapp</string>
+    <!-- This can be anything, but it should be unique to the app. -->
+    <string name="content_file_provider_authority">com.finalyearproject.dan.ocraccountingapp.fileprovider</string>
+
     <string name="app_name">OCR Accounting App</string>
     <string name="cannot">Cannot</string>
     <string name="album_name">CameraSample</string>
@@ -13,6 +19,9 @@
     <string name="developer_text">Developer</string>
     <string name="daniel_maguire">Daniel Maguire</string>
 
+
+    <string name="date_format">dd-MM-yyyy</string>
+    <string name="week_date_format">dd</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -116,5 +125,69 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+
+
+    <!-- USED BY DEMO FEATURES ONLY - YOU CAN DISCARD THESE WITH THE DEMO FOLDER -->
+
+    <string name="feature_user_data_storage_title">User Data Storage</string>
+    <string name="feature_user_data_storage_subtitle">Store files for your users in the cloud.\nStore and sync user data in key/value pairs.</string>
+    <string name="feature_user_data_storage_overview">Store user files such as photos in the cloud. Save user data in key/value pairs and sync across devices that are signed-in with the same user.</string>
+    <string name="feature_user_data_storage_description">The Sample App demonstrates User File Storage and User Profile Data. The User File Storage demonstration includes a remote file explorer, which allows you to upload and download files from your Amazon S3 bucket. You will have access to two folders, a public folder where files are accessible to all users and a private folder where files are only accessible by the current app user.\n\nThe User Profile Data demonstration stores an app color theme using Amazon Cognito Sync and synchronizes that data across all of the user\'s devices as key/value pairs.</string>
+    <string name="feature_user_data_storage_powered_by">Powered by Amazon Cognito and Amazon S3</string>
+    <string name="feature_user_data_storage_demo_button_user_file_storage">Demo User File Storage</string>
+    <string name="feature_user_data_storage_demo_button_user_settings">Demo User Profile Data</string>
+
+    <string name="content_dialog_ok">OK</string>
+    <string name="content_cache_summary_text">Cache Summary</string>
+    <string name="content_cache_limit_text">Limit</string>
+    <string name="content_cache_use_text">In Use</string>
+    <string name="content_cache_available_text">Available</string>
+    <string name="content_cache_pinned_text">Pinned</string>
+    <string name="content_refresh_text">Refresh</string>
+    <string name="content_download_recent_text">Download Recent</string>
+    <string name="content_set_cache_size_text">Set Cache Size</string>
+    <string name="content_clear_cache_text">Clear Cache</string>
+    <string name="content_path_prefix_text">Path:\u0020</string>
+    <string name="content_folder_text">This is a folder.</string>
+    <string name="content_context_menu_open">Open</string>
+    <string name="content_context_menu_open_remote">Open Remote URL</string>
+    <string name="content_context_menu_download">Download</string>
+    <string name="content_context_menu_download_latest">Download Latest Version</string>
+    <string name="content_context_menu_pin">Pin</string>
+    <string name="content_context_menu_download_pin">Download &amp; Pin</string>
+    <string name="content_context_menu_unpin">Unpin</string>
+    <string name="content_context_menu_delete_local">Delete Local Copy</string>
+    <string name="content_progress_dialog_title_wait">Please wait &#8230;</string>
+    <string name="content_progress_dialog_message_load_local_content">Loading local content</string>
+    <string name="content_progress_dialog_message_load_content">Loading S3 objects list</string>
+    <string name="content_list_failure_text">Failure Listing Content</string>
+    <string name="content_transfer_failure_text">Transfer Failure</string>
+    <string name="content_removal_error_text">Content Removal Error</string>
+    <string name="content_permission_failure_title_text">Permission Failure</string>
+    <string name="content_permission_failure_text">Denial of Read External Storage Permission has disabled the ability to upload user files.</string>
+    <string name="main_fragment_title_user_files">User Files</string>
+    <string name="main_fragment_subtitle_user_files">Store and access files for your users.</string>
+    <string name="user_files_demo_button_public">PUBLIC</string>
+    <string name="user_files_demo_button_private">PRIVATE</string>
+    <string name="user_files_demo_dialog_signin_message">Private user file storage is only available to users who are signed-in.\n\nWould you like to sign in?</string>
+    <string name="user_files_browser_upload_text">Upload</string>
+    <string name="user_files_browser_new_folder_text">New Folder</string>
+    <string name="user_files_browser_context_menu_delete">Delete Remote File</string>
+    <string name="user_files_browser_dialog_create_folder_title">New folder</string>
+    <string name="user_files_browser_progress_dialog_message_create_folder">Creating folder \'%s\'</string>
+    <string name="user_files_browser_progress_dialog_message_delete_item">Deleting \'%s\'</string>
+    <string name="user_files_browser_progress_dialog_message_upload_file">Uploading file \'%s\'</string>
+    <string name="user_files_browser_progress_dialog_message_download_item">Downloading item \'%s\'</string>
+    <string name="user_files_browser_error_message_create_folder">Failed to create folder due to \'%s\'.</string>
+    <string name="user_files_browser_error_message_delete_item">Failed to delete item due to \'%s\'.</string>
+    <string name="user_files_browser_error_message_download_item">Failed to download item due to \'%s\'.</string>
+    <string name="user_files_browser_error_message_upload_file">Failed to upload file due to \'%s\'.</string>
+    <string name="main_fragment_title_user_settings">User Profile Data</string>
+    <string name="settings_fragment_dialog_title">Please wait &#8230;</string>
+    <string name="settings_fragment_dialog_message">Loading&#8230;</string>
+    <string name="settings_fragment_prompt">Please choose a theme:</string>
+
+    <string name="content_helper_error_title">No Content Viewer</string>
+    <string name="content_helper_error_no_app">No Viewing App exists for content type \'%s\'.</string>
 
 </resources>

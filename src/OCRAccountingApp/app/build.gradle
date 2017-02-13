@@ -33,10 +33,15 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile project(':openCVLibrary310')
 
-    compile 'com.amazonaws:aws-android-sdk-core:2.3.8'
-    compile ('com.amazonaws:aws-android-sdk-cognitoidentityprovider:2.3.8')
+    compile 'com.amazonaws:aws-android-sdk-core:2.3.9'
+    compile ('com.amazonaws:aws-android-sdk-cognitoidentityprovider:2.3.9')
     compile 'com.facebook.android:facebook-android-sdk:4.6.0'
     compile 'com.google.code.gson:gson:2.7'
+
+    // the S3 SDK dependency
+    compile('com.amazonaws:aws-android-sdk-s3:2.3.9')
+    // the Cognito SDK dependency
+    compile('com.amazonaws:aws-android-sdk-cognito:2.3.9')
 
 
     // the sample uses more advanced functions of the fastadapter

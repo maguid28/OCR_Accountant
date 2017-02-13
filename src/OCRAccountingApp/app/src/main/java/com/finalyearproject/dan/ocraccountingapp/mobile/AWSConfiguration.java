@@ -30,4 +30,10 @@ public class AWSConfiguration {
         "4qi5mafu3hh6ud9nc6lgqvb77j";
     public static final String AMAZON_COGNITO_USER_POOL_CLIENT_SECRET =
         "1jc70p03uk666k19jf3qcnjkpk8rqep7cjr9rsulhh51c6vl80qu";
+    // S3 BUCKET
+    public static final String AMAZON_S3_USER_FILES_BUCKET =
+            "ocraccountingapp-userfiles-mobilehub-1024067420";
+    // S3 BUCKET REGION
+    public static final Regions AMAZON_S3_USER_FILES_BUCKET_REGION =
+            Regions.fromName("eu-west-1");
 }

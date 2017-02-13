@@ -32,7 +32,6 @@ public class Sandbox extends AppCompatActivity {
             Log.d(this.getClass().getSimpleName(), "  OpenCVLoader.initDebug(), working.");
         }
 
-
     }
 
     public void onButtonClick(View v) {
@@ -40,12 +39,6 @@ public class Sandbox extends AppCompatActivity {
         if(v.getId() == R.id.ocrscan_button){
             //this is the activity we need to launch
             Intent i = new Intent(this, OCRScan.class);
-            startActivity(i);
-        }
-
-        if(v.getId() == R.id.ocr_button_2){
-            //this is the activity we need to launch
-            Intent i = new Intent(this, ReceiptCaptureActivity.class);
             startActivity(i);
         }
 
@@ -65,6 +58,18 @@ public class Sandbox extends AppCompatActivity {
         if(v.getId() == R.id.button5){
             //this is the activity we need to launch
                 Intent i = new Intent(this, SplashActivity.class);
+            startActivity(i);
+        }
+
+        if(v.getId() == R.id.button3) {
+            //this is the activity we need to launch
+            Intent i = new Intent(this, MainActivity.class);
+            startActivity(i);
+        }
+
+        if(v.getId() == R.id.uploaddownloadbutton) {
+            //this is the activity we need to launch
+            Intent i = new Intent(this, PermissionActivity.class);
             startActivity(i);
         }
     }

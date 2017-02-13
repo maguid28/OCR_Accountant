@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_calendar"
+    android:id="@+id/activity_file_browser"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.finalyearproject.dan.ocraccountingapp.CalendarActivity">
+    tools:context="com.finalyearproject.dan.ocraccountingapp.FileBrowserActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -16,11 +16,24 @@
         />
 
     <TextView
-        android:text="CALENDARVIEW"
+        android:id="@+id/content_cache_summary_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
+        android:layout_gravity="center"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="All Files"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_below="@+id/toolbar"
         android:layout_centerHorizontal="true"
-        android:id="@+id/textView" />
+        android:layout_marginTop="18dp" />
+
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/content_cache_summary_label"
+        android:layout_alignParentStart="true" />
+
 
 </RelativeLayout>

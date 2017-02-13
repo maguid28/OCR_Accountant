@@ -1,16 +1,21 @@
 package com.finalyearproject.dan.ocraccountingapp.nav;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.view.View;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 
-import com.finalyearproject.dan.ocraccountingapp.CalendarActivity;
+import com.finalyearproject.dan.ocraccountingapp.FileBrowserFragment;
 import com.finalyearproject.dan.ocraccountingapp.R;
-import com.finalyearproject.dan.ocraccountingapp.ReceiptCaptureActivity;
+import com.finalyearproject.dan.ocraccountingapp.ReceiptCaptureFragment;
 import com.finalyearproject.dan.ocraccountingapp.Sandbox;
 import com.finalyearproject.dan.ocraccountingapp.SignInActivity;
+import com.finalyearproject.dan.ocraccountingapp.StatisticsFragment;
+import com.finalyearproject.dan.ocraccountingapp.VPFragment;
 import com.finalyearproject.dan.ocraccountingapp.mobile.AWSMobileClient;
 import com.finalyearproject.dan.ocraccountingapp.mobile.user.IdentityManager;
 import com.finalyearproject.dan.ocraccountingapp.mobile.user.IdentityProvider;
@@ -27,10 +32,6 @@ import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
-/**
- * Created by daniel on 03/02/2017.
- */
-
 public class NavDrawerInstaller {
 
     //save our header or result
@@ -38,7 +39,7 @@ public class NavDrawerInstaller {
     // The identity manager used to keep track of the current user account
     private IdentityManager identityManager;
 
-    public void installOnActivity(final Activity activity, Toolbar toolbar) {
+    public void installOnActivity(final AppCompatActivity activity, Toolbar toolbar) {
 
         String userName = getUserName();
         Bitmap userImage = getUserImage();
@@ -67,6 +68,7 @@ public class NavDrawerInstaller {
                         new PrimaryDrawerItem().withName("Receipt Capture").withIcon(R.drawable.nav_receipt_icon).withIdentifier(2),
                         new PrimaryDrawerItem().withName("Statistics").withIcon(R.drawable.nav_statistics_icon).withIdentifier(3),
                         new PrimaryDrawerItem().withName("Sandbox").withIcon(R.drawable.nav_receipt_icon).withIdentifier(4),
+                        new PrimaryDrawerItem().withName("File Browser").withIcon(R.drawable.nav_receipt_icon).withIdentifier(5),
                         new SectionDrawerItem().withName("Account"),
                         new SecondaryDrawerItem().withName("Settings").withIcon(FontAwesome.Icon.faw_cog),
                         new SecondaryDrawerItem().withName("Log Out").withIcon(R.drawable.nav_logout_icon).withIdentifier(6)
@@ -83,13 +85,38 @@ public class NavDrawerInstaller {
                         if (drawerItem != null) {
                             Intent intent = null;
                             if (drawerItem.getIdentifier() == 1) {
-                                intent = new Intent(activity, CalendarActivity.class);
+                                Fragment fragment = new VPFragment();
+                                FragmentManager manager = activity.getSupportFragmentManager();
+                                FragmentTransaction transaction = manager.beginTransaction();
+                                transaction.replace(R.id.main_fragment_container, fragment);
+                                transaction.commit();
+                                //intent = new Intent(activity, VPFragment.class);
                             }
                             if (drawerItem.getIdentifier() == 2) {
-                                intent = new Intent(activity, ReceiptCaptureActivity.class);
+                                Fragment fragment = new ReceiptCaptureFragment();
+                                FragmentManager manager = activity.getSupportFragmentManager();
+                                FragmentTransaction transaction = manager.beginTransaction();
+                                transaction.replace(R.id.main_fragment_container, fragment);
+                                transaction.commit();
+                                //intent = new Intent(activity, ReceiptCaptureActivity.class);
+                            }
+                            if (drawerItem.getIdentifier() == 3) {
+                                Fragment fragment = new StatisticsFragment();
+                                FragmentManager manager = activity.getSupportFragmentManager();
+                                FragmentTransaction transaction = manager.beginTransaction();
+                                transaction.replace(R.id.main_fragment_container, fragment);
+                                transaction.commit();
+                                //intent = new Intent(activity, ReceiptCaptureActivity.class);
                             }
                             if (drawerItem.getIdentifier() == 4) {
                                 intent = new Intent(activity, Sandbox.class);
+                            }
+                            if (drawerItem.getIdentifier() == 5) {
+                                Fragment fragment = new FileBrowserFragment();
+                                FragmentManager manager = activity.getSupportFragmentManager();
+                                FragmentTransaction transaction = manager.beginTransaction();
+                                transaction.replace(R.id.main_fragment_container, fragment);
+                                transaction.commit();
                             }
                             if (drawerItem.getIdentifier() == 6) {
 

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_ocrscan2"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.finalyearproject.dan.ocraccountingapp.ReceiptCaptureFragment">
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/test2"
+                android:id="@+id/mImageView"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/action_btn"
+                android:text="Capture image"
+                android:layout_below="@+id/toolbar"
+                android:layout_alignParentStart="true">
+            </Button>
+
+            <Button
+                android:text="Upload"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/upload_button"
+                android:layout_below="@+id/toolbar"
+                android:layout_alignParentEnd="true" />
+
+                <TextView
+                    android:text="TextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginStart="72dp"
+                    android:layout_marginBottom="203dp"
+                    android:id="@+id/textResult" />
+
+        </RelativeLayout>
+    </ScrollView>
+
+
+</RelativeLayout>

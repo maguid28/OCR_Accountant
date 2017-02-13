@@ -1,26 +1,37 @@
 package com.finalyearproject.dan.ocraccountingapp;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.finalyearproject.dan.ocraccountingapp.nav.NavDrawerInstaller;
+import com.amazonaws.regions.Regions;
+import com.finalyearproject.dan.ocraccountingapp.mobile.AWSConfiguration;
+import com.finalyearproject.dan.ocraccountingapp.mobile.AWSMobileClient;
+import com.finalyearproject.dan.ocraccountingapp.mobile.content.ContentItem;
+import com.finalyearproject.dan.ocraccountingapp.mobile.content.ContentProgressListener;
+import com.finalyearproject.dan.ocraccountingapp.mobile.content.UserFileManager;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 
@@ -29,8 +40,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.CountDownLatch;
 
-public class ReceiptCaptureActivity extends AppCompatActivity {
+import static android.app.Activity.RESULT_OK;
+
+public class ReceiptCaptureFragment extends Fragment {
 
     private static final String TAG = Sandbox.class.getSimpleName();
     static final int PHOTO_REQUEST_CODE = 1;
@@ -49,27 +65,65 @@ public class ReceiptCaptureActivity extends AppCompatActivity {
     Bitmap imageBitmap;
 
 
+    Mat test2;
+
+    /** Log tag. */
+    private static final String LOG_TAG = ReceiptCaptureFragment.class.getSimpleName();
+
+    /** The user file manager. */
+    private UserFileManager userFileManager;
+
+    /** The current relative path within the UserFileManager. */
+    private String currentPath = "";
+
+    /** The s3 bucket. */
+    private String bucket;
+
+    /** The S3 bucket region. */
+    private Regions region;
+
+    /** The s3 Prefix at which the UserFileManager is rooted. */
+    private String prefix;
+
+    private final CountDownLatch userFileManagerCreatingLatch = new CountDownLatch(1);
+
+    final String pathname = "/storage/emulated/0/Android/data/com.finalyearproject.dan.ocraccountingapp/files/Pictures/TesseractSample/imgs/";
 
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_receiptcapture);
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
 
-        // Handle Toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        // Add nav drawer
-        NavDrawerInstaller navDrawerInstaller = new NavDrawerInstaller();
-        navDrawerInstaller.installOnActivity(this, toolbar);
+        // Inflate the layout for this fragment
+        final View fragmentView = inflater.inflate(R.layout.fragment_receiptcapture, container, false);
 
-        mImageView = (ImageView) findViewById(R.id.mImageView);
+
+        final String identityId = AWSMobileClient.defaultMobileClient().getIdentityManager().getCachedUserID();
+        bucket = AWSConfiguration.AMAZON_S3_USER_FILES_BUCKET;
+        prefix = "private/" + identityId + "/";
+        region = AWSConfiguration.AMAZON_S3_USER_FILES_BUCKET_REGION;
+
+        AWSMobileClient.defaultMobileClient()
+                .createUserFileManager(bucket, prefix,region,
+                        new UserFileManager.BuilderResultHandler() {
+                            @Override
+                            public void onComplete(final UserFileManager userFileManager) {
+
+                                ReceiptCaptureFragment.this.userFileManager = userFileManager;
+                                userFileManagerCreatingLatch.countDown();
+                                Log.e(LOG_TAG, "userfilemanager ..........................." + userFileManager);
+                            }
+                        });
+
+        mImageView = (ImageView) fragmentView.findViewById(R.id.mImageView);
 
         //imageBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.test2);
 
-        DATA_PATH = getFilesDir() + "/TesseractSample/";
-        Button captureImg = (Button) findViewById(R.id.action_btn);
+        DATA_PATH = getActivity().getFilesDir() + "/TesseractSample/";
+
+        //img capture button
+        Button captureImg = (Button) fragmentView.findViewById(R.id.action_btn);
         if (captureImg != null) {
             captureImg.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -78,10 +132,155 @@ public class ReceiptCaptureActivity extends AppCompatActivity {
                 }
             });
         }
-        //textView = (TextView) findViewById(R.id.textResult);
+
+        Button uploadImg = (Button) fragmentView.findViewById(R.id.upload_button);
+        if (uploadImg != null) {
+            uploadImg.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try{
+
+                        boolean bool = false;
+                        //path to file we want to rename
+                        File oldName = new File(pathname + "ocr_receiptimage.jpg");
+
+                        if(oldName.exists()) {
+                            // Create an image file name
+                            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                            String fileName = "rec" + timeStamp + ".jpg";
+                            File newName = new File(pathname + fileName);
+
+
+                            // rename file
+                            bool = oldName.renameTo(newName);
+
+                            // print
+                            Log.d(LOG_TAG, "File renamed? "+bool);
+                            // print
+                            Log.d(LOG_TAG, "File name is now: " + oldName.getName());
+
+                            uploadData(newName);
+                        }
+                        else {
+                            new AlertDialog.Builder(getActivity()).setIcon(android.R.drawable.ic_dialog_alert)
+                                    .setMessage("Please capture an image first")
+                                    .setPositiveButton(android.R.string.ok, null)
+                                    .show();
+                        }
+
+
+                    }catch(Exception e){
+                        // if any error occurs
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+
+        textView = (TextView) fragmentView.findViewById(R.id.textResult);
+
+        return fragmentView;
     }
 
 
+
+
+
+
+
+
+    /*--------------------------------------UPLOAD FILE-------------------------------------------*/
+
+
+    public void uploadData(File filepath) {
+        final String path = filepath.getAbsolutePath();
+        //"/storage/emulated/0/Android/data/com.finalyearproject.dan.ocraccountingapp/files/Pictures/TesseractSample/imgs/ocr_receiptimage.jpg";
+        Log.d(LOG_TAG, "file path: " + path);
+        final ProgressDialog dialog = new ProgressDialog(getActivity());
+        dialog.setTitle(R.string.content_progress_dialog_title_wait);
+        dialog.setMessage(
+                getString(R.string.user_files_browser_progress_dialog_message_upload_file,
+                        path));
+        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        dialog.setMax((int) new File(path).length());
+        dialog.setCancelable(false);
+        dialog.show();
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    userFileManagerCreatingLatch.await();
+                } catch (final InterruptedException ex) {
+                    // This thread should never be interrupted.
+                    throw new RuntimeException(ex);
+                }
+                final File file = new File(path);
+                userFileManager.uploadContent(file, currentPath + file.getName(), new ContentProgressListener() {
+                    @Override
+                    public void onSuccess(final ContentItem contentItem) {
+                        dialog.dismiss();
+                    }
+                    @Override
+                    public void onProgressUpdate(final String fileName, final boolean isWaiting,
+                                                 final long bytesCurrent, final long bytesTotal) {
+                        dialog.setProgress((int) bytesCurrent);
+                    }
+
+                    @Override
+                    public void onError(final String fileName, final Exception ex) {
+                        dialog.dismiss();
+                        showError(R.string.user_files_browser_error_message_upload_file,
+                                ex.getMessage());
+                    }
+                });
+            }
+        }).start();
+    }
+
+    private void showError(final int resId, Object... args) {
+        new AlertDialog.Builder(getActivity()).setIcon(android.R.drawable.ic_dialog_alert)
+                .setMessage(getString(resId, (Object[]) args))
+                .setPositiveButton(android.R.string.ok, null)
+                .show();
+    }
+
+
+    /*------------------------------------END UPLOAD FILE-----------------------------------------*/
+
+
+
+    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(getActivity()) {
+        @Override
+        public void onManagerConnected(int status) {
+            switch (status) {
+                case LoaderCallbackInterface.SUCCESS:
+                {
+                    Log.i("OpenCV", "OpenCV loaded successfully");
+                    test2 = new Mat();
+                } break;
+                default:
+                {
+                    super.onManagerConnected(status);
+                } break;
+            }
+        }
+    };
+
+    // check if OpenCV library have been loaded and initialized from within current application package or not
+    public void onResume()
+    {
+        super.onResume();
+        if (!OpenCVLoader.initDebug()) {
+            Log.d("OpenCV", "Internal OpenCV library not found. Using OpenCV Manager for initialization");
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_1_0, getActivity(), mLoaderCallback);
+        } else {
+            Log.d("OpenCV", "OpenCV library found inside package. Using it!");
+            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+        }
+    }
 
 
 
@@ -89,7 +288,7 @@ public class ReceiptCaptureActivity extends AppCompatActivity {
     private void startCameraActivity() {
         try {
             //Path to image is set to /storage/emulated/0/Android/data/com.finalyearproject.dan.ocraccountingapp/files/Pictures/TesseractSample/imgs
-            IMGS_PATH = getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/TesseractSample/imgs";
+            IMGS_PATH = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/TesseractSample/imgs";
             prepareDirectory(IMGS_PATH);
             Log.i(TAG, "IMGS_PATH IS NOW " +IMGS_PATH);
 
@@ -103,7 +302,7 @@ public class ReceiptCaptureActivity extends AppCompatActivity {
             //store image at .../TesseractSample/imgs/ocr.jpg
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
 
-            if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                 startActivityForResult(takePictureIntent, PHOTO_REQUEST_CODE);
             }
         } catch (Exception e) {
@@ -120,11 +319,11 @@ public class ReceiptCaptureActivity extends AppCompatActivity {
         //making photo
         if (requestCode == PHOTO_REQUEST_CODE && resultCode == RESULT_OK) {
 
-            ReceiptScannerImpl rec = new ReceiptScannerImpl();
+            ReceiptScanner rec = new ReceiptScanner();
             //Mat test = rec.correctReceipt(img_path);
             //Imgcodecs.imwrite(img_path, test);
 
-            Mat test2 = rec.receiptPic(img_path);
+            test2 = rec.receiptPic(img_path);
             Imgcodecs.imwrite(img_path, test2);
 
 
@@ -170,9 +369,9 @@ public class ReceiptCaptureActivity extends AppCompatActivity {
 
             startOCR(outputFileUri);
         } else {
-            Toast.makeText(this, "ERROR: Image was not obtained.", Toast.LENGTH_SHORT).show();
-            Toast.makeText(this, "Activity.RESULT_OK" + RESULT_OK, Toast.LENGTH_SHORT).show();
-            Toast.makeText(this, "PHOTO_REQUEST_CODE" + requestCode, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "ERROR: Image was not obtained.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Activity.RESULT_OK" + RESULT_OK, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "PHOTO_REQUEST_CODE" + requestCode, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -216,7 +415,7 @@ public class ReceiptCaptureActivity extends AppCompatActivity {
     //Copy tessdata files (located on assets/tessdata) to destination directory
     private void copyTessDataFiles(String path) {
         try {
-            String fileList[] = getAssets().list(path);
+            String fileList[] = getActivity().getAssets().list(path);
 
             for (String fileName : fileList) {
 
@@ -225,7 +424,7 @@ public class ReceiptCaptureActivity extends AppCompatActivity {
                 String pathToDataFile = DATA_PATH + path + "/" + fileName;
                 if (!(new File(pathToDataFile)).exists()) {
 
-                    InputStream in = getAssets().open(path + "/" + fileName);
+                    InputStream in = getActivity().getAssets().open(path + "/" + fileName);
 
                     OutputStream out = new FileOutputStream(pathToDataFile);
 

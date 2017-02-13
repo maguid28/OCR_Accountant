@@ -194,3 +194,42 @@ I have added user sign up and login to my application. I have used Amazon Web Se
 I have configured the fundamental app layout. I have added a navigation drawer to easily access each of the applications main features quickly and efficiently.
 Below is a screenshot of the navigation drawer within the application.
 ![Receipt image before and after artifact removal function applied ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/Nav_Drawer.png)
+
+## Blog entry 10 - Application crash
+The application has been inconsistently crashing while the ReceiptCaptureActivity makes a call to the ReceiptScanner class which processes the image for more accurate OCR. The error is as follows:
+```
+FATAL EXCEPTION: main
+                                                   Process: com.finalyearproject.dan.ocraccountingapp, PID: 24575
+                                                   java.lang.RuntimeException: Unable to start activity ComponentInfo{com.finalyearproject.dan.ocraccountingapp/com.finalyearproject.dan.ocraccountingapp.CalendarActivity}: java.lang.NullPointerException: Attempt to invoke virtual method 'com.finalyearproject.dan.ocraccountingapp.mobile.user.IdentityManager com.finalyearproject.dan.ocraccountingapp.mobile.AWSMobileClient.getIdentityManager()' on a null object reference
+                                                       at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:2434)
+                                                       at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:2494)
+                                                       at android.app.ActivityThread.access$900(ActivityThread.java:157)
+                                                       at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1356)
+                                                       at android.os.Handler.dispatchMessage(Handler.java:102)
+                                                       at android.os.Looper.loop(Looper.java:148)
+                                                       at android.app.ActivityThread.main(ActivityThread.java:5527)
+                                                       at java.lang.reflect.Method.invoke(Native Method)
+                                                       at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:730)
+                                                       at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:620)
+                                                    Caused by: java.lang.NullPointerException: Attempt to invoke virtual method 'com.finalyearproject.dan.ocraccountingapp.mobile.user.IdentityManager com.finalyearproject.dan.ocraccountingapp.mobile.AWSMobileClient.getIdentityManager()' on a null object reference
+                                                       at com.finalyearproject.dan.ocraccountingapp.nav.NavDrawerInstaller.getUserName(NavDrawerInstaller.java:125)
+                                                       at com.finalyearproject.dan.ocraccountingapp.nav.NavDrawerInstaller.installOnActivity(NavDrawerInstaller.java:43)
+                                                       at com.finalyearproject.dan.ocraccountingapp.CalendarActivity.onCreate(CalendarActivity.java:21)
+                                                       at android.app.Activity.performCreate(Activity.java:6272)
+                                                       at android.app.Instrumentation.callActivityOnCreate(Instrumentation.java:1108)
+                                                       at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:2387)
+                                                       at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:2494) 
+                                                       at android.app.ActivityThread.access$900(ActivityThread.java:157) 
+                                                       at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1356) 
+                                                       at android.os.Handler.dispatchMessage(Handler.java:102) 
+                                                       at android.os.Looper.loop(Looper.java:148) 
+                                                       at android.app.ActivityThread.main(ActivityThread.java:5527) 
+                                                       at java.lang.reflect.Method.invoke(Native Method) 
+                                                       at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:730) 
+                                                       at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:620) 
+
+```
+I have discovered that the reason for the error is that Android calls the "onCreate" method before loading our OpenCV library. I used an Async Initialization of OpenCV using OpenCVManager and BaseLoaderCallback. Within BaseLoaderCallback I have declared my new Mat. The error has now been resolved and the app does not crash.
+
+
+## Blog entry 10 - Cloud File Storage

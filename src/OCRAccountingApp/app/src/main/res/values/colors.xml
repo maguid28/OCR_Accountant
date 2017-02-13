@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3f51b5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimary">#25B999</color>
+    <color name="colorPrimaryDark">#25A68A</color>
     <color name="colorAccent">#FF4081</color>
 
 
@@ -17,4 +17,5 @@
     <color name="sign_in_separator_color">#DDDDDD</color>
     <color name="instructions_list_border_color">#FFDDDDDD</color>
 
+    <color name="dark_content_text">#333333</color>
 </resources>

@@ -12,6 +12,8 @@ import android.content.Context;
 import android.util.Log;
 
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.mobileconnectors.cognito.CognitoSyncManager;
+import com.finalyearproject.dan.ocraccountingapp.mobile.content.UserFileManager;
 import com.finalyearproject.dan.ocraccountingapp.mobile.user.IdentityManager;
 import com.amazonaws.regions.Regions;
 
@@ -37,34 +39,34 @@ public class AWSMobileClient {
     public static class Builder {
 
         private Context applicationContext;
-        private String cognitoIdentityPoolID;
+        private String  cognitoIdentityPoolID;
         private Regions cognitoRegion;
         private ClientConfiguration clientConfiguration;
         private IdentityManager identityManager;
 
-	/**
-	 * Constructor.
-	 * @param context Android context.
-	 */
+        /**
+         * Constructor.
+         * @param context Android context.
+         */
         public Builder(final Context context) {
             this.applicationContext = context.getApplicationContext();
         };
 
-	/**
-	 * Provides the Amazon Cognito Identity Pool ID.
-	 * @param cognitoIdentityPoolID identity pool ID
-	 * @return builder
-	 */
+        /**
+         * Provides the Amazon Cognito Identity Pool ID.
+         * @param cognitoIdentityPoolID identity pool ID
+         * @return builder
+         */
         public Builder withCognitoIdentityPoolID(final String cognitoIdentityPoolID) {
             this.cognitoIdentityPoolID = cognitoIdentityPoolID;
             return this;
         };
-        
-	/**
-	 * Provides the Amazon Cognito service region.
-	 * @param cognitoRegion service region
-	 * @return builder
-	 */
+
+        /**
+         * Provides the Amazon Cognito service region.
+         * @param cognitoRegion service region
+         * @return builder
+         */
         public Builder withCognitoRegion(final Regions cognitoRegion) {
             this.cognitoRegion = cognitoRegion;
             return this;
@@ -72,9 +74,9 @@ public class AWSMobileClient {
 
         /**
          * Provides the identity manager.
-	 * @param identityManager identity manager
-	 * @return builder
-	 */
+         * @param identityManager identity manager
+         * @return builder
+         */
         public Builder withIdentityManager(final IdentityManager identityManager) {
             this.identityManager = identityManager;
             return this;
@@ -90,22 +92,22 @@ public class AWSMobileClient {
             return this;
         }
 
-	/**
-	 * Creates the AWS mobile client instance and initializes it.
-	 * @return AWS mobile client
-	 */
+        /**
+         * Creates the AWS mobile client instance and initializes it.
+         * @return AWS mobile client
+         */
         public AWSMobileClient build() {
             return
-                new AWSMobileClient(applicationContext,
-                                    cognitoIdentityPoolID,
-                                    cognitoRegion,
-                                    identityManager,
-                                    clientConfiguration);
+                    new AWSMobileClient(applicationContext,
+                            cognitoIdentityPoolID,
+                            cognitoRegion,
+                            identityManager,
+                            clientConfiguration);
         }
     }
 
     private AWSMobileClient(final Context context,
-                            final String cognitoIdentityPoolID,
+                            final String  cognitoIdentityPoolID,
                             final Regions cognitoRegion,
                             final IdentityManager identityManager,
                             final ClientConfiguration clientConfiguration) {
@@ -141,6 +143,15 @@ public class AWSMobileClient {
     }
 
     /**
+     * Gets the Amazon Cognito Sync Manager, which is responsible for saving and
+     * loading user profile data, such as game state or user settings.
+     * @return sync manager
+     */
+    public CognitoSyncManager getSyncManager() {
+        return identityManager.getSyncManager();
+    }
+
+    /**
      * Creates and initialize the default AWSMobileClient if it doesn't already
      * exist using configuration constants from {@link AWSConfiguration}.
      *
@@ -153,16 +164,40 @@ public class AWSMobileClient {
             clientConfiguration.setUserAgent(AWSConfiguration.AWS_MOBILEHUB_USER_AGENT);
             final IdentityManager identityManager = new IdentityManager(context, clientConfiguration);
             final AWSMobileClient awsClient =
-                new AWSMobileClient.Builder(context)
-                    .withCognitoRegion(AWSConfiguration.AMAZON_COGNITO_REGION)
-                    .withCognitoIdentityPoolID(AWSConfiguration.AMAZON_COGNITO_IDENTITY_POOL_ID)
-                    .withIdentityManager(identityManager)
-                    .withClientConfiguration(clientConfiguration)
-                    .build();
+                    new AWSMobileClient.Builder(context)
+                            .withCognitoRegion(AWSConfiguration.AMAZON_COGNITO_REGION)
+                            .withCognitoIdentityPoolID(AWSConfiguration.AMAZON_COGNITO_IDENTITY_POOL_ID)
+                            .withIdentityManager(identityManager)
+                            .withClientConfiguration(clientConfiguration)
+                            .build();
 
             AWSMobileClient.setDefaultMobileClient(awsClient);
         }
         Log.d(LOG_TAG, "AWS Mobile Client is OK");
+    }
+
+    /**
+     * Creates a User File Manager instance, which facilitates file transfers
+     * between the device and the specified Amazon S3 (Simple Storage Service) bucket.
+     *
+     * @param s3Bucket Amazon S3 bucket
+     * @param s3FolderPrefix Folder pre-fix for files affected by this user file
+     *                       manager instance
+     * @param resultHandler handles the resulting UserFileManager instance
+     */
+    public void createUserFileManager(final String s3Bucket,
+                                      final String s3FolderPrefix,
+                                      final Regions region,
+                                      final UserFileManager.BuilderResultHandler resultHandler) {
+
+        new UserFileManager.Builder().withContext(context)
+                .withIdentityManager(getIdentityManager())
+                .withS3Bucket(s3Bucket)
+                .withS3ObjectDirPrefix(s3FolderPrefix)
+                .withLocalBasePath(context.getFilesDir().getAbsolutePath())
+                .withClientConfiguration(clientConfiguration)
+                .withRegion(region)
+                .build(resultHandler);
     }
 
 }

@@ -15,6 +15,7 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         />
 
+
     <Button
         android:text="OCR 3"
         android:layout_width="wrap_content"
@@ -72,7 +73,34 @@
         android:layout_toStartOf="@+id/ocr_button_3"
         android:layout_marginBottom="17dp" />
 
+    <Button
+        android:text="uploaddownload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar"
+        android:layout_toEndOf="@+id/ocrscan_button"
+        android:layout_marginTop="48dp"
+        android:onClick="onButtonClick"
+        android:id="@+id/uploaddownloadbutton" />
 
+    <Button
+        android:text="fragchange"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/fragchangebtn"
+        android:layout_alignBaseline="@+id/uploaddownloadbutton"
+        android:layout_alignBottom="@+id/uploaddownloadbutton"
+        android:layout_alignEnd="@+id/button5" />
+
+    <Button
+        android:text="new app btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/button5"
+        android:layout_marginBottom="26dp"
+        android:onClick="onButtonClick"
+        android:id="@+id/button3" />
 
 
 </RelativeLayout>

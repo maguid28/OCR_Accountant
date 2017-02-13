@@ -5,11 +5,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 
-import com.finalyearproject.dan.ocraccountingapp.nav.NavDrawerInstaller;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 import java.io.File;
@@ -31,12 +29,6 @@ public class OCRScan4 extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ocrscan4);
 
-        // Handle Toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        // Add nav drawer
-        NavDrawerInstaller navDrawerInstaller = new NavDrawerInstaller();
-        navDrawerInstaller.installOnActivity(this, toolbar);
         //init image
         image = BitmapFactory.decodeResource(getResources(), R.drawable.test2);
 
