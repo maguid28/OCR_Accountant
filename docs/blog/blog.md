@@ -233,3 +233,6 @@ I have discovered that the reason for the error is that Android calls the "onCre
 
 
 ## Blog entry 10 - Cloud File Storage
+Using Amazon Simple Storage Service I have added online storage for users to store receipt images. I had to make a decision as to whether I should store the image data in a database or on a filesystem to be referenced in the database. I have weighed out the pros and cons and I have decided that in this case I would store the image data on a filesystem to be referenced in the database. Database storage tends to be more expensive than filesystem storage, and images can be easily cached when stored on the file system. My next main action is to configure a database that will store receipt metadata for each user.
+
+## Blog entry 11 - 
