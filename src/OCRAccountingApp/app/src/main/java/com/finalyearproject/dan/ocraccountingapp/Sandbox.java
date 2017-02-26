@@ -1,5 +1,6 @@
 package com.finalyearproject.dan.ocraccountingapp;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -7,7 +8,11 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+import com.finalyearproject.dan.ocraccountingapp.mobile.AWSMobileClient;
 import com.finalyearproject.dan.ocraccountingapp.nav.NavDrawerInstaller;
+import com.finalyearproject.dan.ocraccountingapp.nosql.ReceiptDataDO;
 
 import org.opencv.android.OpenCVLoader;
 
@@ -71,6 +76,9 @@ public class Sandbox extends AppCompatActivity {
             //this is the activity we need to launch
             Intent i = new Intent(this, PermissionActivity.class);
             startActivity(i);
+        }
+        if(v.getId() == R.id.addtodatabasetest) {
+
         }
     }
 }

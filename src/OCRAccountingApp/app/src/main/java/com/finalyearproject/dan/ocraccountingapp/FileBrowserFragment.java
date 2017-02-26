@@ -420,6 +420,8 @@ public class FileBrowserFragment extends Fragment
             switch(item.getItemId()) {
                 case R.id.content_context_menu_open:
                     ContentHelper.openFileViewer(getActivity(), content.getFile());
+                    Log.e(LOG_TAG, "local file path is ............." + content.getFile());
+
                     return true;
                 case R.id.content_context_menu_open_remote:
                     // Open the object in a browser via a presigned URL.
@@ -438,6 +440,8 @@ public class FileBrowserFragment extends Fragment
                     // Download the content.
                     userFileManager.getContent(content.getFilePath(), content.getSize(),
                             ContentDownloadPolicy.DOWNLOAD_ALWAYS, false, contentListItems);
+                    Log.e(LOG_TAG, "file path is ............." + content.getFilePath());
+
                     return true;
                 case R.id.content_context_menu_download_latest:
                     // Download the content.

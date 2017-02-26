@@ -8,10 +8,13 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,12 +24,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.regions.Regions;
 import com.finalyearproject.dan.ocraccountingapp.mobile.AWSConfiguration;
 import com.finalyearproject.dan.ocraccountingapp.mobile.AWSMobileClient;
+import com.finalyearproject.dan.ocraccountingapp.mobile.content.ContentDownloadPolicy;
 import com.finalyearproject.dan.ocraccountingapp.mobile.content.ContentItem;
 import com.finalyearproject.dan.ocraccountingapp.mobile.content.ContentProgressListener;
 import com.finalyearproject.dan.ocraccountingapp.mobile.content.UserFileManager;
+import com.finalyearproject.dan.ocraccountingapp.mobile.util.ThreadUtils;
+import com.finalyearproject.dan.ocraccountingapp.nosql.ReceiptDataDO;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -146,7 +154,7 @@ public class ReceiptCaptureFragment extends Fragment {
 
                         if(oldName.exists()) {
                             // Create an image file name
-                            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                            String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmmss").format(new Date());
                             String fileName = "rec" + timeStamp + ".jpg";
                             File newName = new File(pathname + fileName);
 
@@ -159,7 +167,7 @@ public class ReceiptCaptureFragment extends Fragment {
                             // print
                             Log.d(LOG_TAG, "File name is now: " + oldName.getName());
 
-                            uploadData(newName);
+                            uploadData(newName, fileName);
                         }
                         else {
                             new AlertDialog.Builder(getActivity()).setIcon(android.R.drawable.ic_dialog_alert)
@@ -177,6 +185,18 @@ public class ReceiptCaptureFragment extends Fragment {
             });
         }
 
+        // add to database button
+        Button addtodb = (Button) fragmentView.findViewById(R.id.addToDB);
+        if (addtodb != null) {
+            addtodb.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //new InsertDataInBackground().execute();
+                    insertData("test6", "12-02-2017", "example/path/to/file", "20170212", "500.00");
+                }
+            });
+        }
+
 
         textView = (TextView) fragmentView.findViewById(R.id.textResult);
 
@@ -185,24 +205,58 @@ public class ReceiptCaptureFragment extends Fragment {
 
 
 
+    /*-----------------------------INSERT DATA INTO DATABASE--------------------------------------*/
 
 
+    public void insertData(final String recName, final String date, final String filepath, final String formattedDate, final String total) {
 
+        // Fetch the default configured DynamoDB ObjectMapper
+        final DynamoDBMapper dynamoDBMapper = AWSMobileClient.defaultMobileClient().getDynamoDBMapper();
+        final ReceiptDataDO receipt = new ReceiptDataDO(); // Initialize the receipt Object
+        // The userId has to be set to user's Cognito Identity Id for private / protected tables.
+        // User's Cognito Identity Id can be fetched by using:
+        // AWSMobileClient.defaultMobileClient().getIdentityManager().getCachedUserID()
+        receipt.setUserId(AWSMobileClient.defaultMobileClient().getIdentityManager().getCachedUserID());
+        receipt.setRecName(recName);
+        receipt.setDate(date);
+        receipt.setFilepath(filepath); // GMT: Fri, 19 Aug 2016 21:53:47 GMT
+        receipt.setTotal(total);
+        receipt.setFormattedDate(formattedDate);
 
+        // create another thread for saving to the DB.
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                AmazonClientException lastException = null;
+                try {
+                    //save the new entry to the db
+                    dynamoDBMapper.save(receipt);
+                    ThreadUtils.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+               //             Toast.makeText(getActivity(), "SUCCESS!", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                } catch (final AmazonClientException ex) {
+                    Log.e("INSERT DATA", "Failed saving item : " + ex.getMessage(), ex);
+                    //Toast.makeText(getActivity(), "FAILED!", Toast.LENGTH_LONG).show();
+                    lastException = ex;
+                }
+            }
+        }).start();
+    }
 
     /*--------------------------------------UPLOAD FILE-------------------------------------------*/
 
 
-    public void uploadData(File filepath) {
+    public void uploadData(File filepath, final String fileName) {
         final String path = filepath.getAbsolutePath();
         //"/storage/emulated/0/Android/data/com.finalyearproject.dan.ocraccountingapp/files/Pictures/TesseractSample/imgs/ocr_receiptimage.jpg";
         Log.d(LOG_TAG, "file path: " + path);
-        final ProgressDialog dialog = new ProgressDialog(getActivity());
-        dialog.setTitle(R.string.content_progress_dialog_title_wait);
-        dialog.setMessage(
-                getString(R.string.user_files_browser_progress_dialog_message_upload_file,
-                        path));
-        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        final ProgressDialog dialog = new ProgressDialog(getActivity(), R.style.Dialog1);
+        dialog.setTitle("Saving Image...");
+        //dialog.setMessage(getString(R.string.user_files_browser_progress_dialog_message_upload_file, path));
+        //dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         dialog.setMax((int) new File(path).length());
         dialog.setCancelable(false);
         dialog.show();
@@ -222,6 +276,20 @@ public class ReceiptCaptureFragment extends Fragment {
                     @Override
                     public void onSuccess(final ContentItem contentItem) {
                         dialog.dismiss();
+
+                        // Get date in correct format
+                        String date = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+                        String formattedDate = new SimpleDateFormat("yyyyMMdd").format(new Date());
+                        // Call insertdata to add the following to the database: insertData(receiptname, date, filepath, total)
+                        insertData(fileName, date, fileName, formattedDate, "n/a");
+
+                        Toast.makeText(getActivity(), "SAVED!", Toast.LENGTH_SHORT).show();
+                        // Workaround until I figure out whats wrong with arrayadapter in FragmentContent.
+                        getActivity().recreate();
+
+                        //FragmentContent f = (FragmentContent) getSupportFragmentManager().findFragmentByTag("yourFragTag");
+
+
                     }
                     @Override
                     public void onProgressUpdate(final String fileName, final boolean isWaiting,

@@ -102,5 +102,14 @@
         android:onClick="onButtonClick"
         android:id="@+id/button3" />
 
+    <Button
+        android:text="addtodatabasetest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/fragchangebtn"
+        android:layout_alignEnd="@+id/button3"
+        android:onClick="onButtonClick"
+        android:id="@+id/addtodatabasetest" />
+
 
 </RelativeLayout>

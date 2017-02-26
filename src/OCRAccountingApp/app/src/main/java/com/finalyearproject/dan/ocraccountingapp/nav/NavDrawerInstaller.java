@@ -19,6 +19,8 @@ import com.finalyearproject.dan.ocraccountingapp.VPFragment;
 import com.finalyearproject.dan.ocraccountingapp.mobile.AWSMobileClient;
 import com.finalyearproject.dan.ocraccountingapp.mobile.user.IdentityManager;
 import com.finalyearproject.dan.ocraccountingapp.mobile.user.IdentityProvider;
+import com.finalyearproject.dan.ocraccountingapp.testing.demo.nosql.NoSQLSelectOperationDemoFragment;
+import com.finalyearproject.dan.ocraccountingapp.testing.demo.nosql.NoSQLSelectTableDemoFragment;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.itemanimators.AlphaCrossFadeAnimator;
 import com.mikepenz.materialdrawer.AccountHeader;
@@ -69,6 +71,7 @@ public class NavDrawerInstaller {
                         new PrimaryDrawerItem().withName("Statistics").withIcon(R.drawable.nav_statistics_icon).withIdentifier(3),
                         new PrimaryDrawerItem().withName("Sandbox").withIcon(R.drawable.nav_receipt_icon).withIdentifier(4),
                         new PrimaryDrawerItem().withName("File Browser").withIcon(R.drawable.nav_receipt_icon).withIdentifier(5),
+                        new PrimaryDrawerItem().withName("Database").withIcon(R.drawable.nav_receipt_icon).withIdentifier(7),
                         new SectionDrawerItem().withName("Account"),
                         new SecondaryDrawerItem().withName("Settings").withIcon(FontAwesome.Icon.faw_cog),
                         new SecondaryDrawerItem().withName("Log Out").withIcon(R.drawable.nav_logout_icon).withIdentifier(6)
@@ -118,6 +121,13 @@ public class NavDrawerInstaller {
                                 transaction.replace(R.id.main_fragment_container, fragment);
                                 transaction.commit();
                             }
+                            if (drawerItem.getIdentifier() == 7) {
+                                Fragment fragment = new NoSQLSelectOperationDemoFragment();
+                                FragmentManager manager = activity.getSupportFragmentManager();
+                                FragmentTransaction transaction = manager.beginTransaction();
+                                transaction.replace(R.id.main_fragment_container, fragment);
+                                transaction.commit();
+                            }
                             if (drawerItem.getIdentifier() == 6) {
 
                                 // Obtain a reference to the mobile client. It is created in the Application class,
@@ -149,6 +159,8 @@ public class NavDrawerInstaller {
 
 
     private String getUserName() {
+
+        AWSMobileClient.defaultMobileClient().getIdentityManager().getCachedUserID();
         final IdentityManager identityManager = AWSMobileClient.defaultMobileClient().getIdentityManager();
         final IdentityProvider identityProvider = identityManager.getCurrentIdentityProvider();
         return identityProvider.getUserName();

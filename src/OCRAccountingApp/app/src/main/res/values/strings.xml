@@ -21,6 +21,7 @@
 
 
     <string name="date_format">dd-MM-yyyy</string>
+    <string name="date_format2">yyyyMMdd</string>
     <string name="week_date_format">dd</string>
 
     <!-- Strings related to login -->
@@ -60,7 +61,6 @@
     <string name="button_text_sign_in">SIGN IN</string>
     <string name="button_text_sign_out">SIGN OUT</string>
     <string name="sign_in_email">Email</string>
-    <string name="sign_in_username">Username/Phone Number (+15551234567)</string>
     <string name="sign_in_password">Password</string>
     <string name="sign_in_new_account">Create New Account</string>
     <string name="sign_in_forgot_password">Forgot Your Password?</string>
@@ -90,7 +90,7 @@
     <string name="password_change_success">Password change succeeded.</string>
     <string name="password_change_failed">Password change failed.</string>
     <string name="sign_up_success">Sign up succeeded.</string>
-    <string name="sign_up_failed">Sign up failed.</string>
+    <string name="sign_up_failed">Sign up failed. User already exists!</string>
     <string name="login_success">Login succeeded.</string>
     <string name="login_failed">Login failed.</string>
     <string name="sign_up_confirm_success">Sign up confirmation succeeded.</string>
@@ -187,7 +187,100 @@
     <string name="settings_fragment_dialog_message">Loading&#8230;</string>
     <string name="settings_fragment_prompt">Please choose a theme:</string>
 
+    <string name="error_message_download_file">Failed to download file due to \'%s\'.</string>
+    <string name="progress_dialog_message_fetch_file"> Fetching receipt.</string>
+
     <string name="content_helper_error_title">No Content Viewer</string>
     <string name="content_helper_error_no_app">No Viewing App exists for content type \'%s\'.</string>
+
+
+    <string name="nosql_select_table_item_partition_key_text">Partition Key</string>
+    <string name="nosql_select_table_item_sort_key_text">Sort Key</string>
+    <string name="nosql_select_table_index_count_text">Indexes</string>
+
+    <string name="nosql_dialog_title_failed_dynamodb_describe_table_text">Failed retrieving schema for table \'%s\'.</string>
+    <string name="nosql_dialog_title_failed_operation_text">Operation Failed</string>
+    <string name="nosql_dialog_title_failed_loading_more_results">Failed Loading More Results</string>
+    <string name="nosql_dialog_title_failed_update_item_text">Update Item Failed</string>
+    <string name="nosql_dialog_title_failed_delete_item_text">Delete Item Failed</string>
+
+    <string name="nosql_database_table_item_creation_date_text">Created %s</string>
+    <string name="nosql_insert_sample_data_button_text">INSERT SAMPLE DATA</string>
+    <string name="nosql_remove_sample_data_button_text">REMOVE SAMPLE DATA</string>
+
+    <string name="nosql_dialog_title_remove_confirmation">Confirm Removal of Sample Items</string>
+    <string name="nosql_dialog_message_remove_confirmation">This will remove all your sample items.  Are you sure?</string>
+
+    <string name="nosql_dialog_title_added_sample_data_text">Added Sample Data</string>
+    <string name="nosql_dialog_message_added_sample_data_text">20 Sample Items with random data were added to your table.</string>
+    <string name="nosql_dialog_title_removed_sample_data_text">Removed Sample Data</string>
+    <string name="nosql_dialog_message_removed_sample_data_text">All Sample Items have been removed from your table.</string>
+    <string name="nosql_dialog_ok_text">OK</string>
+
+    <!-- NoSQL Demo Operations Headers -->
+    <string name="nosql_operation_header_get">Get</string>
+    <string name="nosql_operation_header_primary_queries">Primary Index Queries</string>
+    <string name="nosql_operation_header_secondary_queries">Secondary Index Queries (%s)</string>string>
+    <string name="nosql_operation_header_scan">Scan</string>string>
+    <!-- NoSQL Demo Get Operations -->
+    <string name="nosql_operation_get_by_partition_text">Get Item</string>
+    <string name="nosql_operation_example_get_by_partition_text">Find Item with %1$s = \'%2$s\'.</string>
+
+    <string name="nosql_operation_get_by_partition_and_sort_text">Get Item</string>
+    <string name="nosql_operation_example_get_by_partition_and_sort_text">Find Item with %1$s = \'%2$s\' and %3$s = \'%4$s\'.</string>
+
+    <!-- NoSQL Demo Query Operations -->
+    <string name="nosql_operation_title_query_by_partition_and_sort_condition_text">Query by Partition Key and Sort Condition</string>
+    <string name="nosql_operation_example_query_by_partition_and_sort_condition_text">Find all items with %1$s = \'%2$s\' and %3$s &lt; \'%4$s\'.</string>
+
+    <string name="nosql_operation_title_query_by_partition_text">Query by Partition Key</string>
+    <string name="nosql_operation_example_query_by_partition_text">Find all items with %1$s = \'%2$s\'.</string>
+
+    <string name="nosql_operation_title_query_by_partition_and_filter_text">Query by Partition Key and Filter</string>
+    <string name="nosql_operation_example_query_by_partition_and_filter_text">Find all items with %1$s = \'%2$s\' and %3$s &gt; \'%4$s\' and %5$s &gt; \'%6$s\'.</string>
+
+    <string name="nosql_operation_title_query_by_partition_sort_condition_and_filter_text">Query by Partition Key, Sort Condition, and Filter</string>
+    <string name="nosql_operation_example_query_by_partition_sort_condition_and_filter_text">Find all items with %1$s = \'%2$s\', %3$s &lt; \'%4$s\', and %5$s &gt; \'%6$s\'.</string>
+
+    <string name="nosql_operation_title_index_query_by_partition_and_sort_condition_text">Query by Partition Key and Sort Condition</string>
+    <string name="nosql_operation_example_index_query_by_partition_and_sort_condition_text">Find all items with %1$s = \'%2$s\' and %3$s &gt; \'%4$s\'.</string>
+
+    <string name="nosql_operation_title_index_query_by_partition_text">Query by Partition Key</string>
+    <string name="nosql_operation_example_index_query_by_partition_text">Find all items with %1$s = \'%2$s\'.</string>
+
+    <string name="nosql_operation_title_index_query_by_partition_and_filter_text">Query by Partition Key and Filter</string>
+    <string name="nosql_operation_example_index_query_by_partition_and_filter_text">Find all items with %1$s = \'%2$s\' and %3$s &gt; \'%4$s\'.</string>
+
+    <string name="nosql_operation_title_index_query_by_partition_sort_condition_and_filter_text">Query by Partition Key, Sort Condition, and Filter</string>
+    <string name="nosql_operation_example_index_query_by_partition_sort_condition_and_filter_text">Find all items with %1$s = \'%2$s\', %3$s &lt; \'%4$s\', and %5$s &gt; \'%6$s\'.</string>
+
+    <string name="nosql_operation_title_scan_with_filter">Scan with Filter</string>
+    <string name="nosql_operation_example_scan_with_filter">Find all items with \'%1$s\' &gt; \'%2$s\'.</string>
+    <string name="nosql_operation_example_scan_with_filter_on_partition_and_sort">Find all items with \'%1$s\' beginning with \'%2$s\' and \'%3$s\' beginning with \'%4$s\'.</string>
+    <string name="nosql_operation_example_scan_with_filter_on_partition">Find all items with \'%1$s\' beginning with \'%2$s\'</string>
+
+    <string name="nosql_operation_title_scan_without_filter">Scan</string>
+    <string name="nosql_operation_example_scan_without_filter">Show all items in the table.</string>
+
+    <string name="nosql_dialog_title_pending_results_text">Please wait&#8230;</string>
+    <string name="nosql_dialog_message_pending_results_text">Waiting for the response to load the results.</string>
+
+    <string name="nosql_dialog_title_scan_warning_text">WARNING: Scan is Expensive</string>
+    <string name="nosql_dialog_message_scan_warning_text">This operation scans the entire table and should not generally be used in a production app.</string>
+
+    <string name="nosql_dialog_title_no_results_text">No Matching Items Found</string>
+    <string name="nosql_dialog_message_no_results_text">No items match your criteria. Insert more sample data and try again.</string>
+
+    <string name="nosql_context_menu_title_for_results_text">What would you like to do?</string>
+    <string name="nosql_context_menu_entry_view_item_text">View Receipt</string>
+    <string name="nosql_context_menu_entry_update_item_text">Update Receipt</string>
+    <string name="nosql_context_menu_entry_delete_item_text">Delete Receipt</string>
+    <string name="nosql_dialog_title_confirm_update_item_text">Confirm Update</string>
+    <string name="nosql_dialog_message_confirm_update_item_text">Are you sure you want to update the selected item?</string>
+    <string name="nosql_dialog_title_confirm_delete_item_text">Confirm Delete</string>
+    <string name="nosql_dialog_message_confirm_delete_item_text">Are you sure you want to delete the selected item?</string>
+
+    <string name="main_fragment_title_nosql_select_operation">NoSQL Demo: %s</string>
+    <string name="main_fragment_title_nosql_select_table">NoSQL Demo: Select Table</string>
 
 </resources>

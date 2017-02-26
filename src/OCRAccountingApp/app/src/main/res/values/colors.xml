@@ -2,8 +2,10 @@
 <resources>
     <color name="colorPrimary">#25B999</color>
     <color name="colorPrimaryDark">#25A68A</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="primary_darker">#25A68A</color>
+    <color name="colorAccent">#FFFFFF</color>
 
+    <color name="veryLightGreen">#BFEAE1</color>
 
     <color name="top_bar_background">#F58535</color>
     <color name="splash_text">#66000000</color>
@@ -18,4 +20,6 @@
     <color name="instructions_list_border_color">#FFDDDDDD</color>
 
     <color name="dark_content_text">#333333</color>
+    <color name="iron">#CCCCCC</color>
+    <color name="white">#FFFFFF</color>
 </resources>

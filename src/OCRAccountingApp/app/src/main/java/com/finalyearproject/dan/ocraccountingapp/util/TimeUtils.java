@@ -122,11 +122,31 @@ public class TimeUtils {
 
 
     public static String getFormattedDate(Context context, long date) {
-        final String defaultPattern = "yyyy-MM-dd";
+        final String defaultPattern = "dd-MM-yyyy";
 
         String pattern = null;
         if (context != null) {
             pattern = context.getString(R.string.date_format);
+        }
+        if (pattern == null) {
+            pattern = defaultPattern;
+        }
+        SimpleDateFormat simpleDateFormat = null;
+        try {
+            simpleDateFormat = new SimpleDateFormat(pattern);
+        } catch (IllegalArgumentException e) {
+            simpleDateFormat = new SimpleDateFormat(defaultPattern);
+        }
+
+        return simpleDateFormat.format(new Date(date));
+    }
+
+    public static String FormatDateForVP(Context context, long date) {
+        final String defaultPattern = "yyyyMMdd";
+
+        String pattern = null;
+        if (context != null) {
+            pattern = context.getString(R.string.date_format2);
         }
         if (pattern == null) {
             pattern = defaultPattern;

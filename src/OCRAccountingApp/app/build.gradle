@@ -43,6 +43,12 @@ dependencies {
     // the Cognito SDK dependency
     compile('com.amazonaws:aws-android-sdk-cognito:2.3.9')
 
+    // add the DynamoDB SDK and DynamoDB Object Mapper dependency
+    compile('com.amazonaws:aws-android-sdk-ddb:2.3.9')
+    compile('com.amazonaws:aws-android-sdk-ddb-mapper:2.3.9')
+
+    compile 'com.jakewharton:butterknife:7.0.1'
+
 
     // the sample uses more advanced functions of the fastadapter
     // https://github.com/mikepenz/FastAdapter/
