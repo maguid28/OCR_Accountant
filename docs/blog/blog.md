@@ -344,7 +344,7 @@ public boolean validate() {
 ```
 
 Below is an example of the checks being triggered.
-![validation checks triggered in signup activity ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/signup_ui_validation.png =500x500)
+![validation checks triggered in signup activity ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/signup_ui_validation.png)
 
 And Below is the updated login UI layout.
 ![UI layout](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/login_ui_updated.png)
