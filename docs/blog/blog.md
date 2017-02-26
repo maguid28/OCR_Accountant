@@ -242,7 +242,7 @@ The application queries the database by user id and by date to display the recei
 I have added a view pager to the application and within each page it queries the database to retrieve the receipt data corresponding to the week the user is currently viewing. From within the view pager the user can click on any of the receipts to display a context menu with options allowing the user to update the receipt information, view the captured receipt image or delete the receipt. The application caches the receipt image so when the user clicks view image it will check if the receipt is present and if not it will download it from the users cloud storage.
 
 Below is an screenshot of the view pager.
-![view pager ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/viewpager.png =500x500)
+![view pager|small](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/viewpager.png)
 
 ## Blog entry 13 - ArrayList adapter issue
 I am having an issue with the ArrayList and adapter that I am using to keep track of the queried entries and display them. The issue occurs when I capture an image and then try to go and view the entry in the list. The entry is there but when I click on it to display the context menu and try to view, delete, or update it the application crashes with this error:
