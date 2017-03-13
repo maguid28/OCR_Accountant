@@ -2,10 +2,10 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    buildToolsVersion '25.0.0'
     defaultConfig {
         applicationId "com.finalyearproject.dan.ocraccountingapp"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"
@@ -25,8 +25,12 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+
+    compile 'com.afollestad:material-camera:0.4.4'
+
+    //tessert dependency 
     compile 'com.rmtheis:tess-two:6.0.4'
-    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:appcompat-v7:24.1.1'
     compile 'com.android.support:design:24.2.1'
     compile 'com.android.support:support-v4:24.1.0'
     compile 'com.android.support:multidex:1.0.0'
@@ -48,6 +52,9 @@ dependencies {
     compile('com.amazonaws:aws-android-sdk-ddb-mapper:2.3.9')
 
     compile 'com.jakewharton:butterknife:7.0.1'
+
+    compile 'com.yalantis:ucrop:2.2.0'
+    compile 'gun0912.ted:tedpermission:1.0.2'
 
 
     // the sample uses more advanced functions of the fastadapter
@@ -82,4 +89,6 @@ repositories{
     flatDir{
         dirs 'libs'
     }
+    jcenter()
+    maven { url "https://dl.bintray.com/drummer-aidan/maven" }
 }

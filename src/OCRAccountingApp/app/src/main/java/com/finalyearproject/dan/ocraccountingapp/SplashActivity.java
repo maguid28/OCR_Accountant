@@ -17,33 +17,23 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.Toast;
 
-import com.finalyearproject.dan.ocraccountingapp.mobile.AWSMobileClient;
-import com.finalyearproject.dan.ocraccountingapp.mobile.user.signin.SignInManager;
-import com.finalyearproject.dan.ocraccountingapp.mobile.user.signin.SignInProvider;
-import com.finalyearproject.dan.ocraccountingapp.mobile.user.IdentityManager;
-import com.finalyearproject.dan.ocraccountingapp.mobile.user.IdentityProvider;
+import com.finalyearproject.dan.ocraccountingapp.amazon.AWSMobileClient;
+import com.finalyearproject.dan.ocraccountingapp.amazon.user.signin.SignInManager;
+import com.finalyearproject.dan.ocraccountingapp.amazon.user.signin.SignInProvider;
+import com.finalyearproject.dan.ocraccountingapp.amazon.user.IdentityManager;
+import com.finalyearproject.dan.ocraccountingapp.amazon.user.IdentityProvider;
+import com.finalyearproject.dan.ocraccountingapp.signin.SignInActivity;
 
 import java.util.concurrent.CountDownLatch;
 
-/**
- * Splash Activity is the start-up activity that appears until a delay is expired
- * or the user taps the screen.  When the splash activity starts, various app
- * initialization operations are performed.
- */
 public class SplashActivity extends Activity {
     private static final String LOG_TAG = SplashActivity.class.getSimpleName();
     private final CountDownLatch timeoutLatch = new CountDownLatch(1);
     private SignInManager signInManager;
 
-    /**
-     * SignInResultsHandler handles the results from sign-in for a previously signed in user.
-     */
+    // SignInResultsHandler handles the results from sign-in for a previously signed in user.
     private class SignInResultsHandler implements IdentityManager.SignInResultsHandler {
-        /**
-         * Receives the successful sign-in result for an alraedy signed in user and starts the main
-         * activity.
-         * @param provider the identity provider used for sign-in.
-         */
+        // onSuccess is launched if the user is already signed in
         @Override
         public void onSuccess(final IdentityProvider provider) {
             Log.d(LOG_TAG, String.format("User sign-in with previous %s provider succeeded",
@@ -65,23 +55,10 @@ public class SplashActivity extends Activity {
                     });
         }
 
-        /**
-         * For the case where the user previously was signed in, and an attempt is made to sign the
-         * user back in again, there is not an option for the user to cancel, so this is overriden
-         * as a stub.
-         * @param provider the identity provider with which the user attempted sign-in.
-         */
         @Override
-        public void onCancel(final IdentityProvider provider) {
-            Log.wtf(LOG_TAG, "Cancel can't happen when handling a previously sign-in user.");
-        }
+        public void onCancel(final IdentityProvider provider) {}
 
-        /**
-         * Receives the sign-in result that an error occurred signing in with the previously signed
-         * in provider and re-directs the user to the sign-in activity to sign in again.
-         * @param provider the identity provider with which the user attempted sign-in.
-         * @param ex the exception that occurred.
-         */
+        // onError occurs if the user
         @Override
         public void onError(final IdentityProvider provider, Exception ex) {
             Log.e(LOG_TAG,
@@ -121,7 +98,7 @@ public class SplashActivity extends Activity {
                 // Wait for the splash timeout.
                 try {
                     Thread.sleep(2000);
-                } catch (InterruptedException e) { }
+                } catch (InterruptedException ignored) { }
 
                 // Expire the splash page delay.
                 timeoutLatch.countDown();
@@ -137,23 +114,19 @@ public class SplashActivity extends Activity {
         return true;
     }
 
-    /**
-     * Starts an activity after the splash timeout.
-     * @param intent the intent to start the activity.
-     */
+    // Start activity after timeout
     private void goAfterSplashTimeout(final Intent intent) {
         final Thread thread = new Thread(new Runnable() {
             public void run() {
                 // wait for the splash timeout expiry or for the user to tap.
                 try {
                     timeoutLatch.await();
-                } catch (InterruptedException e) {
+                } catch (InterruptedException ignored) {
                 }
 
                 SplashActivity.this.runOnUiThread(new Runnable() {
                     public void run() {
                         startActivity(intent);
-                        // finish should always be called on the main thread.
                         finish();
                     }
                 });
@@ -162,17 +135,13 @@ public class SplashActivity extends Activity {
         thread.start();
     }
 
-    /**
-     * Go to the main activity after the splash timeout has expired.
-     */
+    // Launch main activity
     protected void goMain() {
         Log.d(LOG_TAG, "Launching Main Activity...");
         goAfterSplashTimeout(new Intent(this, MainActivity.class));
     }
 
-    /**
-     * Go to the sign in activity after the splash timeout has expired.
-     */
+    // Launch sign in activity
     protected void goSignIn() {
         Log.d(LOG_TAG, "Launching Sign-in Activity...");
         goAfterSplashTimeout(new Intent(this, SignInActivity.class));

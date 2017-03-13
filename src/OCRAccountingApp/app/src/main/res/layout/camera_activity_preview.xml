@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <FrameLayout
+        android:id="@+id/photo_preview_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true">
+
+        <com.yalantis.ucrop.view.UCropView
+            android:id="@+id/image_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#ff282828"
+            android:scaleType="centerInside"
+            android:visibility="visible" />
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerInside"
+            android:id="@+id/processed_Image"/>
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/pre_process_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#82212121"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:weightSum="4">
+
+        <TextView
+            android:id="@+id/cancel_media_action"
+            style="@style/PreviewButtonsStyle"
+            android:drawableTop="@drawable/camera_cancel_btn"
+            android:text="@string/preview_controls_cancel" />
+
+        <TextView
+            android:id="@+id/re_take_media"
+            style="@style/PreviewButtonsStyle"
+            android:drawableTop="@drawable/camera_recapture_btn"
+            android:text="@string/preview_controls_retake" />
+
+        <TextView
+            android:id="@+id/process_media"
+            style="@style/PreviewButtonsStyle"
+            android:drawableTop="@drawable/camera_proceed_btn"
+            android:text="Process Image" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/post_process_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#82212121"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:weightSum="4">
+
+        <TextView
+            android:id="@+id/cancel_media_action2"
+            style="@style/PreviewButtonsStyle"
+            android:drawableTop="@drawable/camera_cancel_btn"
+            android:text="@string/preview_controls_cancel" />
+
+        <TextView
+            android:id="@+id/re_take_media2"
+            style="@style/PreviewButtonsStyle"
+            android:drawableTop="@drawable/camera_recapture_btn"
+            android:text="@string/preview_controls_retake" />
+
+        <TextView
+            android:id="@+id/confirm_media_result"
+            style="@style/PreviewButtonsStyle"
+            android:drawableTop="@drawable/camera_proceed_btn"
+            android:text="Proceed" />
+
+    </LinearLayout>
+</RelativeLayout>

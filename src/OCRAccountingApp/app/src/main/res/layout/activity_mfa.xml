@@ -69,7 +69,6 @@
         android:text="@string/verify_button_text"
         android:textAllCaps="false"
         android:textSize="@dimen/activity_button_text_size"
-        android:id="@+id/mfa_button"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/mfa_space3"
         android:onClick="verify"/>

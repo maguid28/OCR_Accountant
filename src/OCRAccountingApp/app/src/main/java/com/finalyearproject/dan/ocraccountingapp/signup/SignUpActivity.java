@@ -14,9 +14,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.finalyearproject.dan.ocraccountingapp.mobile.user.signin.CognitoUserPoolsSignInProvider;
+import com.finalyearproject.dan.ocraccountingapp.signin.SignInActivity;
+import com.finalyearproject.dan.ocraccountingapp.amazon.user.signin.CognitoUserPoolsSignInProvider;
 import com.finalyearproject.dan.ocraccountingapp.R;
 import com.finalyearproject.dan.ocraccountingapp.signup.util.ViewHelper;
 
@@ -27,7 +29,8 @@ public class SignUpActivity extends Activity {
     /** Log tag. */
     private static final String LOG_TAG = SignUpActivity.class.getSimpleName();
 
-    EditText _nameText, _emailText, _mobileText, _passwordText, _reEnterPasswordText;
+    EditText _nameText, _emailText, _passwordText, _reEnterPasswordText;
+    TextView _loginLink;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -36,9 +39,19 @@ public class SignUpActivity extends Activity {
 
         _nameText = (EditText) findViewById(R.id.signup_given_name);
         _emailText = (EditText) findViewById(R.id.signup_email);
-        _mobileText = (EditText) findViewById(R.id.signup_phone);
-        _passwordText = (EditText) findViewById(R.id.signup_phone);
+        _passwordText = (EditText) findViewById(R.id.signup_password);
         _reEnterPasswordText = (EditText) findViewById(R.id.input_reEnterPassword);
+        _loginLink = (TextView) findViewById(R.id.link_login);
+
+        _loginLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Finish the registration screen and return to the Login activity
+                Intent intent = new Intent(getApplicationContext(),SignInActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
     }
 
     /**
@@ -106,6 +119,8 @@ public class SignUpActivity extends Activity {
         if (password.isEmpty() || password.length() < 8) {
             _passwordText.setError("at least 8 characters");
             valid = false;
+        } else {
+            _passwordText.setError(null);
         }
         if(!hasLowercase || !hasUppercase || !(password.matches(".*\\d.*"))) {
             _passwordText.setError("Password must contain uppcase, lowercase and numeric characters");

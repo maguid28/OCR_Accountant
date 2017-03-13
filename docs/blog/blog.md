@@ -348,3 +348,15 @@ Below is an example of the checks being triggered.
 
 And Below is the updated login UI layout.
 ![UI layout](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/login_ui_updated.png)
+
+
+
+## Blog entry 15 - ViewPager changed
+Due to my ongoing issues with the view pager and the dynamic list view adapter used to display receipts, I have decided to go for a different approach to displaying the receipts. I have still kept the view pager but decided to go for a more simplistic method by displaying the months of the year within the view pager. This method has resolved the issues I have had with the list view adapter not updating correctly.
+The image below is a screenshot of the current updated view.
+![Cal display image ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/cal_display.jpg)
+
+## Blog entry 16 - Custom camera
+I have added a custom camera to the application which forces the flash on to allow clearer captures and more accurate processing of the receipt as it makes it much easier to differentiate the receipt image from the background. The camera also has an preview activity that allows the user to process the image within the activity and allows the user to easily recapture the images if it does not process correctly.
+The camera manager also decides which version of the android camera API to use depending on the OS of the device. Older devices will need to use the deprecated Camera API, but newer devices will be able to take advantage of the newer Camera2 API.
+![Image capture process ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/image_capture_process.jpg)

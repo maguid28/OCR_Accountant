@@ -17,6 +17,7 @@ public class TimeUtils {
     public static final int DAYS_OF_TIME;
     public static final int WEEKS_OF_TIME;
     public static final int MONTHS_OF_TIME;
+    public static final int YEARS_OF_TIME;
 
 
     static {
@@ -27,6 +28,7 @@ public class TimeUtils {
         DAYS_OF_TIME = 73413; //(int) ((LAST_DAY_OF_TIME.getTimeInMillis() - FIRST_DAY_OF_TIME.getTimeInMillis()) / (24 * 60 * 60 * 1000));
         WEEKS_OF_TIME = 10487; // (int) ((LAST_DAY_OF_TIME.getTimeInMillis() - FIRST_DAY_OF_TIME.getTimeInMillis()) / (7 * 24 * 60 * 60 * 1000));
         MONTHS_OF_TIME = 2400; // (int) ((LAST_DAY_OF_TIME.getTimeInMillis() - FIRST_DAY_OF_TIME.getTimeInMillis()) / (12 * 7 * 24 * 60 * 60 * 1000));
+        YEARS_OF_TIME = 200; //(int) ((LAST_DAY_OF_TIME.getTimeInMillis() - FIRST_DAY_OF_TIME.getTimeInMillis()) / (24 * 60 * 60 * 1000));
     }
 
     /**
@@ -54,6 +56,15 @@ public class TimeUtils {
         if (week != null) {
             return (int) ((week.getTimeInMillis() - FIRST_DAY_OF_TIME.getTimeInMillis())
                     / 604800000L);  //(7 * 24 * 60 * 60 * 1000)
+        }
+        return 0;
+    }
+
+
+    public static int getPositionForYear(Calendar year) {
+        if (year != null) {
+            return (int) ((year.getTimeInMillis() - FIRST_DAY_OF_TIME.getTimeInMillis())
+                    / 31536000000L);  //(365 * 24 * 60 * 60 * 1000)
         }
         return 0;
     }
@@ -100,6 +111,24 @@ public class TimeUtils {
         cal.add(Calendar.WEEK_OF_YEAR, position);
         return cal;
     }
+
+    /**
+     * Get the week for a given position in the ViewPager
+     *
+     * @param position
+     * @return the week
+     * @throws IllegalArgumentException if position is negative
+     */
+    public static Calendar getYearForPosition(int position) throws IllegalArgumentException {
+        if (position < 0) {
+            throw new IllegalArgumentException("position cannot be negative");
+        }
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(FIRST_DAY_OF_TIME.getTimeInMillis());
+        cal.add(Calendar.YEAR, position);
+        return cal;
+    }
+
 
 
     /**
@@ -168,6 +197,29 @@ public class TimeUtils {
         String pattern = null;
         if (context != null) {
             pattern = context.getString(R.string.week_date_format);
+        }
+        if (pattern == null) {
+            pattern = defaultPattern;
+        }
+        SimpleDateFormat simpleDateFormat = null;
+        try {
+            simpleDateFormat = new SimpleDateFormat(pattern);
+        } catch (IllegalArgumentException e) {
+            simpleDateFormat = new SimpleDateFormat(defaultPattern);
+        }
+
+        return simpleDateFormat.format(new Date(date));
+    }
+
+
+
+    //function to provide week view format
+    public static String getYearFormat(Context context, long date) {
+        final String defaultPattern = "yyyy";
+
+        String pattern = null;
+        if (context != null) {
+            pattern = context.getString(R.string.year_date_format);
         }
         if (pattern == null) {
             pattern = defaultPattern;

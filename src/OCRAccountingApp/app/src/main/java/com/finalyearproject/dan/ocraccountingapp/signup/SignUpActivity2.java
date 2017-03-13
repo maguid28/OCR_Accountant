@@ -14,7 +14,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import com.finalyearproject.dan.ocraccountingapp.mobile.user.signin.CognitoUserPoolsSignInProvider;
+import com.finalyearproject.dan.ocraccountingapp.amazon.user.signin.CognitoUserPoolsSignInProvider;
 import com.finalyearproject.dan.ocraccountingapp.R;
 import com.finalyearproject.dan.ocraccountingapp.signup.util.ViewHelper;
 
@@ -40,18 +40,15 @@ public class SignUpActivity2 extends Activity {
         final String password = ViewHelper.getStringValue(this, R.id.signup_password);
         final String givenName = ViewHelper.getStringValue(this, R.id.signup_given_name);
         final String email = ViewHelper.getStringValue(this, R.id.signup_email);
-        final String phone = ViewHelper.getStringValue(this, R.id.signup_phone);
 
 
         Log.d(LOG_TAG, "given_name = " + givenName);
         Log.d(LOG_TAG, "email = " + email);
-        Log.d(LOG_TAG, "phone = " + phone);
 
         final Intent intent = new Intent();
         intent.putExtra(CognitoUserPoolsSignInProvider.AttributeKeys.PASSWORD, password);
         intent.putExtra(CognitoUserPoolsSignInProvider.AttributeKeys.GIVEN_NAME, givenName);
         intent.putExtra(CognitoUserPoolsSignInProvider.AttributeKeys.EMAIL_ADDRESS, email);
-        intent.putExtra(CognitoUserPoolsSignInProvider.AttributeKeys.PHONE_NUMBER, phone);
 
         setResult(RESULT_OK, intent);
 

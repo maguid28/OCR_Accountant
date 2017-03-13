@@ -101,7 +101,6 @@
         android:text="@string/sign_up_confirm_text"
         android:textAllCaps="false"
         android:textSize="@dimen/activity_button_text_size"
-        android:id="@+id/confirm_account_button"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/confirm_account_space5"
         android:onClick="confirmAccount"/>

@@ -14,7 +14,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import com.finalyearproject.dan.ocraccountingapp.mobile.user.signin.CognitoUserPoolsSignInProvider;
+import com.finalyearproject.dan.ocraccountingapp.amazon.user.signin.CognitoUserPoolsSignInProvider;
 import com.finalyearproject.dan.ocraccountingapp.R;
 import com.finalyearproject.dan.ocraccountingapp.signup.util.ViewHelper;
 
