@@ -368,9 +368,12 @@ The image I will be performing these tests on is below. Once I get high accuracy
 
 At the moment tesseract is generating the following from the image.
 DEFAULT:
+
 width of image: 1976
+
 height of image: 3076
 
+```
 									 Tower Records
                    40-42 Lower 0A00nnel St
                    Dublin
@@ -389,7 +392,7 @@ height of image: 3076
                    Tota 1 a 1 9 99
                    CLugtomeLViBmem
                    Dash €20,00
-
+```
 Tesseracts accuracy drops dramatically on images with pixel densities of lower than 300dpi. So the first test was to scale it up x2 the size of the original image and see if this improves accuracy.
 
 Resized to x2 size of original image
@@ -401,6 +404,7 @@ Size size2 = new Size((imageROI.width() * 2), (imageROI.height() * 2));  Mat
 ```
 
 The result is:
+```
 									   Tower Records
                      40-42 Lower OTConnel St
                      Dublin
@@ -419,7 +423,7 @@ The result is:
                      Tota1 &€19.99
                      EDEIQEQCEPEYDEDI
                      Cash €20.00
-
+```
 There has been some improvement.
 I have further increased the image size to x2.5 original size, and x3 of the original with little or no improvement in the text recognition accuracy, with larger images also slowing down the OCR task significantly. I've decided to settle on an a scaled image size of x2 original size.
 I have followed the guidelines on the official GitHub page on improving image quality which mentions the following steps to improve Tesseracts accuracy:
