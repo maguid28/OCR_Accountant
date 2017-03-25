@@ -361,7 +361,7 @@ I have added a custom camera to the application which forces the flash on to all
 The camera manager also decides which version of the android camera API to use depending on the OS of the device. Older devices will need to use the deprecated Camera API, but newer devices will be able to take advantage of the newer Camera2 API.
 ![Image capture process ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/image_capture_process.jpg)
 
-## Blog entry 17 - OCR
+## Blog entry 17 - OCR 1: Improving image quality
 I have now moved on to OCR side of the application now. I am currently performing tests to improve the accuracy of read text.
 The image I will be performing these tests on is below. Once I get high accuracy results with this image I will test others and show results.
 ![OCR Test image ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/ocr_test_receipt.jpg)
@@ -428,23 +428,25 @@ There has been some improvement.
 I have further increased the image size to x2.5 original size, and x3 of the original with little or no improvement in the text recognition accuracy, with larger images also slowing down the OCR task significantly. I've decided to settle on an a scaled image size of x2 original size.
 I have followed the guidelines on the official GitHub page on improving image quality which mentions the following steps to improve Tesseracts accuracy:
 
-Rescaling the image: I have performed this by scaling the image by x2, mentioned above.
+#### Rescaling the image:
+I have performed this by scaling the image by x2, mentioned above.
 
-### Binarisation:
+#### Binarisation:
 I have converted the image to black and white and performed adaptive gaussian c threshold to the image to balance out the darker and brighter areas of the image.
 
-### Noise Removal:
+#### Noise Removal:
 I have performed image denoising using a Non-local Means Denoising algorithm located in the opencv library.
 ```java
 Photo.fastNlMeansDenoising(srcImage, dstImage);
 ```
 
-## Rotate and Deskew:
+#### Rotate and Deskew:
 I have rotated and deskewed the image by locating the four corners of the receipt in the image and rotating accordingly.
 
-## Border Removal:
+#### Border Removal:
 This step is present in Tesseracts document as it mentions that "Scanned pages often have dark borders around them. These can be erroneously picked up as extra characters, especially if they vary in shape and gradation". My issue went slightly further than just borders as receipts may have creases or marks on them that may show up as unwanted artifacts in the processed receipt image.
-I have tackled this issue by identifying areas of text while removing all other areas that were not identified as text(See Blog entry #7).
+I have tackled this issue by identifying areas of text while removing all other areas that were not identified as text (See Blog entry #7).
 
 
+## Blog entry 18 - OCR 2: Training Tesseract
 My next step is to train Tesseract to better identify receipt text as the sample english trained data on Tesseracts official GitHub page is tailored for sentences with full blocks of text.
