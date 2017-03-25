@@ -112,7 +112,7 @@
 
     <string name="nosql_context_menu_title_for_results_text">What would you like to do?</string>
     <string name="nosql_context_menu_entry_view_item_text">View Receipt</string>
-    <string name="nosql_context_menu_entry_update_item_text">Update Receipt</string>
+    <string name="nosql_context_menu_entry_update_item_text">Edit Receipt</string>
     <string name="nosql_context_menu_entry_delete_item_text">Delete Receipt</string>
     <string name="nosql_dialog_title_confirm_update_item_text">Confirm Update</string>
     <string name="nosql_dialog_message_confirm_update_item_text">Are you sure you want to update the selected item?</string>

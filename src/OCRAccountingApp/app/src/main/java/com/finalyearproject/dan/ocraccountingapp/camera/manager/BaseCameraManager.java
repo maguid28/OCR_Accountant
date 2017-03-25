@@ -1,14 +1,13 @@
 package com.finalyearproject.dan.ocraccountingapp.camera.manager;
 
 import android.content.Context;
-import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Process;
 import android.util.Log;
 
-import com.finalyearproject.dan.ocraccountingapp.camera.utils.Size;
+import com.finalyearproject.dan.ocraccountingapp.util.Size;
 
 abstract class BaseCameraManager<CameraId, SurfaceListener>
         implements CameraManager<CameraId, SurfaceListener> {
@@ -58,10 +57,7 @@ abstract class BaseCameraManager<CameraId, SurfaceListener>
     }
 
     private void stopBackgroundThread() {
-        if (Build.VERSION.SDK_INT > 17) {
-            backgroundThread.quitSafely();
-        } else backgroundThread.quit();
-
+        backgroundThread.quitSafely();
         try {
             backgroundThread.join();
         } catch (InterruptedException e) {

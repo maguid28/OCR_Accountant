@@ -3,7 +3,7 @@ package com.finalyearproject.dan.ocraccountingapp.camera.manager;
 import android.app.Activity;
 import android.content.Context;
 import android.view.View;
-import com.finalyearproject.dan.ocraccountingapp.camera.utils.Size;
+import com.finalyearproject.dan.ocraccountingapp.util.Size;
 
 import java.io.File;
 

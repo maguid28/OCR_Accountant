@@ -9,8 +9,8 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.WindowManager;
 
-import com.finalyearproject.dan.ocraccountingapp.camera.utils.CameraHelper;
-import com.finalyearproject.dan.ocraccountingapp.camera.utils.Size;
+import com.finalyearproject.dan.ocraccountingapp.util.CameraHelper;
+import com.finalyearproject.dan.ocraccountingapp.util.Size;
 
 import java.io.File;
 import java.io.FileNotFoundException;

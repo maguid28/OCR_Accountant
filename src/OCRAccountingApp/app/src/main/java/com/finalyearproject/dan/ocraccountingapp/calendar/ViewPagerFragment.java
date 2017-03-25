@@ -1,11 +1,13 @@
 package com.finalyearproject.dan.ocraccountingapp.calendar;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -43,7 +45,12 @@ public class ViewPagerFragment extends Fragment {
         // set pager to current date
         viewPager.setCurrentItem(TimeUtils.getPositionForYear(Calendar.getInstance()));
 
-        viewPager.setOffscreenPageLimit(10);
+        // change the color of the tab strip in the view pager
+        PagerTabStrip pagerTabStrip = (PagerTabStrip) view.findViewById(R.id.pagertabstrip);
+        pagerTabStrip.setDrawFullUnderline(true);
+        pagerTabStrip.setTabIndicatorColor(Color.parseColor("#BFEAE1"));
+
+        //viewPager.setOffscreenPageLimit(10);
 
         return view;
     }

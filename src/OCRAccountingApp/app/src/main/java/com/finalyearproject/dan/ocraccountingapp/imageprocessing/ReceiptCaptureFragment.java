@@ -152,11 +152,10 @@ public class ReceiptCaptureFragment extends Fragment {
                         File oldName = new File(pathname + "ocr_receiptimage.jpg");
 
                         if(oldName.exists()) {
-                            // Create an image file name
+                            // Create a unique image file name
                             String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmmss").format(new Date());
                             String fileName = "rec" + timeStamp + ".jpg";
                             File newName = new File(pathname + fileName);
-
 
                             // rename file
                             bool = oldName.renameTo(newName);
@@ -531,7 +530,7 @@ public class ReceiptCaptureFragment extends Fragment {
      * don't run this code in main thread - it stops UI thread. Create AsyncTask instead.
      * http://developer.android.com/intl/ru/reference/android/os/AsyncTask.html
      */
-    private void startOCR(Uri imgUri) {
+    private String startOCR(Uri imgUri) {
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inSampleSize = 4; // 1 - means max size. 4 - means maxsize/4 size. Don't use value <4, because you need more memory in the heap to store your data.
@@ -585,6 +584,7 @@ public class ReceiptCaptureFragment extends Fragment {
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
+        return result;
     }
 
 
@@ -626,16 +626,16 @@ public class ReceiptCaptureFragment extends Fragment {
 
 
 
-    private class runOCRinBackground extends AsyncTask<Uri, Void, Void> {
+    public class runOCRinBackground extends AsyncTask<Uri, Void, String> {
 
         @Override
-        protected Void doInBackground(Uri... params) {
+        protected String doInBackground(Uri... params) {
 
             Uri fileUri = params[0];
 
-            startOCR(fileUri);
+            String ocr = startOCR(fileUri);
 
-            return null;
+            return ocr;
         }
         @Override
         protected void onPreExecute() {}

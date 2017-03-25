@@ -1,4 +1,4 @@
-package com.finalyearproject.dan.ocraccountingapp.camera.utils;
+package com.finalyearproject.dan.ocraccountingapp.util;
 
 import android.annotation.TargetApi;
 import android.media.Image;
@@ -52,7 +52,6 @@ public class ImageSaver implements Runnable {
 
     public interface ImageSaverCallback {
         void onSuccessFinish();
-
         void onError();
     }
 

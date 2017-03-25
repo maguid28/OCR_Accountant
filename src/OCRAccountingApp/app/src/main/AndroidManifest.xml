@@ -48,6 +48,7 @@
         <activity
             android:name=".signin.SignInActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:windowSoftInputMode="stateHidden|adjustResize"
             android:label="@string/title_activity_sign_in" />
         <activity
             android:name=".signup.ForgotPasswordActivity"
@@ -73,6 +74,10 @@
             android:name="com.afollestad.materialcamera.CaptureActivity2"
             android:theme="@style/MaterialCamera.CaptureActivity" />
 
+
+        <activity
+            android:name=".ReceiptEditActivity"
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
 
         <!--Camera activities -->
         <activity

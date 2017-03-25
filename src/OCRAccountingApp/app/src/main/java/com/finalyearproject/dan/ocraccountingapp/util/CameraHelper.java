@@ -1,8 +1,7 @@
-package com.finalyearproject.dan.ocraccountingapp.camera.utils;
+package com.finalyearproject.dan.ocraccountingapp.util;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
 import android.os.Build;
@@ -10,12 +9,10 @@ import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 public final class CameraHelper {
@@ -25,15 +22,9 @@ public final class CameraHelper {
 
     private CameraHelper() {}
 
-    public static boolean hasCamera(Context context) {
-        return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA) ||
-                context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT);
-    }
-
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static boolean hasCamera2(Context context) {
         if (context == null) return false;
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) return false;
         try {
             CameraManager manager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
             String[] idList = manager.getCameraIdList();
@@ -61,24 +52,36 @@ public final class CameraHelper {
         }
     }
 
-    public static File getOutputMediaFile(Context context) {
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), context.getPackageName());
+    public static File getOutputFile(Context context) {
 
-        if (!mediaStorageDir.exists()) {
-            if (!mediaStorageDir.mkdirs()) {
-                Log.d(TAG, "Failed to create directory.");
-                return null;
+        File filePath;
+
+        String IMGS_PATH = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/TesseractSample/imgs";
+        // checks if the directory exists, if not create it
+        prepareDirectory(IMGS_PATH);
+
+        //path to image is /storage/emulated/0/Android/data/com.finalyearproject.dan.ocraccountingapp/files/Pictures/TesseractSample/imgs/ocr.jpg
+        String img_path = IMGS_PATH + "/ocr.jpg";
+
+        Log.i(TAG, "IMGS_PATH IS NOW " +img_path);
+
+        filePath = new File(img_path);
+
+        return filePath;
+    }
+
+
+    //Prepare directory on external storage
+    private static  void prepareDirectory(String path) {
+
+        File dir = new File(path);
+        if (!dir.exists()) {
+            if (!dir.mkdirs()) {
+                Log.e(TAG, "ERROR: Creation of directory " + path + " failed, check does Android Manifest have permission to write to external storage.");
             }
+        } else {
+            Log.i(TAG, "Created directory " + path);
         }
-
-        String timeStamp = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss").format(new Date());
-        File mediaFile;
-
-        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    "IMG_" + timeStamp + ".jpg");
-
-        return mediaFile;
     }
 
     @SuppressWarnings("deprecation")
@@ -208,12 +211,6 @@ public final class CameraHelper {
             return null;
         }
     }
-
-
-
-
-
-
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private static class CompareSizesByArea2 implements Comparator<Size> {

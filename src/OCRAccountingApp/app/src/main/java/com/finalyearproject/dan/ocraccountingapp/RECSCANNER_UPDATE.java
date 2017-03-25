@@ -1,67 +1,78 @@
-package com.finalyearproject.dan.ocraccountingapp.camera;
+package com.finalyearproject.dan.ocraccountingapp;
 
-import org.opencv.core.Core;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfPoint2f;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
+import android.util.Log;
+
+import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.photo.Photo;
 import org.opencv.utils.Converters;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.opencv.core.CvType.CV_8UC3;
 import static org.opencv.imgproc.Imgproc.THRESH_BINARY;
+import static org.opencv.imgproc.Imgproc.circle;
 import static org.opencv.imgproc.Imgproc.rectangle;
 
-public class ReceiptScanner {
-
-    private static String jpg = ".jpg";
-    private static String pathname = "/Users/daniel/IdeaProjects/opcvtest/src/main/resources/receipt12";
-    private static String path = pathname + jpg;
-
-
+public final class RECSCANNER_UPDATE {
 
     public static void main(String[] args) {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        ReceiptScanner rec = new ReceiptScanner();
-        Mat test = rec.correctReceipt(path);
-    }
-
-
-    public Mat correctReceipt(String path) {
-
-        Mat srcImage = Imgcodecs.imread(path);
-        Mat canny = ApplyCanny(srcImage);
-        Mat transform = imageTransform(canny, srcImage);
-        Mat clean = imageClean(transform);
-        Mat artifact = removeArtifacts(clean);
-        return artifact;
+        String a = new RECSCANNER_UPDATE().getTextFromReceiptImage("/Users/daniel/IdeaProjects/opcvtest/src/main/resources/receipt12.jpg");
+        System.out.println(a);
     }
 
     public Mat receiptPic(String path) {
 
         Mat srcImage = Imgcodecs.imread(path);
-        Mat canny = ApplyCanny(srcImage);
+        Mat canny = CannyEdge(srcImage);
         Mat transform = imageTransform(canny, srcImage);
         return transform;
     }
 
-    private Mat ApplyCanny(Mat rgbImage) {
+    public Mat correctReceipt(String path) {
+
+        Mat getReceipt = receiptPic(path);
+        Mat clean = imageClean(getReceipt);
+        Mat artifact = removeArtifacts(clean);
+        Log.e("width of p-image", String.valueOf(artifact.width()));
+        Log.e("height of p-image", String.valueOf(artifact.height()));
+        return artifact;
+    }
+
+    private static String jpg = ".jpg";
+    private static String pathname = "/Users/daniel/IdeaProjects/opcvtest/src/main/resources/receipt12";
+    private static String path = pathname + jpg;
+
+    private String getTextFromReceiptImage(String path) {
+
+        //final File receiptImageFile = new File(receiptFileImagepath);
+        //final String receiptImagePathFile = receiptImageFile.getAbsolutePath();
+        //System.out.println(receiptImagePathFile);
+
+        Mat receiptImage = Imgcodecs.imread(path);
+        Mat applyCanny = CannyEdge(receiptImage);
+        Mat transformImage = imageTransform(applyCanny, receiptImage);
+        Mat cleanImage = imageClean(transformImage);
+        Mat cleanedReceipt = removeArtifacts(cleanImage);
+
+        String cleanedReceiptFilePath = pathname + "_cleaned.jpg";
+        //Imgcodecs.imwrite(cleanedReceiptFilePath, cleanedReceipt);
+
+        return cleanedReceiptFilePath;
+    }
+
+    private Mat CannyEdge(Mat srcImage) {
         //mat gray image holder
         Mat imageGrey = new Mat();
         //mat canny image
-        Mat imageCanny = new Mat();
+        Mat imageCny = new Mat();
 
         //convert to greyscale
-        Imgproc.cvtColor(rgbImage, imageGrey, Imgproc.COLOR_BGR2GRAY);
+        Imgproc.cvtColor(srcImage, imageGrey, Imgproc.COLOR_BGR2GRAY);
 
         //resize image to 30% of original image
         Size sz = new Size((imageGrey.width() * 30) / 100, (imageGrey.height() * 30) / 100);
@@ -82,25 +93,27 @@ public class ReceiptScanner {
         Imgproc.dilate(imageGrey, imageGrey, element1);
 
         //apply canny edge detection
-        Imgproc.Canny(imageGrey, imageCanny, 50, 140, 5, true);
+        Imgproc.Canny(imageGrey, imageCny, 50, 140, 5, true);
 
-        return imageCanny;
+        return imageCny;
     }
 
 
-
-    private Mat imageTransform(Mat cannyImage, Mat sourceImage) {
+    private Mat imageTransform(Mat cannyImg, Mat srcImg) {
 
         //resize image back to original size
-        Size sz = new Size((cannyImage.width() * 100) / 30, (cannyImage.height() * 100) / 30);
-        Imgproc.resize(cannyImage, cannyImage, sz);
+        Size sz = new Size((cannyImg.width() * 100) / 30, (cannyImg.height() * 100) / 30);
+        Imgproc.resize(cannyImg, cannyImg, sz);
+        //Imgcodecs.imwrite(pathname + "_canny.jpg", imgSource);
 
         //find the contours
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-        Imgproc.findContours(cannyImage, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.findContours(cannyImg, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+        System.out.println("contours: " + contours);
 
         double maxArea = -1;
-        MatOfPoint temp_contour = contours.get(0);
+        System.out.println("size " +Integer.toString(contours.size()));
+        MatOfPoint temp_contour = contours.get(0); //the largest is at the index 0 for starting point
         MatOfPoint largest_contour = contours.get(0);
 
         MatOfPoint2f approxCurve = new MatOfPoint2f();
@@ -108,6 +121,7 @@ public class ReceiptScanner {
         for (int i = 0; i < contours.size(); i++) {
             temp_contour = contours.get(i);
             double contourarea = Imgproc.contourArea(temp_contour);
+            //System.out.println( contours.get(i) + "contour area: " + contourarea + "..... index: " + i);
             //compare this contour to the previous largest contour found
             if (contourarea > maxArea) {
                 // find out if this is a rectangle
@@ -123,10 +137,12 @@ public class ReceiptScanner {
             }
         }
 
+        //print the largest contour
+        System.out.println("Largest contour is " + largest_contour + ".... area: " + maxArea);
         List<MatOfPoint> largest_contours = new ArrayList<MatOfPoint>();
         largest_contours.add(0, largest_contour);
         //convert the image to color
-        Imgproc.cvtColor(cannyImage, cannyImage, Imgproc.COLOR_BayerBG2RGB);
+        Imgproc.cvtColor(cannyImg, cannyImg, Imgproc.COLOR_BayerBG2RGB);
 
         double[] temp_double;
         temp_double = approxCurve.get(0,0);
@@ -139,32 +155,33 @@ public class ReceiptScanner {
         Point p4 = new Point(temp_double[0], temp_double[1]);
         List<Point> source = new ArrayList<Point>();
 
-        //circle(sourceImage,p1,100,new Scalar(255,255,255), 20, 8, 0);
-        //circle(sourceImage,p2,100,new Scalar(255,0,0), 20, 8, 0);
-        //circle(sourceImage,p3,100,new Scalar(0,0,255), 20, 8, 0);
-        //circle(sourceImage,p4,100,new Scalar(0,255,0), 20, 8, 0);
+        circle(cannyImg,p1,100,new Scalar(255,255,255), 20, 8, 0);
+        circle(cannyImg,p2,100,new Scalar(255,0,0), 20, 8, 0);
+        circle(cannyImg,p3,100,new Scalar(0,0,255), 20, 8, 0);
+        circle(cannyImg,p4,100,new Scalar(0,255,0), 20, 8, 0);
 
         source.add(p1);
         source.add(p2);
         source.add(p3);
         source.add(p4);
 
-
         int distp1p2=(int) Math.sqrt((p2.x-p1.x)*(p2.x-p1.x) + (p2.y-p1.y)*(p2.y-p1.y));
         int distp2p3=(int) Math.sqrt((p3.x-p2.x)*(p3.x-p2.x) + (p3.y-p2.y)*(p3.y-p2.y));
 
-        Mat startM = Converters.vector_Point2f_to_Mat(source);
-        Mat result=extract(sourceImage,startM, distp1p2, distp2p3);
 
-        //Imgcodecs.imwrite("/storage/emulated/0/Android/data/com.finalyearproject.dan.ocraccountingapp/files/Pictures/TesseractSample/imgs/ocr"+ "_circled_points.jpg", sourceImage);
+        Mat startM = Converters.vector_Point2f_to_Mat(source);
+        Mat result=extract(srcImg, startM, distp1p2, distp2p3);
+        //Imgcodecs.imwrite(pathname + "_circled_points.jpg", cannyImg);
 
         if(p2.x > p1.x){
             Core.flip(result, result,1);
         }
 
-        Imgcodecs.imwrite("/storage/emulated/0/Android/data/com.finalyearproject.dan.ocraccountingapp/files/Pictures/TesseractSample/imgs/ocr" + "_receiptimage.jpg", result);
+        //Imgcodecs.imwrite(pathname + "_outputtest.jpg", result);
         return result;
     }
+
+
 
     private Mat extract(Mat inputMat, Mat startM, int height, int width) {
 
@@ -189,6 +206,8 @@ public class ReceiptScanner {
                 new Size(width, height),
                 Imgproc.INTER_CUBIC);
 
+        System.out.println("image width: " + outputMat.size().width);
+        System.out.println("image height: " + outputMat.size().height);
         if(outputMat.size().width > outputMat.size().height){
             Core.transpose(outputMat, outputMat);
             Core.flip(outputMat, outputMat, 1);
@@ -198,11 +217,6 @@ public class ReceiptScanner {
     }
 
 
-
-
-
-
-
     private Mat imageClean(Mat srcImage){
         //convert to grey
         Imgproc.cvtColor(srcImage, srcImage, Imgproc.COLOR_BGR2GRAY);
@@ -210,6 +224,9 @@ public class ReceiptScanner {
         Photo.fastNlMeansDenoising(srcImage, srcImage);
         //apply adaptive threshold
         Imgproc.adaptiveThreshold(srcImage,srcImage, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, 55, 2);
+        //Photo.fastNlMeansDenoising(srcImage, srcImage);
+
+        //Imgcodecs.imwrite(pathname + "_output_greyscale.jpg", srcImage);
 
         Imgproc.cvtColor(srcImage, srcImage, Imgproc.COLOR_BayerBG2RGB);
 
@@ -223,7 +240,6 @@ public class ReceiptScanner {
         Mat rgbImg = new Mat();
 
 
-        // resize image to 40% of original size
         Size sz = new Size((srcImage.width() * 40) / 100, (srcImage.height() * 40) / 100);
         Imgproc.resize(srcImage, rgbImg, sz);
 
@@ -233,8 +249,6 @@ public class ReceiptScanner {
         Imgproc.cvtColor(rgbImg, small, Imgproc.COLOR_RGB2GRAY);
 
         Mat grad = new Mat();
-
-        //Imgcodecs.imwrite(pathname + "_check0.jpg", grad);
 
         Mat morphKernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(3,3));
 
@@ -251,33 +265,20 @@ public class ReceiptScanner {
         Mat connected = new Mat();
 
         //Imgcodecs.imwrite(pathname + "_check1_1.jpg", bw);
-/*
+
         morphKernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(13,1));
 
         Imgproc.morphologyEx(bw, connected, Imgproc.MORPH_CLOSE  , morphKernel);
 
-        Imgcodecs.imwrite(pathname + "_check2.jpg", connected);
-
-/*
-        morphKernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(4,1));
-
-        Imgproc.morphologyEx(connected, connected, Imgproc.MORPH_OPEN  , morphKernel);
-
-        Imgcodecs.imwrite(pathname + "_check3.jpg", connected);
+        //Imgcodecs.imwrite(pathname + "_check2.jpg", connected);
 
 
-        morphKernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(10,10));
-
-        Imgproc.morphologyEx(connected, connected, Imgproc.MORPH_CLOSE  , morphKernel);
-
-        Imgcodecs.imwrite(pathname + "_check4.jpg", connected);
-
-        morphKernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(10,1));
+        morphKernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(7,1));
 
         Imgproc.morphologyEx(connected, connected, Imgproc.MORPH_OPEN  , morphKernel);
 
-        Imgcodecs.imwrite(pathname + "_check5.jpg", connected);
-*/
+        //Imgcodecs.imwrite(pathname + "_check3.jpg", connected);
+
 
 
 
@@ -285,7 +286,7 @@ public class ReceiptScanner {
 
 
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-        Imgproc.findContours(bw, contours, new Mat(), Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE, new Point(0, 0));
+        Imgproc.findContours(connected, contours, new Mat(), Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE, new Point(0, 0));
 
         Mat mask = Mat.zeros(bw.size(), CvType.CV_8UC1);
         for(int idx = 0; idx < contours.size(); idx++) {
@@ -296,11 +297,11 @@ public class ReceiptScanner {
 
             Imgproc.drawContours(mask, contours, idx, new Scalar(255, 255, 255), Core.FILLED);
 
-            double r = (double) Core.countNonZero(maskROI)/(rect.width*rect.height);
+            double r = (double)Core.countNonZero(maskROI)/(rect.width*rect.height);
 
-            if (r > .10 && (rect.height > 10 && rect.width > 5) && rect.height < 65 && rect.width < 80) {
+            if (r > .45 && (rect.height > 10 && rect.width > 10)) {
                 rectangle(rgbImg, rect.br() , new Point( rect.br().x-rect.width ,rect.br().y-rect.height),  new Scalar(0, 255, 0));
-                rectangle(mask2, rect.br() , new Point( rect.br().x-rect.width ,rect.br().y-rect.height),  new Scalar(255, 255, 255), Core.FILLED);
+                rectangle(mask2, rect.br() , new Point( rect.br().x-rect.width ,rect.br().y-rect.height),  new Scalar(255, 255, 255),Core.FILLED);
             }
         }
 
@@ -313,14 +314,25 @@ public class ReceiptScanner {
 
         srcImage.copyTo(imageROI, mask2);
 
+        // convert to greyscale
+        Imgproc.cvtColor(imageROI, imageROI, Imgproc.COLOR_RGB2GRAY);
+
+        //resize image to x2 the size of original image
+        Size size2 = new Size((imageROI.width() * 2.5), (imageROI.height() * 2.5));
+
+        Mat imageROI2 = new Mat(srcImage.size(), CV_8UC3);
+        Imgproc.resize(imageROI, imageROI2, size2);
 
         //Imgcodecs.imwrite(pathname + "_check6.jpg", rgbImg);
         //Imgcodecs.imwrite(pathname + "_ROI.jpg", imageROI);
         //Imgcodecs.imwrite(pathname + "_MASK2.jpg", mask2);
         //Imgcodecs.imwrite(pathname + "_MASK.jpg", mask);
 
-        return imageROI;
+        return imageROI2;
     }
 
 
 }
+
+
+

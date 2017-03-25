@@ -5,7 +5,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +14,7 @@ import com.finalyearproject.dan.ocraccountingapp.R;
 import com.finalyearproject.dan.ocraccountingapp.camera.controller.CameraController;
 import com.finalyearproject.dan.ocraccountingapp.camera.manager.CameraManager;
 import com.finalyearproject.dan.ocraccountingapp.camera.ui.view.AspectFrameLayout;
-import com.finalyearproject.dan.ocraccountingapp.camera.utils.Size;
+import com.finalyearproject.dan.ocraccountingapp.util.Size;
 
 abstract public class CameraActivity extends Activity
         implements CameraManager.Rotation, CameraManager.CameraView, SensorEventListener {
@@ -40,10 +39,8 @@ abstract public class CameraActivity extends Activity
         deviceDefaultOrientation = 0x111;
 
         View decorView = getWindow().getDecorView();
-        if (Build.VERSION.SDK_INT > 15) {
-            int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
-            decorView.setSystemUiVisibility(uiOptions);
-        }
+        int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
 
         setContentView(R.layout.camera_generic_camera_layout);
 
@@ -54,9 +51,7 @@ abstract public class CameraActivity extends Activity
         setUserContent();
     }
 
-    protected void onProcessBundle(Bundle savedInstanceState) {
-
-    }
+    protected void onProcessBundle(Bundle savedInstanceState) {}
 
     @Override
     protected void onResume() {
@@ -140,9 +135,7 @@ abstract public class CameraActivity extends Activity
     }
 
     @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 
     @Override
     public final int getSensorPosition() {

@@ -179,9 +179,9 @@ public class DisplayResultsFragment extends Fragment {
                                     final ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, view, menuInfo);
 
+        menu.add(0, R.id.nosql_context_menu_entry_view_image, 0, R.string.nosql_context_menu_entry_view_item_text);
         menu.add(0, R.id.nosql_context_menu_entry_update, 0, R.string.nosql_context_menu_entry_update_item_text);
         menu.add(0, R.id.nosql_context_menu_entry_delete, 0, R.string.nosql_context_menu_entry_delete_item_text);
-        menu.add(0, R.id.nosql_context_menu_entry_view_image, 0, R.string.nosql_context_menu_entry_view_item_text);
 
         menu.setHeaderTitle(R.string.nosql_context_menu_title_for_results_text);
     }

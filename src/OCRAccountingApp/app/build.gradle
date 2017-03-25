@@ -28,8 +28,10 @@ dependencies {
 
     compile 'com.afollestad:material-camera:0.4.4'
 
-    //tessert dependency 
-    compile 'com.rmtheis:tess-two:6.0.4'
+    compile 'com.github.aakira:expandable-layout:1.4.2@aar'
+
+    //tessert dependency
+    compile 'com.rmtheis:tess-two:6.2.0'
     compile 'com.android.support:appcompat-v7:24.1.1'
     compile 'com.android.support:design:24.2.1'
     compile 'com.android.support:support-v4:24.1.0'

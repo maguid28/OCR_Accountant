@@ -14,6 +14,8 @@ public class ReceiptDataDO {
     private String _filepath;
     private String _total;
     private String _formattedDate;
+    private String _friendlyName;
+    private String _category;
 
 
     @DynamoDBHashKey(attributeName = "userId")
@@ -65,6 +67,25 @@ public class ReceiptDataDO {
 
     public void setFormattedDate(final String _formattedDate) {
         this._formattedDate = _formattedDate;
+    }
+
+    @DynamoDBAttribute(attributeName = "friendlyName")
+    public String getFriendlyName() {
+        return _friendlyName;
+    }
+
+    public void setFriendlyName(final String _friendlyName) {
+        this._friendlyName = _friendlyName;
+    }
+
+
+    @DynamoDBAttribute(attributeName = "category")
+    public String getCategory() {
+        return _category;
+    }
+
+    public void setCategory(final String _category) {
+        this._category = _category;
     }
 
 }

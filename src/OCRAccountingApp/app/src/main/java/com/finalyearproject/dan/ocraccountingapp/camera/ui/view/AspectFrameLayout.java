@@ -44,9 +44,7 @@ public class AspectFrameLayout extends FrameLayout {
             double viewAspectRatio = (double) initialWidth / initialHeight;
             double aspectDifference = targetAspectRatio / viewAspectRatio - 1;
 
-            if (Math.abs(aspectDifference) < 0.01) {
-                //no changes
-            } else {
+            if (Math.abs(aspectDifference) >= 0.01) {
                 if (aspectDifference > 0) {
                     initialHeight = (int) (initialWidth / targetAspectRatio);
                 } else {

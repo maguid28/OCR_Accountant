@@ -5,9 +5,12 @@
     <color name="primary_darker">#25A68A</color>
     <color name="colorAccent">#FFFFFF</color>
 
+    <color name="colorPrimaryLight">#4dc7ab</color>
+
     <color name="veryLightGreen">#BFEAE1</color>
 
     <color name="dark_content_text">#333333</color>
     <color name="iron">#CCCCCC</color>
     <color name="white">#FFFFFF</color>
+
 </resources>

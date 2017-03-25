@@ -30,9 +30,9 @@ import android.view.TextureView;
 import android.view.WindowManager;
 
 import com.finalyearproject.dan.ocraccountingapp.camera.ui.BaseActivity;
-import com.finalyearproject.dan.ocraccountingapp.camera.utils.CameraHelper;
-import com.finalyearproject.dan.ocraccountingapp.camera.utils.ImageSaver;
-import com.finalyearproject.dan.ocraccountingapp.camera.utils.Size;
+import com.finalyearproject.dan.ocraccountingapp.util.CameraHelper;
+import com.finalyearproject.dan.ocraccountingapp.util.ImageSaver;
+import com.finalyearproject.dan.ocraccountingapp.util.Size;
 
 import java.io.File;
 import java.lang.annotation.Retention;

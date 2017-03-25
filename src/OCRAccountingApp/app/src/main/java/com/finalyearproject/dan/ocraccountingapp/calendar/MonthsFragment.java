@@ -1,6 +1,8 @@
 package com.finalyearproject.dan.ocraccountingapp.calendar;
 
 import android.app.AlertDialog;
+import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -9,7 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.finalyearproject.dan.ocraccountingapp.R;
 import com.finalyearproject.dan.ocraccountingapp.amazon.util.ThreadUtils;
@@ -54,6 +58,14 @@ public class MonthsFragment extends Fragment {
 
         // The list view containing the months of the year
         final ListView monthListView = (ListView) view.findViewById(R.id.month_listview);
+
+
+        String[] months = getResources().getStringArray(R.array.months);
+        MyColoringAdapter adapter = new MyColoringAdapter(getContext(),months);
+        monthListView.setAdapter(adapter);
+
+
+
         monthListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -91,6 +103,31 @@ public class MonthsFragment extends Fragment {
         });
 
         return view;
+    }
+
+
+    private class MyColoringAdapter extends ArrayAdapter<String> {
+        private final Context context;
+        private final String[] values;
+
+        public MyColoringAdapter(Context context, String[] values) {
+            super(context, R.layout.month_list_item, values);
+            this.context = context;
+            this.values = values;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            LayoutInflater inflater = (LayoutInflater) context
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View rowView = inflater.inflate(R.layout.month_list_item, parent, false);
+            TextView textView = (TextView) rowView.findViewById(R.id.list_textview);
+            // Set text
+            textView.setText(values[position]);
+
+            textView.setTextColor(Color.WHITE);
+            return rowView;
+        }
     }
 
 

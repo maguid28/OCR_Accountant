@@ -15,4 +15,16 @@
         <item >December</item>
     </string-array>
 
+
+    <string-array name="expense_catagories">
+        <item >Food</item>
+        <item >Utilities</item>
+        <item >Transport</item>
+        <item >Clothing</item>
+        <item >Recreation</item>
+        <item >Health</item>
+        <item >Personal</item>
+        <item >Other</item>
+    </string-array>
+
 </resources>

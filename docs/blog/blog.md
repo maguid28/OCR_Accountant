@@ -360,3 +360,83 @@ The image below is a screenshot of the current updated view.
 I have added a custom camera to the application which forces the flash on to allow clearer captures and more accurate processing of the receipt as it makes it much easier to differentiate the receipt image from the background. The camera also has an preview activity that allows the user to process the image within the activity and allows the user to easily recapture the images if it does not process correctly.
 The camera manager also decides which version of the android camera API to use depending on the OS of the device. Older devices will need to use the deprecated Camera API, but newer devices will be able to take advantage of the newer Camera2 API.
 ![Image capture process ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/image_capture_process.jpg)
+
+## Blog entry 17 - OCR
+I have now moved on to OCR side of the application now. I am currently performing tests to improve the accuracy of read text.
+The image I will be performing these tests on is below. Once I get high accuracy results with this image I will test others and show results.
+![OCR Test image ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/ocr_test_receipt.jpg)
+
+At the moment tesseract is generating the following from the image.
+DEFAULT:
+width of image: 1976
+height of image: 3076
+
+									 Tower Records
+                   40-42 Lower 0A00nnel St
+                   Dublin
+                   RepubTic Of Ireland
+                   IEI 0035318786680
+                   EmpTuyee ID 222
+                   Order ID 3431966
+                   TiTT Number 207 H
+                   TOWER RECORDS DAWSON STREET LT
+                   PLEASE NOTE AS PER TOCS LOYALTY CARDS
+                   ARE NOT VALID FIR STAMPS OR REDEMPTION
+                   FOR THE MONTH O DECEMBER
+                   FOLLOW US ON TWITTER OTOWERDUBLIN
+                   10/03/2017 15318
+                   DOCTOR STRANGET BR €19.99
+                   Tota 1 a 1 9 99
+                   CLugtomeLViBmem
+                   Dash €20,00
+
+Tesseracts accuracy drops dramatically on images with pixel densities of lower than 300dpi. So the first test was to scale it up x2 the size of the original image and see if this improves accuracy.
+
+Resized to x2 size of original image
+width of p-image: 3618
+height of p-image: 5486
+
+```java
+Size size2 = new Size((imageROI.width() * 2), (imageROI.height() * 2));  Mat imageROI2 = new Mat(srcImage.size(), CV_8UC3); Imgproc.resize(imageROI, imageROI2, size2);
+```
+
+The result is:
+									   Tower Records
+                     40-42 Lower OTConnel St
+                     Dublin
+                     RepubTic Of Ireland
+                     TeT 0035318786680
+                     Employee ID 222
+                     Order ID 3431966
+                     Till Number 207
+                     TONER RECORDS DAWSON STREET V
+                     PLEASE NOTE AS PER T&CS LOYALTY CARDS
+                     ARE NOT VALID FOR STAMPS 0R REDEMPTION
+                     FOR THE MONTH OF DECEMBER
+                     FOLLOW US ON TWITTER OTDNERDUBLIN
+                     10/03/2011L15048
+                     DOCTOR STRANGEIV BR €19.99
+                     Tota1 &€19.99
+                     EDEIQEQCEPEYDEDI
+                     Cash €20.00
+
+There has been some improvement.
+I have further increased the image size to x2.5 original size, and x3 of the original with little or no improvement in the text recognition accuracy, with larger images also slowing down the OCR task significantly. I've decided to settle on an a scaled image size of x2 original size.
+I have followed the guidelines on the official GitHub page on improving image quality which mentions the following steps to improve Tesseracts accuracy:
+
+Rescaling the image: I have performed this by scaling the image by x2, mentioned above.
+
+Binarisation: I have converted the image to black and white and performed adaptive gaussian c threshold to the image to balance out the darker and brighter areas of the image.
+
+Noise Removal: I have performed image denoising using a Non-local Means Denoising algorithm located in the opencv library.
+```java
+Photo.fastNlMeansDenoising(srcImage, dstImage);
+```
+
+Rotate and Deskew: I have rotated and deskewed the image by locating the four corners of the receipt in the image and rotating accordingly.
+
+Border Removal: This step is present in Tesseracts document as it mentions that "Scanned pages often have dark borders around them. These can be erroneously picked up as extra characters, especially if they vary in shape and gradation". My issue went slightly further than just borders as receipts may have creases or marks on them that may show up as unwanted artifacts in the processed receipt image.
+I have tackled this issue by identifying areas of text while removing all other areas that were not identified as text(See Blog entry #7).
+
+
+My next step is to train Tesseract to better identify receipt text as the sample english trained data on Tesseracts official GitHub page is tailored for sentences with full blocks of text.

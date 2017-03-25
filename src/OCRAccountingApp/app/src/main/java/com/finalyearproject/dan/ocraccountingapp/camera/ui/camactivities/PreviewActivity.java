@@ -1,5 +1,6 @@
 package com.finalyearproject.dan.ocraccountingapp.camera.ui.camactivities;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -9,6 +10,7 @@ import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,10 +21,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.MediaController;
 
+import com.finalyearproject.dan.ocraccountingapp.OCR;
 import com.finalyearproject.dan.ocraccountingapp.R;
-import com.finalyearproject.dan.ocraccountingapp.camera.ReceiptScanner;
+import com.finalyearproject.dan.ocraccountingapp.RECSCANNER_UPDATE;
 import com.finalyearproject.dan.ocraccountingapp.camera.ui.BaseActivity;
-import com.finalyearproject.dan.ocraccountingapp.camera.utils.Utils;
+import com.finalyearproject.dan.ocraccountingapp.ReceiptEditActivity;
 import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.view.UCropView;
 
@@ -35,14 +38,18 @@ import org.opencv.imgcodecs.Imgcodecs;
 import java.io.File;
 import java.io.IOException;
 
+import static com.finalyearproject.dan.ocraccountingapp.util.Orientation.exifToDegrees;
+
 public class PreviewActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private final static String MEDIA_ACTION_ARG = "media_action_arg";
-    private final static String FILE_PATH_ARG = "file_path_arg";
-    private final static String RESPONSE_CODE_ARG = "response_code_arg";
-    private final static String MIME_TYPE_IMAGE = "image";
+    private final static String FILE_PATH = "file_path_arg";
+    private final static String RESPONSE_CODE = "response_code_arg";
+    private final static String OCR_TEXT = "ocr_text_arg";
+
+
 
     private String previewFilePath;
+    private String displayFilePath;
     private UCropView imagePreview;
     private ViewGroup preprocessPanel;
     private ViewGroup postprocessPanel;
@@ -51,26 +58,26 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
     private MediaPlayer mediaPlayer;
 
     Bitmap imageBitmap;
+    Bitmap displayBitmap;
     Mat test2;
 
     public static Intent newIntent(Context context, int mediaAction,
                                    String filePath) {
 
         return new Intent(context, PreviewActivity.class)
-                .putExtra(MEDIA_ACTION_ARG, mediaAction)
-                .putExtra(FILE_PATH_ARG, filePath);
+                .putExtra(FILE_PATH, filePath);
     }
 
     public static boolean isResultConfirm(@NonNull Intent resultIntent) {
-        return BaseActivity.ACTION_CONFIRM == resultIntent.getIntExtra(RESPONSE_CODE_ARG, -1);
+        return BaseActivity.ACTION_CONFIRM == resultIntent.getIntExtra(RESPONSE_CODE, -1);
     }
 
     public static String getMediaFilePath(@NonNull Intent resultIntent) {
-        return resultIntent.getStringExtra(FILE_PATH_ARG);
+        return resultIntent.getStringExtra(FILE_PATH);
     }
 
     public static boolean isResultCancel(@NonNull Intent resultIntent) {
-        return BaseActivity.ACTION_CANCEL == resultIntent.getIntExtra(RESPONSE_CODE_ARG, -1);
+        return BaseActivity.ACTION_CANCEL == resultIntent.getIntExtra(RESPONSE_CODE, -1);
     }
 
 
@@ -82,6 +89,7 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.camera_activity_preview);
+
 
         imagePreview = (UCropView) findViewById(R.id.image_view);
         preprocessPanel = (ViewGroup) findViewById(R.id.pre_process_panel);
@@ -117,31 +125,11 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
 
         Bundle args = getIntent().getExtras();
 
-        int mediaAction = args.getInt(MEDIA_ACTION_ARG);
-        previewFilePath = args.getString(FILE_PATH_ARG);
+        previewFilePath = args.getString(FILE_PATH);
 
-        int PHOTO_CODE = 101;
-        if (mediaAction == PHOTO_CODE) {
-            displayImage();
-        } else {
-            String mimeType = Utils.getMimeType(previewFilePath);
-            if (mimeType.contains(MIME_TYPE_IMAGE)) {
-                displayImage();
-            } else finish();
-        }
-/*
-        if (!OpenCVLoader.initDebug()) {
-            Log.d("OpenCV", "Internal OpenCV library not found. Using OpenCV Manager for initialization");
-            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_1_0, this, mLoaderCallback);
-        } else {
-            Log.d("OpenCV", "OpenCV library found inside package. Using it!");
-            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
-        }
-        */
+        displayImage();
+
     }
-
-
-
 
 
 
@@ -202,35 +190,47 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
     public void onClick(View view) {
         Intent resultIntent = new Intent();
         if (view.getId() == R.id.confirm_media_result) {
-            resultIntent.putExtra(RESPONSE_CODE_ARG, BaseActivity.ACTION_CONFIRM);
-            resultIntent.putExtra(FILE_PATH_ARG, previewFilePath);
-            setResult(RESULT_OK, resultIntent);
+
+
+            OCR ocr = new OCR();
+            // get the text from the image and store it in ocrText
+            String ocrText = ocr.OCRImage(previewFilePath, this);
+
+            Log.e("filepath is ...", previewFilePath);
+
+            Intent i;
+            i = new Intent(this, ReceiptEditActivity.class);
+            i.putExtra(FILE_PATH, previewFilePath);
+            i.putExtra(OCR_TEXT, ocrText);
+            //Start receipt edit activity
+            this.startActivityForResult(i, 111);
             finish();
+
         } else if (view.getId() == R.id.re_take_media) {
             deleteMediaFile();
-            resultIntent.putExtra(RESPONSE_CODE_ARG, BaseActivity.ACTION_RETAKE);
+            resultIntent.putExtra(RESPONSE_CODE, BaseActivity.ACTION_RETAKE);
             setResult(RESULT_OK, resultIntent);
             finish();
         }
         else if (view.getId() == R.id.re_take_media2) {
             deleteMediaFile();
-            resultIntent.putExtra(RESPONSE_CODE_ARG, BaseActivity.ACTION_RETAKE);
+            resultIntent.putExtra(RESPONSE_CODE, BaseActivity.ACTION_RETAKE);
             setResult(RESULT_OK, resultIntent);
             finish();
         } else if (view.getId() == R.id.cancel_media_action) {
             deleteMediaFile();
-            resultIntent.putExtra(RESPONSE_CODE_ARG, BaseActivity.ACTION_CANCEL);
+            resultIntent.putExtra(RESPONSE_CODE, BaseActivity.ACTION_CANCEL);
             setResult(RESULT_OK, resultIntent);
             finish();
         } else if (view.getId() == R.id.cancel_media_action2) {
             deleteMediaFile();
-            resultIntent.putExtra(RESPONSE_CODE_ARG, BaseActivity.ACTION_CANCEL);
+            resultIntent.putExtra(RESPONSE_CODE, BaseActivity.ACTION_CANCEL);
             setResult(RESULT_OK, resultIntent);
             finish();
         }
         else if (view.getId() == R.id.process_media) {
             processMediaFile();
-            //resultIntent.putExtra(RESPONSE_CODE_ARG, BaseActivity.ACTION_CANCEL);
+            //resultIntent.putExtra(RESPONSE_CODE, BaseActivity.ACTION_CANCEL);
         }
     }
 
@@ -245,6 +245,115 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
         return mediaFile.delete();
     }
 
+    private class ProcessImageTask extends AsyncTask<String, Void, String> {
+
+        ProgressDialog mProgressDialog;
+
+        public ProcessImageTask(PreviewActivity activity) {
+            mProgressDialog = new ProgressDialog(activity);
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            RECSCANNER_UPDATE rec = new RECSCANNER_UPDATE();
+            //Mat test = rec.correctReceipt(img_path);
+            //Imgcodecs.imwrite(img_path, test);
+
+            //test2 = rec.receiptPic(previewFilePath);
+            //Imgcodecs.imwrite(previewFilePath, test2);
+
+            //Mat test = rec.correctReceipt(img_path);
+            //Imgcodecs.imwrite(img_path, test);
+
+
+            // get the directory of the previewfilepath
+            // find the last occurence of '/'
+            int p=previewFilePath.lastIndexOf("/");
+            // e is the string value after the last occurence of '/'
+            String e=previewFilePath.substring(p+1);
+            // split the string at the value of e to remove the it from the string and get the dir path
+            String[] a = previewFilePath.split(e);
+            String dirPath = a[0];
+
+            System.out.println("previewfilepath " + previewFilePath);
+            System.out.println("dirpath " + dirPath);
+            displayFilePath = dirPath + "displayImage.jpg";
+
+            test2 = rec.correctReceipt(previewFilePath);
+            Imgcodecs.imwrite(previewFilePath, test2);
+
+            Imgcodecs.imwrite(displayFilePath, test2);
+            return "Executed";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            mProgressDialog.dismiss();
+            //turn off the image preview to allow for the processed image to be displayed
+            imagePreview.setVisibility(View.GONE);
+
+            ImageView processedImage = (ImageView) findViewById(R.id.processed_Image);
+
+            //Get the dimensions of the bitmap
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            bmOptions.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(previewFilePath, bmOptions);
+
+            int photoW = bmOptions.outWidth;
+            int photoH = bmOptions.outHeight;
+
+
+            //decode the image file into a bitmap sized to fill the view
+            bmOptions.inJustDecodeBounds = false;
+            bmOptions.inSampleSize = 4;
+
+            imageBitmap = BitmapFactory.decodeFile(previewFilePath, bmOptions);
+
+            try {
+                //Display image in the correct orientation
+                ExifInterface exif = new ExifInterface(previewFilePath);
+                int rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+                int rotationInDegrees = exifToDegrees(rotation);
+                Matrix matrix = new Matrix();
+                if (rotation != 0f) {matrix.preRotate(rotationInDegrees);}
+                imageBitmap = Bitmap.createBitmap(imageBitmap,0,0, imageBitmap.getWidth(),imageBitmap.getHeight(), matrix, true);
+
+            }catch(IOException ex){
+                Log.e("Failed to get Exif data", "ex");
+            }
+
+            imageBitmap = BitmapFactory.decodeFile(previewFilePath, bmOptions);
+
+
+
+            //displayBitmap
+
+
+            // set image view to the processed bitmap image
+            processedImage.setImageBitmap(imageBitmap);
+
+            Log.e("BITMAP WIDTH ", String.valueOf(imageBitmap.getWidth()));
+            Log.e("BITMAP HEIGHT ", String.valueOf(imageBitmap.getHeight()));
+
+            // Hide the preprocess panel
+            preprocessPanel.setVisibility(View.GONE);
+            // Bring the post process panel into view
+            postprocessPanel.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            // Set the progress dialog attributes
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            mProgressDialog.setMessage("Processing, please wait...");
+            mProgressDialog.show();
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {}
+    }
+
+
     private void processMediaFile() {
 
         Log.e("PROCESSING...", previewFilePath);
@@ -252,68 +361,12 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
         int width = imagePreview.getWidth();
         int height = imagePreview.getHeight();
 
-        Log.e("Height...", String.valueOf(height));
-        Log.e("Width...", String.valueOf(width));
+        Log.e("Height of preview...", String.valueOf(height));
+        Log.e("Width of preview", String.valueOf(width));
 
-        imagePreview.setVisibility(View.GONE);
-        ImageView mImageView = (ImageView) findViewById(R.id.processed_Image);
-        ReceiptScanner rec = new ReceiptScanner();
-        //Mat test = rec.correctReceipt(img_path);
-        //Imgcodecs.imwrite(img_path, test);
-
-        test2 = rec.receiptPic(previewFilePath);
-        Imgcodecs.imwrite(previewFilePath, test2);
-
-
-
-        //Get the dimensions of the bitmap
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(previewFilePath, bmOptions);
-
-        //determine how much to scale down the image
-        //int scalefactor = Math.min(photoW/targetW, photoH/targetH);
-
-        //decode the image file into a bitmap sized to fill the view
-        bmOptions.inJustDecodeBounds = false;
-        //bmOptions.inSampleSize = scalefactor;
-
-        imageBitmap = BitmapFactory.decodeFile(previewFilePath, bmOptions);
-
-        try {
-            //Display image in the correct orientation
-            ExifInterface exif = new ExifInterface(previewFilePath);
-            int rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-            int rotationInDegrees = exifToDegrees(rotation);
-            Matrix matrix = new Matrix();
-            if (rotation != 0f) {matrix.preRotate(rotationInDegrees);}
-            imageBitmap = Bitmap.createBitmap(imageBitmap,0,0, imageBitmap.getWidth(),imageBitmap.getHeight(), matrix, true);
-
-        }catch(IOException ex){
-            Log.e("Failed to get Exif data", "ex");
-        }
-
-        imageBitmap = BitmapFactory.decodeFile(previewFilePath, bmOptions);
-
-        // set image view to the processed bitmap image
-        mImageView.setImageBitmap(imageBitmap);
-
-        // Hide the preprocess panel
-        preprocessPanel.setVisibility(View.GONE);
-        // Bring the post process panel into view
-        postprocessPanel.setVisibility(View.VISIBLE);
+        ProcessImageTask processImageTask = new ProcessImageTask(this);
+        processImageTask.execute();
     }
-
-
-
-    private static int exifToDegrees(int exifOrientation) {
-        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) { return 90; }
-        else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {  return 180; }
-        else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {  return 270; }
-        return 0;
-    }
-
-
 
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {

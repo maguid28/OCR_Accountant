@@ -9,8 +9,8 @@ import android.view.SurfaceHolder;
 import com.finalyearproject.dan.ocraccountingapp.camera.manager.Camera1Manager;
 import com.finalyearproject.dan.ocraccountingapp.camera.manager.CameraManager;
 import com.finalyearproject.dan.ocraccountingapp.camera.ui.view.AutoFitSurfaceView;
-import com.finalyearproject.dan.ocraccountingapp.camera.utils.CameraHelper;
-import com.finalyearproject.dan.ocraccountingapp.camera.utils.Size;
+import com.finalyearproject.dan.ocraccountingapp.util.CameraHelper;
+import com.finalyearproject.dan.ocraccountingapp.util.Size;
 
 import java.io.File;
 
@@ -61,7 +61,7 @@ public class Camera2ControllerAPI24 implements CameraController,
 
     @Override
     public void takePhoto() {
-        outputFile = CameraHelper.getOutputMediaFile(cameraView.getActivity());
+        outputFile = CameraHelper.getOutputFile(cameraView.getActivity());
         camera2Manager.takePhoto(outputFile, this);
     }
 

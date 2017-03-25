@@ -2,6 +2,7 @@ package com.finalyearproject.dan.ocraccountingapp.nosql.nosql;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
@@ -64,7 +65,7 @@ public class NoSQLReceiptDataResult implements NoSQLResult {
     }
     private void setValueTextViewStyle(final TextView textView) {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        layoutParams.setMargins(dp(15), 0, dp(15), dp(2));
+        layoutParams.setMargins(dp(15), 0, dp(15), dp(20));
         textView.setLayoutParams(layoutParams);
     }
 
@@ -107,63 +108,84 @@ public class NoSQLReceiptDataResult implements NoSQLResult {
         final TextView filepathValueTextView;
         final TextView totalKeyTextView;
         final TextView totalValueTextView;
+        final TextView friendlyNameKeyTextView;
+        final TextView friendlyNameValueTextView;
+        final TextView categoryKeyTextView;
+        final TextView categoryValueTextView;
+
         if (convertView == null) {
             layout = new LinearLayout(context);
             layout.setOrientation(LinearLayout.VERTICAL);
             resultNumberTextView = new TextView(context);
             resultNumberTextView.setGravity(Gravity.CENTER_HORIZONTAL);
             layout.addView(resultNumberTextView);
+            resultNumberTextView.setTextColor(Color.WHITE);
 
-            recNameKeyTextView = new TextView(context);
-            recNameValueTextView = new TextView(context);
-            setKeyAndValueTextViewStyles(recNameKeyTextView, recNameValueTextView);
-            layout.addView(recNameKeyTextView);
-            layout.addView(recNameValueTextView);
+            friendlyNameKeyTextView = new TextView(context);
+            friendlyNameValueTextView = new TextView(context);
+            setKeyAndValueTextViewStyles(friendlyNameKeyTextView, friendlyNameValueTextView);
+            layout.addView(friendlyNameKeyTextView);
+            layout.addView(friendlyNameValueTextView);
+            friendlyNameKeyTextView.setTextColor(Color.parseColor("#BFEAE1"));
+            friendlyNameValueTextView.setTextSize(15);
+            friendlyNameValueTextView.setTextColor(Color.WHITE);
 
             dateKeyTextView = new TextView(context);
             dateValueTextView = new TextView(context);
             setKeyAndValueTextViewStyles(dateKeyTextView, dateValueTextView);
             layout.addView(dateKeyTextView);
             layout.addView(dateValueTextView);
+            dateKeyTextView.setTextColor(Color.parseColor("#BFEAE1"));
+            dateValueTextView.setTextSize(15);
+            dateValueTextView.setTextColor(Color.WHITE);
 
-            filepathKeyTextView = new TextView(context);
-            filepathValueTextView = new TextView(context);
-            setKeyAndValueTextViewStyles(filepathKeyTextView, filepathValueTextView);
-            layout.addView(filepathKeyTextView);
-            layout.addView(filepathValueTextView);
+            categoryKeyTextView = new TextView(context);
+            categoryValueTextView = new TextView(context);
+            setKeyAndValueTextViewStyles(categoryKeyTextView, categoryValueTextView);
+            layout.addView(categoryKeyTextView);
+            layout.addView(categoryValueTextView);
+            categoryKeyTextView.setTextColor(Color.parseColor("#BFEAE1"));
+            categoryValueTextView.setTextSize(15);
+            categoryValueTextView.setTextColor(Color.WHITE);
 
             totalKeyTextView = new TextView(context);
             totalValueTextView = new TextView(context);
             setKeyAndValueTextViewStyles(totalKeyTextView, totalValueTextView);
             layout.addView(totalKeyTextView);
             layout.addView(totalValueTextView);
+            totalKeyTextView.setTextColor(Color.parseColor("#BFEAE1"));
+            totalValueTextView.setTextSize(15);
+            totalValueTextView.setTextColor(Color.WHITE);
+
+
         } else {
             layout = (LinearLayout) convertView;
             resultNumberTextView = (TextView) layout.getChildAt(0);
 
-            recNameKeyTextView = (TextView) layout.getChildAt(1);
-            recNameValueTextView = (TextView) layout.getChildAt(2);
+            friendlyNameKeyTextView = (TextView) layout.getChildAt(1);
+            friendlyNameValueTextView = (TextView) layout.getChildAt(2);
 
             dateKeyTextView = (TextView) layout.getChildAt(3);
             dateValueTextView = (TextView) layout.getChildAt(4);
 
-            filepathKeyTextView = (TextView) layout.getChildAt(5);
-            filepathValueTextView = (TextView) layout.getChildAt(6);
+            categoryKeyTextView = (TextView) layout.getChildAt(5);
+            categoryValueTextView = (TextView) layout.getChildAt(6);
 
             totalKeyTextView = (TextView) layout.getChildAt(7);
             totalValueTextView = (TextView) layout.getChildAt(8);
 
+
         }
 
         resultNumberTextView.setText(String.format("#%d", + position+1));
-        recNameKeyTextView.setText("recName");
-        recNameValueTextView.setText(result.getRecName());
-        dateKeyTextView.setText("date");
+        dateKeyTextView.setText("Date");
         dateValueTextView.setText(result.getDate());
-        filepathKeyTextView.setText("filepath");
-        filepathValueTextView.setText(result.getFilepath());
-        totalKeyTextView.setText("total");
+        totalKeyTextView.setText("Total");
         totalValueTextView.setText(result.getTotal());
+        friendlyNameKeyTextView.setText("Receipt Name");
+        friendlyNameValueTextView.setText(result.getFriendlyName());
+        categoryKeyTextView.setText("Category");
+        categoryValueTextView.setText(result.getCategory());
         return layout;
     }
 }

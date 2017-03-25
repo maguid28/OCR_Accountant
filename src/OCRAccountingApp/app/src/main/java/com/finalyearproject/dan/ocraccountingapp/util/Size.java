@@ -1,4 +1,4 @@
-package com.finalyearproject.dan.ocraccountingapp.camera.utils;
+package com.finalyearproject.dan.ocraccountingapp.util;
 
 import android.annotation.TargetApi;
 import android.hardware.Camera;

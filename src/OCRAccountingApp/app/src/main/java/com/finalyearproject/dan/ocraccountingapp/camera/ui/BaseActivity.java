@@ -11,7 +11,7 @@ import com.finalyearproject.dan.ocraccountingapp.R;
 import com.finalyearproject.dan.ocraccountingapp.camera.ui.camactivities.PreviewActivity;
 import com.finalyearproject.dan.ocraccountingapp.camera.ui.view.CameraControlPanel;
 import com.finalyearproject.dan.ocraccountingapp.camera.ui.view.CaptureButton;
-import com.finalyearproject.dan.ocraccountingapp.camera.utils.Size;
+import com.finalyearproject.dan.ocraccountingapp.util.Size;
 
 
 public abstract class BaseActivity extends CameraActivity

@@ -11,7 +11,7 @@ import android.view.View;
 
 import com.finalyearproject.dan.ocraccountingapp.camera.ui.camactivities.Camera1Activity;
 import com.finalyearproject.dan.ocraccountingapp.camera.ui.camactivities.Camera2Activity;
-import com.finalyearproject.dan.ocraccountingapp.camera.utils.CameraHelper;
+import com.finalyearproject.dan.ocraccountingapp.util.CameraHelper;
 import com.finalyearproject.dan.ocraccountingapp.filebrowser.FileBrowserFragment;
 import com.finalyearproject.dan.ocraccountingapp.R;
 import com.finalyearproject.dan.ocraccountingapp.imageprocessing.ReceiptCaptureFragment;
@@ -21,6 +21,7 @@ import com.finalyearproject.dan.ocraccountingapp.statistics.StatisticsFragment;
 import com.finalyearproject.dan.ocraccountingapp.amazon.AWSMobileClient;
 import com.finalyearproject.dan.ocraccountingapp.amazon.user.IdentityManager;
 import com.finalyearproject.dan.ocraccountingapp.amazon.user.IdentityProvider;
+import com.finalyearproject.dan.ocraccountingapp.ReceiptEditActivity;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.itemanimators.AlphaCrossFadeAnimator;
 import com.mikepenz.materialdrawer.AccountHeader;
@@ -68,7 +69,6 @@ public class NavDrawerInstaller {
                         new PrimaryDrawerItem().withName("Receipt Capture").withIcon(R.drawable.nav_receipt_icon).withIdentifier(2),
                         new PrimaryDrawerItem().withName("Statistics").withIcon(R.drawable.nav_statistics_icon).withIdentifier(3),
                         new PrimaryDrawerItem().withName("File Browser").withIcon(R.drawable.nav_receipt_icon).withIdentifier(5),
-                        new PrimaryDrawerItem().withName("Capture").withIcon(R.drawable.nav_receipt_icon).withIdentifier(7),
                         new SectionDrawerItem().withName("Account"),
                         new SecondaryDrawerItem().withName("Settings").withIcon(FontAwesome.Icon.faw_cog),
                         new SecondaryDrawerItem().withName("Log Out").withIcon(R.drawable.nav_logout_icon).withIdentifier(6)
@@ -93,12 +93,15 @@ public class NavDrawerInstaller {
                                 //intent = new Intent(activity, VPFragment.class);
                             }
                             if (drawerItem.getIdentifier() == 2) {
-                                Fragment fragment = new ReceiptCaptureFragment();
-                                FragmentManager manager = activity.getSupportFragmentManager();
-                                FragmentTransaction transaction = manager.beginTransaction();
-                                transaction.replace(R.id.main_fragment_container, fragment);
-                                transaction.commit();
-                                //intent = new Intent(activity, ReceiptCaptureActivity.class);
+                                Intent cameraIntent;
+                                if (CameraHelper.hasCamera2(activity)) {
+                                    cameraIntent = new Intent(activity, Camera2Activity.class);
+                                } else {
+                                    cameraIntent = new Intent(activity, Camera1Activity.class);
+                                }
+
+                                //Intent cameraIntent = new Intent(activity, Camera1Activity.class);
+                                activity.startActivityForResult(cameraIntent, 111);
                             }
                             if (drawerItem.getIdentifier() == 3) {
                                 Fragment fragment = new StatisticsFragment();
@@ -130,17 +133,6 @@ public class NavDrawerInstaller {
                                 identityManager.signOut();
                                 activity.startActivity(new Intent(activity, SignInActivity.class));
                                 activity.finish();
-                            }
-                            if (drawerItem.getIdentifier() == 7) {
-                                Intent cameraIntent;
-                                if (CameraHelper.hasCamera2(activity)) {
-                                    cameraIntent = new Intent(activity, Camera2Activity.class);
-                                } else {
-                                    cameraIntent = new Intent(activity, Camera1Activity.class);
-                                }
-
-                                //Intent cameraIntent = new Intent(activity, Camera1Activity.class);
-                                activity.startActivityForResult(cameraIntent, 111);
                             }
                             if (intent != null) {
                                 activity.startActivity(intent);
