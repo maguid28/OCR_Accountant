@@ -430,16 +430,20 @@ I have followed the guidelines on the official GitHub page on improving image qu
 
 Rescaling the image: I have performed this by scaling the image by x2, mentioned above.
 
-Binarisation: I have converted the image to black and white and performed adaptive gaussian c threshold to the image to balance out the darker and brighter areas of the image.
+### Binarisation:
+I have converted the image to black and white and performed adaptive gaussian c threshold to the image to balance out the darker and brighter areas of the image.
 
-Noise Removal: I have performed image denoising using a Non-local Means Denoising algorithm located in the opencv library.
+### Noise Removal:
+I have performed image denoising using a Non-local Means Denoising algorithm located in the opencv library.
 ```java
 Photo.fastNlMeansDenoising(srcImage, dstImage);
 ```
 
-Rotate and Deskew: I have rotated and deskewed the image by locating the four corners of the receipt in the image and rotating accordingly.
+## Rotate and Deskew:
+I have rotated and deskewed the image by locating the four corners of the receipt in the image and rotating accordingly.
 
-Border Removal: This step is present in Tesseracts document as it mentions that "Scanned pages often have dark borders around them. These can be erroneously picked up as extra characters, especially if they vary in shape and gradation". My issue went slightly further than just borders as receipts may have creases or marks on them that may show up as unwanted artifacts in the processed receipt image.
+## Border Removal:
+This step is present in Tesseracts document as it mentions that "Scanned pages often have dark borders around them. These can be erroneously picked up as extra characters, especially if they vary in shape and gradation". My issue went slightly further than just borders as receipts may have creases or marks on them that may show up as unwanted artifacts in the processed receipt image.
 I have tackled this issue by identifying areas of text while removing all other areas that were not identified as text(See Blog entry #7).
 
 
