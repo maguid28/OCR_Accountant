@@ -450,3 +450,57 @@ I have tackled this issue by identifying areas of text while removing all other 
 
 ## Blog entry 18 - OCR 2: Training Tesseract
 My next step is to train Tesseract to better identify receipt text as the sample english trained data on Tesseracts official GitHub page is tailored for sentences with full blocks of text.
+
+The first step that I performed to train tesseract to more accurately recognize receipt text was to capture numerous receipts and clean them which I used my image processing algorithm in my application to accomplish.
+
+I then used Adobe PhotoShop to clean any artifacts or noise still present in the image. Once there was only text left in the image I then extracted the text and put it all on one line. This step was necessary due to line height issues that are thrown later in the process if this step is not completed.
+Here is a snippet of the final image.
+![png snippet ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/eng.rec.exp0.png)
+
+I did this for a total of 7 different receipts and ended up with 17 processed files, I had to split the files up as file sizes got too large and caused issues when running the tesseract training tools. Tiff format was recommended for these files but caused errors when I used it so instead I used png format which resulted in clearer images and no errors.
+
+The next step was to create box files for each of the png files I had created. I did this by running:
+
+```
+tesseract eng.rec.expX.png eng.rec.expX batch.nochop makebox
+```
+where I replaced the 'X' with its respective number between 0-16. These box files contain a line for each character in the image in the format
+
+P 228 22 243 57 0
+
+Where the leftmost character is the character that tesseract assumes the character is  with the rest of the digits being coordinates on the image along with box heights and widths. I used a java program call jTessBoxEditor to correct any of the mistakes that were made by Tesseract. I then saved and proceeded to do this for all 17 files.
+
+The next step was to create training files for each of the image-box pairs.
+I performed this by running:
+
+```
+tesseract eng.rec.expX.png eng.rec.expX box.train
+```
+Once this was completed for all image files I had to generate the unicharset file from the box files:
+
+```
+unicharset_extractor eng.rec.exp0.box eng.rec.exp1.box eng.rec.exp2.box eng.rec.exp3.box eng.rec.exp4.box eng.rec.exp5.box eng.rec.exp6.box eng.rec.exp7.box eng.rec.exp8.box eng.rec.exp9.box eng.rec.exp10.box eng.rec.exp11.box eng.rec.exp12.box eng.rec.exp13.box eng.rec.exp14.box eng.rec.exp15.box eng.rec.exp16.box
+```
+and create the font properties file.
+
+The next step is to perform shape clustering but from research I have performed shapeclustering is not always beneficial for languages other than Indic languages. But as I am not performing standard OCR on blocks of text I will test shape clustering to see the outcome:
+
+```
+shapeclustering -F eng.font_properties -U output_unicharset  eng.rec.exp0.tr eng.rec.exp1.tr eng.rec.exp2.tr eng.rec.exp3.tr eng.rec.exp4.tr eng.rec.exp5.tr eng.rec.exp6.tr eng.rec.exp7.tr eng.rec.exp8.tr eng.rec.exp9.tr eng.rec.exp10.tr eng.rec.exp11.tr eng.rec.exp12.tr eng.rec.exp13.tr eng.rec.exp14.tr eng.rec.exp15.tr eng.rec.exp16.tr
+
+```
+
+My final step is to run mftraining which generates the shape prototypes file, shapetable, and pffmtable which is the number of expected features for each character and cntraining which generates the character normalization sensitivity prototypes by running:
+
+```
+mftraining -F eng.font_properties -U output_unicharset  eng.rec.exp0.tr eng.rec.exp1.tr eng.rec.exp2.tr eng.rec.exp3.tr eng.rec.exp4.tr eng.rec.exp5.tr eng.rec.exp6.tr eng.rec.exp7.tr eng.rec.exp8.tr eng.rec.exp9.tr eng.rec.exp10.tr eng.rec.exp11.tr eng.rec.exp12.tr eng.rec.exp13.tr eng.rec.exp14.tr eng.rec.exp15.tr eng.rec.exp16.tr
+
+cntraining -F eng.font_properties -U output_unicharset  eng.rec.exp0.tr eng.rec.exp1.tr eng.rec.exp2.tr eng.rec.exp3.tr eng.rec.exp4.tr eng.rec.exp5.tr eng.rec.exp6.tr eng.rec.exp7.tr eng.rec.exp8.tr eng.rec.exp9.tr eng.rec.exp10.tr eng.rec.exp11.tr eng.rec.exp12.tr eng.rec.exp13.tr eng.rec.exp14.tr eng.rec.exp15.tr eng.rec.exp16.tr
+
+```
+
+I then compile the data down into the trained data file ready for use in my application by running:
+
+```
+combine_tessdata eng.
+```

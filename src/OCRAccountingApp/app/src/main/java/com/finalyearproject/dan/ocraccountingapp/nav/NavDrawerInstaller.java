@@ -94,14 +94,12 @@ public class NavDrawerInstaller {
                             }
                             if (drawerItem.getIdentifier() == 2) {
                                 Intent cameraIntent;
-                                if (CameraHelper.hasCamera2(activity)) {
-                                    cameraIntent = new Intent(activity, Camera2Activity.class);
-                                } else {
+
                                     cameraIntent = new Intent(activity, Camera1Activity.class);
-                                }
+
 
                                 //Intent cameraIntent = new Intent(activity, Camera1Activity.class);
-                                activity.startActivityForResult(cameraIntent, 111);
+                                activity.startActivity(cameraIntent);
                             }
                             if (drawerItem.getIdentifier() == 3) {
                                 Fragment fragment = new StatisticsFragment();
