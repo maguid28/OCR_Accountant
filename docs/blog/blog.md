@@ -484,7 +484,7 @@ unicharset_extractor eng.rec.exp0.box eng.rec.exp1.box eng.rec.exp2.box eng.rec.
 ```
 and create the font properties file.
 
-The next step is to perform shape clustering but from research I have performed shapeclustering is not always beneficial for languages other than Indic languages. But as I am not performing standard OCR on blocks of text I will test shape clustering to see the outcome:
+The next step is to perform shape clustering but from research I have performed shape clustering is not always beneficial for languages other than Indic languages. But as I am not performing standard OCR on blocks of text I will test shape clustering to see the outcome:
 
 ```
 shapeclustering -F eng.font_properties -U output_unicharset  eng.rec.exp0.tr eng.rec.exp1.tr eng.rec.exp2.tr eng.rec.exp3.tr eng.rec.exp4.tr eng.rec.exp5.tr eng.rec.exp6.tr eng.rec.exp7.tr eng.rec.exp8.tr eng.rec.exp9.tr eng.rec.exp10.tr eng.rec.exp11.tr eng.rec.exp12.tr eng.rec.exp13.tr eng.rec.exp14.tr eng.rec.exp15.tr eng.rec.exp16.tr
@@ -510,8 +510,32 @@ combine_tessdata eng.
 
 Below are the ocr results of both my trained data files on the same image, Shape clustering is applied on the right result, while the same process but without the shape clustering step is applied in the left result.
 
+#### Case 1
 ![comparing training results 1 ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/clusteringVSnoclustering1.jpg)
 
+#### Case 2
 ![comparing training results 2 ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/clusteringVSnoclustering2.jpg)
 
+#### Case 3
 ![comparing training results 3 ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/clusteringVSnoclustering3.jpg)
+
+There does not seem to be much difference and both balance each other out with errors in different areas.
+To stick by the documentation I will not apply shape clustering to my training data.
+
+
+## Blog entry 20 - Word correction
+My next step to improve read accuracy is to apply a word correction algorithm to correct misinterpreted words e.g. Tota1 or lotal will be autocorrected to total.
+
+The method I used for this step is a modification of the Spell checker program GitHub user shyam057cs has built. It is licensed under General Public License version 3.
+Here is the link to the spell checker: https://github.com/shyam057cs/Spell-Checker
+
+I have played around with both versions of his Spell-Checker and found his hash table implementation works for my case much more accurately than his bloomfilter implementation.
+
+Originally, the program takes a text file as input reads it and prints out suggestions for words that are not in its dictionary file.
+
+I have modified it to:
+* replace words in the text file with the suggested word and write to an output text file.
+* Words that are not in the dictionary file and have no suggestion are removed.
+* Prices and dates are ignored as suggestions would not work correctly and removal is not an option.
+
+The dictionary file and word probability list also has to be modified to account for names and other words common to receipts that would not be present.
