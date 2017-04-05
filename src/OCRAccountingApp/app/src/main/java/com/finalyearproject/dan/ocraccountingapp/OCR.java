@@ -45,16 +45,7 @@ public class OCR {
 
         outputFileUri = Uri.fromFile(new File(img_path));
 
-        String OCRText = "";
-
-        RunOCRinBackground runOCRinBackground = new RunOCRinBackground();
-        try {
-            OCRText = runOCRinBackground.execute(outputFileUri).get();
-            Log.e(TAG, "OCR TEXT IS \n" + OCRText);
-
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+        String OCRText = startOCR(outputFileUri);
 
         return OCRText;
     }

@@ -241,25 +241,10 @@ public class Camera1Manager extends BaseCameraManager<Integer, SurfaceHolder.Cal
         camera.setParameters(parameters);
     }
 
+    // MAY NEED TO BE CHANGED FOR OTHER PHONES...
     @Override
     protected int getPhotoOrientation(int sensorPosition) {
-        int rotate;
-        if (currentCameraId.equals(faceFrontCameraId)) {
-            rotate = (360 + faceFrontCameraOrientation + rotation.getDegrees()) % 360;
-        } else {
-            rotate = (360 + faceBackCameraOrientation - rotation.getDegrees()) % 360;
-        }
-
-        if (rotate == 0) {
-            orientation = ExifInterface.ORIENTATION_NORMAL;
-        } else if (rotate == 90) {
-            orientation = ExifInterface.ORIENTATION_ROTATE_90;
-        } else if (rotate == 180) {
-            orientation = ExifInterface.ORIENTATION_ROTATE_180;
-        } else if (rotate == 270) {
-            orientation = ExifInterface.ORIENTATION_ROTATE_270;
-        }
-
+        orientation = ExifInterface.ORIENTATION_ROTATE_90;
         return orientation;
     }
 

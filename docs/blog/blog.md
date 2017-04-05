@@ -455,6 +455,7 @@ The first step that I performed to train tesseract to more accurately recognize 
 
 I then used Adobe PhotoShop to clean any artifacts or noise still present in the image. Once there was only text left in the image I then extracted the text and put it all on one line. This step was necessary due to line height issues that are thrown later in the process if this step is not completed.
 Here is a snippet of the final image.
+
 ![png snippet ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/eng.rec.exp0.png)
 
 I did this for a total of 7 different receipts and ended up with 17 processed files, I had to split the files up as file sizes got too large and caused issues when running the tesseract training tools. Tiff format was recommended for these files but caused errors when I used it so instead I used png format which resulted in clearer images and no errors.
@@ -504,3 +505,13 @@ I then compile the data down into the trained data file ready for use in my appl
 ```
 combine_tessdata eng.
 ```
+
+## Blog entry 19 - OCR 3: Training results
+
+Below are the ocr results of both my trained data files on the same image, Shape clustering is applied on the right result, while the same process but without the shape clustering step is applied in the left result.
+
+![comparing training results 1 ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/clusteringVSnoclustering1.jpg)
+
+![comparing training results 2 ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/clusteringVSnoclustering2.jpg)
+
+![comparing training results 3 ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/clusteringVSnoclustering3.jpg)

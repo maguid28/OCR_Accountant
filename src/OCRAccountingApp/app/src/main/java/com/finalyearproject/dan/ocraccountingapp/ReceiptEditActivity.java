@@ -48,6 +48,7 @@ public class ReceiptEditActivity extends AppCompatActivity {
 
     private static final String TAG = ReceiptEditActivity.class.getSimpleName();
 
+
     ExpandableRelativeLayout expandableLayout1;
     ImageView receiptDisplayImageView;
 
@@ -74,6 +75,8 @@ public class ReceiptEditActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.test);
+
+        AWSMobileClient.initializeMobileClientIfNecessary(getApplicationContext());
 
         // Get the bundle
         Bundle bundle = getIntent().getExtras();
@@ -375,7 +378,7 @@ public class ReceiptEditActivity extends AppCompatActivity {
 
         //decode the image file into a bitmap sized to fill the view
         bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = 3;
+        bmOptions.inSampleSize = 4;
 
         imageBitmap = BitmapFactory.decodeFile(filePath, bmOptions);
 

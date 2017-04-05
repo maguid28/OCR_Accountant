@@ -7,21 +7,18 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 
-import com.finalyearproject.dan.ocraccountingapp.camera.ui.camactivities.Camera1Activity;
-import com.finalyearproject.dan.ocraccountingapp.camera.ui.camactivities.Camera2Activity;
-import com.finalyearproject.dan.ocraccountingapp.util.CameraHelper;
+import com.finalyearproject.dan.ocraccountingapp.camera.ui.camactivities.CamActivity;
 import com.finalyearproject.dan.ocraccountingapp.filebrowser.FileBrowserFragment;
 import com.finalyearproject.dan.ocraccountingapp.R;
-import com.finalyearproject.dan.ocraccountingapp.imageprocessing.ReceiptCaptureFragment;
 import com.finalyearproject.dan.ocraccountingapp.calendar.ViewPagerFragment;
 import com.finalyearproject.dan.ocraccountingapp.signin.SignInActivity;
 import com.finalyearproject.dan.ocraccountingapp.statistics.StatisticsFragment;
 import com.finalyearproject.dan.ocraccountingapp.amazon.AWSMobileClient;
 import com.finalyearproject.dan.ocraccountingapp.amazon.user.IdentityManager;
 import com.finalyearproject.dan.ocraccountingapp.amazon.user.IdentityProvider;
-import com.finalyearproject.dan.ocraccountingapp.ReceiptEditActivity;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.itemanimators.AlphaCrossFadeAnimator;
 import com.mikepenz.materialdrawer.AccountHeader;
@@ -42,7 +39,7 @@ public class NavDrawerInstaller {
 
     public void installOnActivity(final AppCompatActivity activity, Toolbar toolbar) {
 
-        String userName = getUserName();
+        String userName = getUserName(activity);
         Bitmap userImage = getUserImage();
 
         // Create the profile
@@ -95,10 +92,9 @@ public class NavDrawerInstaller {
                             if (drawerItem.getIdentifier() == 2) {
                                 Intent cameraIntent;
 
-                                    cameraIntent = new Intent(activity, Camera1Activity.class);
+                                cameraIntent = new Intent(activity, CamActivity.class);
 
-
-                                //Intent cameraIntent = new Intent(activity, Camera1Activity.class);
+                                //Intent cameraIntent = new Intent(activity, CamActivity.class);
                                 activity.startActivity(cameraIntent);
                             }
                             if (drawerItem.getIdentifier() == 3) {
@@ -146,11 +142,12 @@ public class NavDrawerInstaller {
     }
 
 
-    private String getUserName() {
+    private String getUserName(AppCompatActivity activity) {
 
         AWSMobileClient.defaultMobileClient().getIdentityManager().getCachedUserID();
         final IdentityManager identityManager = AWSMobileClient.defaultMobileClient().getIdentityManager();
         final IdentityProvider identityProvider = identityManager.getCurrentIdentityProvider();
+        Log.e("IDENTITY PROVIDER ", identityProvider.getUserName());
         return identityProvider.getUserName();
     }
 

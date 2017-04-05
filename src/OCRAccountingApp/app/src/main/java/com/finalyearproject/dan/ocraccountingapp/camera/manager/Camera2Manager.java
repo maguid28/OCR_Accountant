@@ -271,6 +271,7 @@ public final class Camera2Manager extends BaseCameraManager<String, TextureView.
         }
     }
 
+    // FIX ORIENTATION HERE
     @Override
     protected int getPhotoOrientation(int sensorPosition) {
         int degrees = 0;

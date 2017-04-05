@@ -32,7 +32,7 @@ import com.finalyearproject.dan.ocraccountingapp.amazon.content.ContentItem;
 import com.finalyearproject.dan.ocraccountingapp.amazon.content.ContentProgressListener;
 import com.finalyearproject.dan.ocraccountingapp.amazon.content.UserFileManager;
 import com.finalyearproject.dan.ocraccountingapp.amazon.util.ThreadUtils;
-import com.finalyearproject.dan.ocraccountingapp.camera.ui.camactivities.Camera1Activity;
+import com.finalyearproject.dan.ocraccountingapp.camera.ui.camactivities.CamActivity;
 import com.finalyearproject.dan.ocraccountingapp.nosql.ReceiptDataDO;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
@@ -368,7 +368,7 @@ public class ReceiptCaptureFragment extends Fragment {
             //store image at .../TesseractSample/imgs/ocr.jpg
             //takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
 
-            Intent cameraIntent = new Intent(getContext(), Camera1Activity.class);
+            Intent cameraIntent = new Intent(getContext(), CamActivity.class);
             getActivity().startActivityForResult(cameraIntent, 368);
             //if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
             //    startActivityForResult(takePictureIntent, PHOTO_REQUEST_CODE);

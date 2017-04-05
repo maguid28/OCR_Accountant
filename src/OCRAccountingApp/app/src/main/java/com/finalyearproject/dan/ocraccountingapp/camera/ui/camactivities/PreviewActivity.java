@@ -46,8 +46,6 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
     private final static String RESPONSE_CODE = "response_code_arg";
     private final static String OCR_TEXT = "ocr_text_arg";
 
-
-
     private String previewFilePath;
     private String displayFilePath;
     private UCropView imagePreview;
@@ -131,12 +129,6 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
-
-
-
-
-
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -185,26 +177,16 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
     }
 
 
-
     @Override
     public void onClick(View view) {
         Intent resultIntent = new Intent();
         if (view.getId() == R.id.confirm_media_result) {
 
-
-            OCR ocr = new OCR();
-            // get the text from the image and store it in ocrText
-            String ocrText = ocr.OCRImage(previewFilePath, this);
+            // run ocr in asynctask
+            OCRTask OCRTask = new OCRTask(this);
+            OCRTask.execute();
 
             Log.e("filepath is ...", previewFilePath);
-
-            Intent i;
-            i = new Intent(this, ReceiptEditActivity.class);
-            i.putExtra(FILE_PATH, previewFilePath);
-            i.putExtra(OCR_TEXT, ocrText);
-            //Start receipt edit activity
-            this.startActivityForResult(i, 111);
-            finish();
 
         } else if (view.getId() == R.id.re_take_media) {
             deleteMediaFile();
@@ -233,6 +215,59 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
             //resultIntent.putExtra(RESPONSE_CODE, BaseActivity.ACTION_CANCEL);
         }
     }
+
+
+
+
+    private class OCRTask extends AsyncTask<Void, Void, String> {
+
+        ProgressDialog mProgressDialog;
+
+        public OCRTask(PreviewActivity activity) {
+            mProgressDialog = new ProgressDialog(activity);
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+
+            String path = previewFilePath;
+
+            String ocrText;
+
+            OCR ocr = new OCR();
+            ocrText = ocr.OCRImage(path, PreviewActivity.this);
+
+            return ocrText;
+        }
+        @Override
+        protected void onPreExecute() {
+            // Set the progress dialog attributes
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            mProgressDialog.setMessage("Extracting text...");
+            mProgressDialog.show();
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            // dismiss the progress dialog
+            mProgressDialog.dismiss();
+
+            Intent i;
+            i = new Intent(PreviewActivity.this, ReceiptEditActivity.class);
+            // Pass the file path and text result to the receipt edit activity
+            i.putExtra(FILE_PATH, previewFilePath);
+            Log.e("OCR TEXT: ", result);
+            i.putExtra(OCR_TEXT, result);
+            // Start receipt edit activity
+            PreviewActivity.this.startActivityForResult(i, 111);
+            finish();
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {}
+    }
+
+
 
     @Override
     public void onBackPressed() {

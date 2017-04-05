@@ -81,11 +81,7 @@
 
         <!--Camera activities -->
         <activity
-            android:name=".camera.ui.camactivities.Camera1Activity"
-            android:screenOrientation="portrait"
-            android:theme="@style/ThemeFullscreen" />
-        <activity
-            android:name="camera.ui.camactivities.Camera2Activity"
+            android:name=".camera.ui.camactivities.CamActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ThemeFullscreen" />
         <activity
