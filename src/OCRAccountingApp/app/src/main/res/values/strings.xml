@@ -12,10 +12,11 @@
 
     <!-- Strings related to title screen -->
 
-    <string name="date_format">dd-MM-yyyy</string>
+    <string name="date_format">dd/MM/yyyy</string>
     <string name="date_format2">yyyyMMdd</string>
     <string name="week_date_format">dd</string>
     <string name="year_date_format">yyyy</string>
+    <string name="month_date_format">MMMM yyyy</string>
 
     <!-- REQUIRED FOR GENERAL APP FUNCTIONALITY - YOU MAY WANT TO KEEP THESE -->
     <string name="title_activity_sign_in">Sign-in</string>
@@ -35,7 +36,7 @@
     <string name="username_text">Username</string>
     <string name="sign_up_confirm_code">Confirmation code</string>
     <string name="sign_up_confirm_text">Confirm</string>
-    <string name="sign_up_confirm_code_sent">A confirmation code was sent.</string>
+    <string name="sign_up_confirm_code_sent">A confirmation code was sent to the registered email address.</string>
     <string name="sign_up_confirm_enter_code">Please enter the code below to confirm your account.</string>
     <string name="sign_up_confirm_title">Confirm your account</string>
     <string name="password_change_success">Password change succeeded.</string>

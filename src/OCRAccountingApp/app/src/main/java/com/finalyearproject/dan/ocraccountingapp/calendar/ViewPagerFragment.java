@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +36,10 @@ public class ViewPagerFragment extends Fragment {
 
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_calendar_viewpager, container, false);
+
+        // change the toolbar title
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Calendar");
+
 
         mContext = getContext();
 

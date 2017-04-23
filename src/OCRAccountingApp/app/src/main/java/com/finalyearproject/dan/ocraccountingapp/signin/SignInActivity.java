@@ -19,6 +19,8 @@ import com.finalyearproject.dan.ocraccountingapp.amazon.user.IdentityProvider;
 import com.finalyearproject.dan.ocraccountingapp.amazon.user.signin.CognitoUserPoolsSignInProvider;
 import com.finalyearproject.dan.ocraccountingapp.amazon.user.signin.FacebookSignInProvider;
 import com.finalyearproject.dan.ocraccountingapp.amazon.user.signin.SignInManager;
+import com.finalyearproject.dan.ocraccountingapp.camera.ui.camactivities.CamActivity;
+import com.finalyearproject.dan.ocraccountingapp.signup.SignUpConfirmActivity;
 
 public class SignInActivity extends Activity {
     private static final String LOG_TAG = SignInActivity.class.getSimpleName();
@@ -29,6 +31,13 @@ public class SignInActivity extends Activity {
     EditText _passwordText;
     Button _loginButton;
     TextView _signupLink;
+    TextView _verifyAccount;
+
+    /** Start of Intent request codes owned by the Cognito User Pools app. */
+    private static final int REQUEST_CODE_START = 0x2970;
+    /** Request code for account verification Intent. */
+    private static final int VERIFICATION_REQUEST_CODE = REQUEST_CODE_START + 45;
+
 
     /**
      * SignInResultsHandler handles the final result from sign in. Making it static is a best
@@ -105,7 +114,7 @@ public class SignInActivity extends Activity {
         _passwordText = (EditText) findViewById(R.id.signIn_editText_password);
         _loginButton = (Button) findViewById(R.id.signIn_imageButton_login);
         _signupLink = (TextView) findViewById(R.id.signIn_textView_CreateNewAccount);
-
+        _verifyAccount = (TextView) findViewById(R.id.signIn_textView_verifyAccount);
         signInManager = SignInManager.getInstance(this);
 
 
@@ -115,6 +124,18 @@ public class SignInActivity extends Activity {
             @Override
             public void onClick(View v) {
                 login();
+            }
+        });
+
+        _verifyAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent cameraIntent;
+
+                cameraIntent = new Intent(SignInActivity.this, SignUpConfirmActivity.class);
+
+                //Intent cameraIntent = new Intent(activity, CamActivity.class);
+                SignInActivity.this.startActivityForResult(cameraIntent, VERIFICATION_REQUEST_CODE);
             }
         });
 

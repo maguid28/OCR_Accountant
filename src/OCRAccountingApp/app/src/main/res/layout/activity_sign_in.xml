@@ -32,7 +32,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
-
+                android:textColor="@color/white"
                 android:hint="@string/sign_in_email"
                 />
         </android.support.design.widget.TextInputLayout>
@@ -48,6 +48,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
+                android:textColor="@color/white"
                 android:hint="Password"/>
         </android.support.design.widget.TextInputLayout>
 
@@ -85,6 +86,28 @@
                 android:textColor = "@color/veryLightGreen"
                 android:text="Forgot Password?"
                 android:gravity="right"
+                android:textSize="16dip"/>
+
+
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp">
+
+            <TextView android:id="@+id/signIn_textView_verifyAccount"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:layout_weight="1"
+                android:textColor = "@color/veryLightGreen"
+                android:text="Verify Account"
+                android:gravity="center"
                 android:textSize="16dip"/>
 
 

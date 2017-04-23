@@ -8,6 +8,6 @@
         android:id="@+id/list_textview"
         android:layout_gravity="center"
         android:textSize="15sp"
-        android:paddingTop="8.5dp"
-        android:paddingBottom="8.5dp"/>
+        android:paddingTop="10.5dp"
+        android:paddingBottom="10.5dp"/>
 </LinearLayout>

@@ -70,7 +70,7 @@ public class SignUpActivity extends Activity {
         final String email = ViewHelper.getStringValue(this, R.id.signup_email);
         final String password = ViewHelper.getStringValue(this, R.id.signup_password);
         String[] split = email.split("@");
-        String username = split[0];
+        String username = split[0].toLowerCase();
 
 
         Log.d(LOG_TAG, "given_name = " + givenName);
@@ -115,7 +115,6 @@ public class SignUpActivity extends Activity {
             _emailText.setError(null);
         }
 
-
         if (password.isEmpty() || password.length() < 8) {
             _passwordText.setError("at least 8 characters");
             valid = false;
@@ -129,10 +128,19 @@ public class SignUpActivity extends Activity {
             _passwordText.setError(null);
         }
 
-        if (reEnterPassword.isEmpty() || reEnterPassword.length() < 4 || reEnterPassword.length() > 10 || !(reEnterPassword.equals(password))) {
-            _reEnterPasswordText.setError("Password Do not match");
+        if (reEnterPassword.isEmpty()) {
+            _reEnterPasswordText.setError("Field cannot be empty");
             valid = false;
-        } else {
+        }
+        else if(reEnterPassword.length() < 4) {
+            _reEnterPasswordText.setError("Password must be greater than 4 characters");
+            valid = false;
+        }
+        else if(!(reEnterPassword.equals(password))) {
+            _reEnterPasswordText.setError("Passwords do not match");
+            valid = false;
+        }
+        else {
             _reEnterPasswordText.setError(null);
         }
 

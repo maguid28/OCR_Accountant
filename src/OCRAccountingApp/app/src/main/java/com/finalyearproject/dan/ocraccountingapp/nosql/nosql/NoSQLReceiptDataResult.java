@@ -24,15 +24,22 @@ public class NoSQLReceiptDataResult implements NoSQLResult {
         this.result = result;
     }
     @Override
-    public void updateItem() {
+    public void updateItem(String title, String total, String date, String category) {
         final DynamoDBMapper mapper = AWSMobileClient.defaultMobileClient().getDynamoDBMapper();
-        final String originalValue = result.getDate();
-        result.setDate("01-03-1994");
+
+        result.setFriendlyName(title);
+        result.setDate(date);
+        result.setTotal(total);
+        result.setCategory(category);
         try {
             mapper.save(result);
         } catch (final AmazonClientException ex) {
             // Restore original data if save fails, and re-throw.
-            result.setDate(originalValue);
+            result.setFriendlyName(title);
+            result.setDate(date);
+            result.setTotal(total);
+            result.setCategory(category);
+
             throw ex;
         }
     }
@@ -41,6 +48,31 @@ public class NoSQLReceiptDataResult implements NoSQLResult {
     public void deleteItem() {
         final DynamoDBMapper mapper = AWSMobileClient.defaultMobileClient().getDynamoDBMapper();
         mapper.delete(result);
+    }
+
+    @Override
+    public String getDate() {
+         return result.getDate();
+    }
+
+    @Override
+    public String getFormattedDate() {
+        return result.getFormattedDate();
+    }
+
+    @Override
+    public String getTotal() {
+        return result.getTotal();
+    }
+
+    @Override
+    public String getCategory() {
+        return result.getCategory();
+    }
+
+    @Override
+    public String getFriendlyName() {
+        return result.getFriendlyName();
     }
 
 
@@ -100,12 +132,8 @@ public class NoSQLReceiptDataResult implements NoSQLResult {
     public View getView(final Context context, final View convertView, int position) {
         final LinearLayout layout;
         final TextView resultNumberTextView;
-        final TextView recNameKeyTextView;
-        final TextView recNameValueTextView;
         final TextView dateKeyTextView;
         final TextView dateValueTextView;
-        final TextView filepathKeyTextView;
-        final TextView filepathValueTextView;
         final TextView totalKeyTextView;
         final TextView totalValueTextView;
         final TextView friendlyNameKeyTextView;

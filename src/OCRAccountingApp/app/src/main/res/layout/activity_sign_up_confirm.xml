@@ -23,6 +23,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/sign_up_confirm_title"
         android:id="@+id/confirm_account_title"
+        android:textColor="@color/white"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
@@ -39,6 +40,7 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="@string/sign_up_confirm_code_sent"
         android:id="@+id/confirm_account_message1"
+        android:textColor="@color/white"
         android:layout_below="@id/confirm_account_space1"
         android:layout_centerHorizontal="true" />
 
@@ -55,6 +57,7 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="@string/sign_up_confirm_enter_code"
         android:id="@+id/confirm_account_message2"
+        android:textColor="@color/white"
         android:layout_below="@id/confirm_account_space2"
         android:layout_centerHorizontal="true" />
 
@@ -71,7 +74,8 @@
         android:id="@+id/confirm_account_username"
         android:layout_below="@id/confirm_account_space3"
         android:layout_centerHorizontal="true"
-        android:hint="@string/username_text"
+        android:textColor="@color/white"
+        android:hint="Email"
         android:inputType="textPersonName"/>
 
     <Space
@@ -86,6 +90,7 @@
         android:id="@+id/confirm_account_confirmation_code"
         android:layout_below="@id/confirm_account_space4"
         android:layout_centerHorizontal="true"
+        android:textColor="@color/white"
         android:hint="@string/sign_up_confirm_code"
         android:inputType="number" />
 
@@ -101,6 +106,7 @@
         android:text="@string/sign_up_confirm_text"
         android:textAllCaps="false"
         android:textSize="@dimen/activity_button_text_size"
+        android:textColor="@color/white"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/confirm_account_space5"
         android:onClick="confirmAccount"/>

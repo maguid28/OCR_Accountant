@@ -21,9 +21,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.MediaController;
 
-import com.finalyearproject.dan.ocraccountingapp.OCR;
+import com.finalyearproject.dan.ocraccountingapp.imgtotext.OCR;
 import com.finalyearproject.dan.ocraccountingapp.R;
-import com.finalyearproject.dan.ocraccountingapp.RECSCANNER_UPDATE;
+import com.finalyearproject.dan.ocraccountingapp.imgtotext.ReceiptScanner;
+import com.finalyearproject.dan.ocraccountingapp.imgtotext.TextExtraction;
 import com.finalyearproject.dan.ocraccountingapp.camera.ui.BaseActivity;
 import com.finalyearproject.dan.ocraccountingapp.ReceiptEditActivity;
 import com.yalantis.ucrop.UCrop;
@@ -35,7 +36,9 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import static com.finalyearproject.dan.ocraccountingapp.util.Orientation.exifToDegrees;
@@ -58,6 +61,19 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
     Bitmap imageBitmap;
     Bitmap displayBitmap;
     Mat test2;
+
+    ProgressDialog mProgressDialog;
+
+    String ocrResult;
+
+    // marked as true when the image processing task is in operation
+    public static boolean isProcessTaskRunning = false;
+    public static boolean processButtonClicked = false;
+
+    // marked as true when the image ocr task is in operation
+    public static boolean isOCRTaskRunning = false;
+    public static boolean ocrButtonClicked = false;
+
 
     public static Intent newIntent(Context context, int mediaAction,
                                    String filePath) {
@@ -96,6 +112,8 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
         // Hide the post process panel until processing is complete
         postprocessPanel.setVisibility(View.GONE);
 
+        mProgressDialog = new ProgressDialog(this);
+
         View confirmMediaResult = findViewById(R.id.confirm_media_result);
         View reTakeMedia = findViewById(R.id.re_take_media);
         View reTakeMedia2 = findViewById(R.id.re_take_media2);
@@ -127,6 +145,7 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
 
         displayImage();
 
+        processMediaFile();
     }
 
     @Override
@@ -176,55 +195,79 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-
     @Override
     public void onClick(View view) {
         Intent resultIntent = new Intent();
         if (view.getId() == R.id.confirm_media_result) {
 
-            // run ocr in asynctask
-            OCRTask OCRTask = new OCRTask(this);
-            OCRTask.execute();
-
             Log.e("filepath is ...", previewFilePath);
 
+            ocrButtonClicked = true;
+            if(isOCRTaskRunning){
+                Log.e("OCRTASK COMPLETE? ", "NO");
+                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                mProgressDialog.setMessage("Extracting text...");
+                mProgressDialog.setCancelable(false);
+                mProgressDialog.show();
+            }
+            else{
+                startReceiptEdit();
+            }
+
         } else if (view.getId() == R.id.re_take_media) {
+            processButtonClicked = false;
             deleteMediaFile();
             resultIntent.putExtra(RESPONSE_CODE, BaseActivity.ACTION_RETAKE);
             setResult(RESULT_OK, resultIntent);
             finish();
         }
         else if (view.getId() == R.id.re_take_media2) {
+            processButtonClicked = false;
+            ocrButtonClicked = false;
             deleteMediaFile();
             resultIntent.putExtra(RESPONSE_CODE, BaseActivity.ACTION_RETAKE);
             setResult(RESULT_OK, resultIntent);
             finish();
         } else if (view.getId() == R.id.cancel_media_action) {
+            processButtonClicked = false;
             deleteMediaFile();
             resultIntent.putExtra(RESPONSE_CODE, BaseActivity.ACTION_CANCEL);
             setResult(RESULT_OK, resultIntent);
             finish();
         } else if (view.getId() == R.id.cancel_media_action2) {
+            processButtonClicked = false;
+            ocrButtonClicked = false;
             deleteMediaFile();
             resultIntent.putExtra(RESPONSE_CODE, BaseActivity.ACTION_CANCEL);
             setResult(RESULT_OK, resultIntent);
             finish();
         }
         else if (view.getId() == R.id.process_media) {
-            processMediaFile();
-            //resultIntent.putExtra(RESPONSE_CODE, BaseActivity.ACTION_CANCEL);
+            processButtonClicked = true;
+            // if process task is running
+            if(isProcessTaskRunning) {
+                Log.e("IMGTASK COMPLETE? ", "NO");
+                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                mProgressDialog.setMessage("Processing, please wait...");
+                mProgressDialog.setCancelable(false);
+                mProgressDialog.show();
+            }
+            else {
+                // execute post process instructions
+                postProcess();
+            }
         }
     }
 
 
 
 
+
     private class OCRTask extends AsyncTask<Void, Void, String> {
 
-        ProgressDialog mProgressDialog;
-
-        public OCRTask(PreviewActivity activity) {
-            mProgressDialog = new ProgressDialog(activity);
+        @Override
+        protected void onPreExecute() {
+            isOCRTaskRunning = true;
         }
 
         @Override
@@ -232,40 +275,114 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
 
             String path = previewFilePath;
 
+            Log.e("FILEPATH IN 1 ", path);
+
             String ocrText;
 
             OCR ocr = new OCR();
             ocrText = ocr.OCRImage(path, PreviewActivity.this);
 
+            // Write the result to a txt file and store it in the same dir as the temp img
+            // find the last occurence of '/'
+            int p=previewFilePath.lastIndexOf("/");
+            // e is the string value after the last occurence of '/'
+            String e=previewFilePath.substring(p+1);
+            // split the string at the value of e to remove the it from the string and get the dir path
+            String[] a = previewFilePath.split(e);
+            String dirPath = a[0];
+
+            String fileString = dirPath + "ocrtext.txt";
+            File file = new File(fileString);
+
+            try {
+                FileWriter fw = new FileWriter(file);
+                BufferedWriter bw = new BufferedWriter(fw);
+                bw.write(ocrText);
+
+                bw.close();
+                System.out.println("done!!");
+
+            } catch (IOException i) {
+                i.printStackTrace();
+            }
+
+            //new spellchecker12(dirPath, fileString, PreviewActivity.this);
+            //new WordCorrect(dirPath, fileString, PreviewActivity.this);
+
             return ocrText;
-        }
-        @Override
-        protected void onPreExecute() {
-            // Set the progress dialog attributes
-            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            mProgressDialog.setMessage("Extracting text...");
-            mProgressDialog.show();
         }
 
         @Override
         protected void onPostExecute(String result) {
-            // dismiss the progress dialog
-            mProgressDialog.dismiss();
 
-            Intent i;
-            i = new Intent(PreviewActivity.this, ReceiptEditActivity.class);
-            // Pass the file path and text result to the receipt edit activity
-            i.putExtra(FILE_PATH, previewFilePath);
-            Log.e("OCR TEXT: ", result);
-            i.putExtra(OCR_TEXT, result);
-            // Start receipt edit activity
-            PreviewActivity.this.startActivityForResult(i, 111);
-            finish();
+            isOCRTaskRunning = false;
+            Log.e("OCR TASK COMPLETE? ", "YES");
+            ocrResult = result;
+
+            if(ocrButtonClicked) {
+                // dismiss the progress dialog
+                mProgressDialog.dismiss();
+                startReceiptEdit();
+            }
+
         }
 
         @Override
         protected void onProgressUpdate(Void... values) {}
     }
+
+
+
+
+
+    private void startReceiptEdit() {
+        ocrButtonClicked = false;
+
+        // Write the result to a txt file and store it in the same dir as the temp img
+        // find the last occurence of '/'
+        int p=previewFilePath.lastIndexOf("/");
+        // e is the string value after the last occurence of '/'
+        String e=previewFilePath.substring(p+1);
+        // split the string at the value of e to remove the it from the string and get the dir path
+        String[] a = previewFilePath.split(e);
+        String dirPath = a[0] + "ocrtext.txt";
+
+
+
+        TextExtraction te = new TextExtraction();
+
+        String recTitle = te.getTitle(dirPath, this);
+        String recTotal = te.getTotal(dirPath);
+        String recDate = te.getDate(dirPath);
+        String recCatagory = te.getCatagory(dirPath, recTitle);
+
+        Intent i;
+        i = new Intent(PreviewActivity.this, ReceiptEditActivity.class);
+        // Pass the file path and text result to the receipt edit activity
+        i.putExtra(FILE_PATH, previewFilePath);
+        Log.e("OCR TEXT: ", ocrResult);
+        i.putExtra(OCR_TEXT, ocrResult);
+
+        // pass the title, total, date, and catagory to receipt edit activity
+        i.putExtra("TITLE", recTitle);
+        i.putExtra("TOTAL", recTotal);
+        i.putExtra("DATE", recDate);
+        i.putExtra("CATAGORY", recCatagory);
+        // Start receipt edit activity
+        PreviewActivity.this.startActivityForResult(i, 111);
+        finish();
+    }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -282,25 +399,15 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
 
     private class ProcessImageTask extends AsyncTask<String, Void, String> {
 
-        ProgressDialog mProgressDialog;
-
-        public ProcessImageTask(PreviewActivity activity) {
-            mProgressDialog = new ProgressDialog(activity);
+        @Override
+        protected void onPreExecute() {
+            isProcessTaskRunning = true;
         }
 
         @Override
         protected String doInBackground(String... params) {
-            RECSCANNER_UPDATE rec = new RECSCANNER_UPDATE();
-            //Mat test = rec.correctReceipt(img_path);
-            //Imgcodecs.imwrite(img_path, test);
 
-            //test2 = rec.receiptPic(previewFilePath);
-            //Imgcodecs.imwrite(previewFilePath, test2);
-
-            //Mat test = rec.correctReceipt(img_path);
-            //Imgcodecs.imwrite(img_path, test);
-
-
+            ReceiptScanner rec = new ReceiptScanner();
             // get the directory of the previewfilepath
             // find the last occurence of '/'
             int p=previewFilePath.lastIndexOf("/");
@@ -323,70 +430,90 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
 
         @Override
         protected void onPostExecute(String result) {
-            mProgressDialog.dismiss();
-            //turn off the image preview to allow for the processed image to be displayed
-            imagePreview.setVisibility(View.GONE);
 
-            ImageView processedImage = (ImageView) findViewById(R.id.processed_Image);
+            isProcessTaskRunning = false;
+            Log.e("IMGTASK COMPLETE? ", "YES");
 
-            //Get the dimensions of the bitmap
-            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-            bmOptions.inJustDecodeBounds = true;
-            BitmapFactory.decodeFile(previewFilePath, bmOptions);
-
-            int photoW = bmOptions.outWidth;
-            int photoH = bmOptions.outHeight;
-
-
-            //decode the image file into a bitmap sized to fill the view
-            bmOptions.inJustDecodeBounds = false;
-            bmOptions.inSampleSize = 4;
-
-            imageBitmap = BitmapFactory.decodeFile(previewFilePath, bmOptions);
-
-            try {
-                //Display image in the correct orientation
-                ExifInterface exif = new ExifInterface(previewFilePath);
-                int rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-                int rotationInDegrees = exifToDegrees(rotation);
-                Matrix matrix = new Matrix();
-                if (rotation != 0f) {matrix.preRotate(rotationInDegrees);}
-                imageBitmap = Bitmap.createBitmap(imageBitmap,0,0, imageBitmap.getWidth(),imageBitmap.getHeight(), matrix, true);
-
-            }catch(IOException ex){
-                Log.e("Failed to get Exif data", "ex");
+            // If user has already clicked the process button
+            if(processButtonClicked) {
+                mProgressDialog.dismiss();
+                postProcess();
             }
-
-            imageBitmap = BitmapFactory.decodeFile(previewFilePath, bmOptions);
-
-
-
-            //displayBitmap
-
-
-            // set image view to the processed bitmap image
-            processedImage.setImageBitmap(imageBitmap);
-
-            Log.e("BITMAP WIDTH ", String.valueOf(imageBitmap.getWidth()));
-            Log.e("BITMAP HEIGHT ", String.valueOf(imageBitmap.getHeight()));
-
-            // Hide the preprocess panel
-            preprocessPanel.setVisibility(View.GONE);
-            // Bring the post process panel into view
-            postprocessPanel.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected void onPreExecute() {
-            // Set the progress dialog attributes
-            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            mProgressDialog.setMessage("Processing, please wait...");
-            mProgressDialog.show();
         }
 
         @Override
         protected void onProgressUpdate(Void... values) {}
     }
+
+
+
+
+
+    private void postProcess() {
+
+        // reset button clicked to false
+        processButtonClicked = false;
+
+        //turn off the image preview to allow for the processed image to be displayed
+        imagePreview.setVisibility(View.GONE);
+
+        ImageView processedImage = (ImageView) findViewById(R.id.processed_Image);
+
+        //Get the dimensions of the bitmap
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(previewFilePath, bmOptions);
+
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+
+        //decode the image file into a bitmap sized to fill the view
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = 4;
+
+        imageBitmap = BitmapFactory.decodeFile(previewFilePath, bmOptions);
+
+        try {
+            //Display image in the correct orientation
+            ExifInterface exif = new ExifInterface(previewFilePath);
+            int rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+            int rotationInDegrees = exifToDegrees(rotation);
+            Matrix matrix = new Matrix();
+            if (rotation != 0f) {matrix.preRotate(rotationInDegrees);}
+            imageBitmap = Bitmap.createBitmap(imageBitmap,0,0, imageBitmap.getWidth(),imageBitmap.getHeight(), matrix, true);
+
+        }catch(IOException ex){
+            Log.e("Failed to get Exif data", "ex");
+        }
+
+        imageBitmap = BitmapFactory.decodeFile(previewFilePath, bmOptions);
+
+
+
+        //displayBitmap
+
+
+        // set image view to the processed bitmap image
+        processedImage.setImageBitmap(imageBitmap);
+
+        Log.e("BITMAP WIDTH ", String.valueOf(imageBitmap.getWidth()));
+        Log.e("BITMAP HEIGHT ", String.valueOf(imageBitmap.getHeight()));
+
+        // Hide the preprocess panel
+        preprocessPanel.setVisibility(View.GONE);
+        // Bring the post process panel into view
+        postprocessPanel.setVisibility(View.VISIBLE);
+
+        // run ocr in asynctask
+        OCRTask OCRTask = new OCRTask();
+        OCRTask.execute();
+    }
+
+
+
+
+
 
 
     private void processMediaFile() {
@@ -399,7 +526,7 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
         Log.e("Height of preview...", String.valueOf(height));
         Log.e("Width of preview", String.valueOf(width));
 
-        ProcessImageTask processImageTask = new ProcessImageTask(this);
+        ProcessImageTask processImageTask = new ProcessImageTask();
         processImageTask.execute();
     }
 

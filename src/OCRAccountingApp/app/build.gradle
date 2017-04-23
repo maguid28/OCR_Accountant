@@ -19,6 +19,10 @@ android {
     }
 }
 
+repositories {
+    maven { url "https://jitpack.io" }
+}
+
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
@@ -38,6 +42,8 @@ dependencies {
     compile 'com.android.support:multidex:1.0.0'
     testCompile 'junit:junit:4.12'
     compile project(':openCVLibrary310')
+
+    compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'
 
     compile 'com.amazonaws:aws-android-sdk-core:2.3.9'
     compile ('com.amazonaws:aws-android-sdk-cognitoidentityprovider:2.3.9')

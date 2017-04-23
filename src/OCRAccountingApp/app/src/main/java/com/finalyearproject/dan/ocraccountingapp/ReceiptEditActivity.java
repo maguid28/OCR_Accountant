@@ -1,5 +1,6 @@
 package com.finalyearproject.dan.ocraccountingapp;
 
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,6 +16,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -32,14 +35,12 @@ import com.finalyearproject.dan.ocraccountingapp.amazon.util.ThreadUtils;
 import com.finalyearproject.dan.ocraccountingapp.nosql.ReceiptDataDO;
 import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
 
-import org.w3c.dom.Text;
-
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 
 import static com.finalyearproject.dan.ocraccountingapp.util.Orientation.exifToDegrees;
@@ -52,15 +53,25 @@ public class ReceiptEditActivity extends AppCompatActivity {
     ExpandableRelativeLayout expandableLayout1;
     ImageView receiptDisplayImageView;
 
+    String OCRText;
 
     String filePath;
 
-    String OCRText;
+    String receiptTitle;
+    String receiptTotal;
+    String receiptDate;
+    String receiptCatagory;
 
     Bitmap imageBitmap;
 
-    EditText totalEdit, recNameEdit;
+    EditText recTotalEditText, recNameEditText;
     String selectedSpinnerItem;
+    EditText recDateEditText;
+
+    // id of the fragment or activity that passed information to this
+    String afID;
+
+    SQLObj sqlObj;
 
     // The user file manager.
     private UserFileManager userFileManager;
@@ -70,54 +81,78 @@ public class ReceiptEditActivity extends AppCompatActivity {
 
     private final CountDownLatch userFileManagerCreatingLatch = new CountDownLatch(1);
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.test);
+        setContentView(R.layout.activity_receipt_edit);
 
         AWSMobileClient.initializeMobileClientIfNecessary(getApplicationContext());
 
         // Get the bundle
         Bundle bundle = getIntent().getExtras();
+
+        recDateEditText = (EditText)findViewById(R.id.dateEdit);
+        recTotalEditText = (EditText)findViewById(R.id.total_edit);
+        recNameEditText = (EditText)findViewById(R.id.recNameEdit);
+
         try {
             //Extract the data passed from the previous activity
             filePath = bundle.getString("file_path_arg");
             OCRText = bundle.getString("ocr_text_arg");
+            receiptTitle = bundle.getString("TITLE");
+            receiptTotal = bundle.getString("TOTAL");
+            receiptDate = bundle.getString("DATE");
+            receiptCatagory = bundle.getString("CATAGORY");
             TextView ocrtextview = (TextView) findViewById(R.id.ocr_textview);
+
+            recNameEditText.setText(receiptTitle, TextView.BufferType.EDITABLE);
+            recTotalEditText.setText(receiptTotal, TextView.BufferType.EDITABLE);
+            recDateEditText.setText(receiptDate, TextView.BufferType.EDITABLE);
+
             ocrtextview.setText(OCRText);
             Log.i("prev activity: ", filePath);
         }
         catch (NullPointerException ignored) {}
 
-        totalEdit = (EditText) findViewById(R.id.total_edit);
-        recNameEdit = (EditText) findViewById(R.id.recNameEdit);
 
+        Button expandableButton = (Button) findViewById(R.id.expandableButton1);
+        expandableButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                expandableLayout1 = (ExpandableRelativeLayout) findViewById(R.id.expandableLayout1);
+                expandableLayout1.toggle(); // toggle expand and collapse
+            }
+        });
 
+        recDateEditText.setFocusable(false);
+        recDateEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-        // find the last occurence of '/'
-        int p=filePath.lastIndexOf("/");
-        // e is the string value after the last occurence of '/'
-        String e=filePath.substring(p+1);
-        // split the string at the value of e to remove the it from the string and get the dir path
-        String[] a = filePath.split(e);
-        String dirPath = a[0];
+                final Calendar myCalendar = Calendar.getInstance();
+                DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                          int dayOfMonth) {
 
-        File file = new File(dirPath + "ocrtext.txt");
+                        myCalendar.set(Calendar.YEAR, year);
+                        myCalendar.set(Calendar.MONTH, monthOfYear);
+                        myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                        String myFormat = "dd/MM/yyyy"; // your format
+                        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.UK);
 
-        try {
-            FileWriter fw = new FileWriter(file);
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write(OCRText);
+                        recDateEditText.setText(sdf.format(myCalendar.getTime()));
+                    }
+                };
 
-            bw.close();
-            System.out.println("done!!");
+                //new DatePickerDialog(ReceiptEditActivity.this, date, myCalendar.get(Calendar.YEAR),
+                //        myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH)).show();
 
-        } catch (IOException i) {
-            i.printStackTrace();
-        }
+                new DatePickerDialog(ReceiptEditActivity.this, R.style.datepickerCustom, date,myCalendar.get(Calendar.YEAR),
+                               myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH)).show();
 
-
+            }
+        });
 
 
 
@@ -131,6 +166,8 @@ public class ReceiptEditActivity extends AppCompatActivity {
         // Create the spinner from the expense catagories in arrays.xml and style it as spinner_item
         ArrayAdapter adapter = ArrayAdapter.createFromResource(this, R.array.expense_catagories, R.layout.spinner_item);
         categories.setAdapter(adapter);
+
+        categories.setSelection(getIndex(categories, receiptCatagory));
 
         // listen for the selected value of the spinner
         categories.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -161,22 +198,27 @@ public class ReceiptEditActivity extends AppCompatActivity {
                                 Log.e(TAG, "userfilemanager ..........................." + userFileManager);
                             }
                         });
-
     }
 
 
+    private int getIndex(Spinner spinner, String myString)
+    {
+        int index = 0;
 
-
-
-    public void expandableButton1(View view) {
-        expandableLayout1 = (ExpandableRelativeLayout) findViewById(R.id.expandableLayout1);
-        expandableLayout1.toggle(); // toggle expand and collapse
+        for (int i=0;i<spinner.getCount();i++){
+            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString)){
+                index = i;
+                break;
+            }
+        }
+        return index;
     }
+
 
 
 
     // set up the floating action button
-    private void configureFAB(){
+    public void configureFAB(){
         // open the context menu when the fab is clicked
         FloatingActionButton myFab = (FloatingActionButton) findViewById(R.id.fab);
         myFab.setOnClickListener(new View.OnClickListener() {
@@ -257,9 +299,9 @@ public class ReceiptEditActivity extends AppCompatActivity {
         dialog.show();
 
         // get the total entered in the edit text field
-        final String total = totalEdit.getText().toString();
+        final String total = recTotalEditText.getText().toString();
         // get the name entered by the edit text field
-        final String friendlyName = recNameEdit.getText().toString();
+        final String friendlyName = recNameEditText.getText().toString();
         // get the value selected on the spinner
         final String category = selectedSpinnerItem;
 
@@ -278,9 +320,18 @@ public class ReceiptEditActivity extends AppCompatActivity {
                     public void onSuccess(final ContentItem contentItem) {
                         dialog.dismiss();
 
+                        String date = recDateEditText.getText().toString();
                         // Get date in correct format
-                        String date = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
-                        String formattedDate = new SimpleDateFormat("yyyyMMdd").format(new Date());
+                        String d = date.substring(0,2);
+                        System.out.println("d = " + d);
+                        String m = date.substring(3,5);
+                        System.out.println("m = " + m);
+                        String y = date.substring(6,10);
+                        System.out.println("y = " + y);
+
+                        String formattedDate = y + m + d;
+                        System.out.println("formatted = " + formattedDate);
+
                         // Call insertdata to add the entered data into the database
                         insertData(fileName, date, fileName, formattedDate, total, friendlyName, category);
 
@@ -403,4 +454,7 @@ public class ReceiptEditActivity extends AppCompatActivity {
 
 
 
+
 }
+
+

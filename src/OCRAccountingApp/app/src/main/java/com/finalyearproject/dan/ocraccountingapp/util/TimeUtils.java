@@ -113,7 +113,7 @@ public class TimeUtils {
     }
 
     /**
-     * Get the week for a given position in the ViewPager
+     * Get thE YEAR  for a given position in the ViewPager
      *
      * @param position
      * @return the week
@@ -132,7 +132,7 @@ public class TimeUtils {
 
 
     /**
-     * Get the week for a given position in the ViewPager
+     * Get the month for a given position in the ViewPager
      *
      * @param position
      * @return the month
@@ -151,7 +151,7 @@ public class TimeUtils {
 
 
     public static String getFormattedDate(Context context, long date) {
-        final String defaultPattern = "dd-MM-yyyy";
+        final String defaultPattern = "dd/MM/yyyy";
 
         String pattern = null;
         if (context != null) {
@@ -213,13 +213,34 @@ public class TimeUtils {
 
 
 
-    //function to provide week view format
+    //function to provide year view format
     public static String getYearFormat(Context context, long date) {
         final String defaultPattern = "yyyy";
 
         String pattern = null;
         if (context != null) {
             pattern = context.getString(R.string.year_date_format);
+        }
+        if (pattern == null) {
+            pattern = defaultPattern;
+        }
+        SimpleDateFormat simpleDateFormat = null;
+        try {
+            simpleDateFormat = new SimpleDateFormat(pattern);
+        } catch (IllegalArgumentException e) {
+            simpleDateFormat = new SimpleDateFormat(defaultPattern);
+        }
+
+        return simpleDateFormat.format(new Date(date));
+    }
+
+    //function to provide month view format
+    public static String getMonthFormat(Context context, long date) {
+        final String defaultPattern = "MMMM yyyy";
+
+        String pattern = null;
+        if (context != null) {
+            pattern = context.getString(R.string.month_date_format);
         }
         if (pattern == null) {
             pattern = defaultPattern;

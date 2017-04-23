@@ -4,8 +4,11 @@ package com.finalyearproject.dan.ocraccountingapp.calendar;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -17,6 +20,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.amazonaws.AmazonClientException;
+import com.finalyearproject.dan.ocraccountingapp.MainActivity;
+import com.finalyearproject.dan.ocraccountingapp.ReceiptEditActivity;
+import com.finalyearproject.dan.ocraccountingapp.SQLObj;
 import com.finalyearproject.dan.ocraccountingapp.amazon.content.ContentItem;
 import com.finalyearproject.dan.ocraccountingapp.amazon.content.ContentProgressListener;
 import com.finalyearproject.dan.ocraccountingapp.amazon.content.UserFileManager;
@@ -25,10 +31,12 @@ import com.finalyearproject.dan.ocraccountingapp.amazon.AWSConfiguration;
 import com.finalyearproject.dan.ocraccountingapp.amazon.util.ThreadUtils;
 import com.amazonaws.regions.Regions;
 import com.finalyearproject.dan.ocraccountingapp.R;
+import com.finalyearproject.dan.ocraccountingapp.camera.ui.camactivities.PreviewActivity;
 import com.finalyearproject.dan.ocraccountingapp.nosql.nosql.DynamoDBUtils;
 import com.finalyearproject.dan.ocraccountingapp.nosql.nosql.NoSQLOperation;
 import com.finalyearproject.dan.ocraccountingapp.nosql.nosql.NoSQLResult;
 import com.finalyearproject.dan.ocraccountingapp.nosql.nosql.NoSQLResultListAdapter;
+import com.finalyearproject.dan.ocraccountingapp.statistics.StatisticsFragment;
 import com.finalyearproject.dan.ocraccountingapp.util.ContentHelper;
 
 import java.io.File;
@@ -129,14 +137,6 @@ public class DisplayResultsFragment extends Fragment {
                         });
 
 
-
-
-
-
-
-
-
-
         // Reset the results in case of screen rotation.
         noSQLOperation.resetResults();
 
@@ -230,6 +230,29 @@ public class DisplayResultsFragment extends Fragment {
         final NoSQLResultListAdapter listAdapter = (NoSQLResultListAdapter) resultsList.getAdapter();
         final NoSQLResult result = listAdapter.getItem(position);
 
+        Log.e("COUNTLISTADAPTER: ", String.valueOf(listAdapter.getCount()));
+        assert result != null;
+        final String file = result.getFilePath();
+        Log.e("FilePath: ", file);
+/*
+        final ProgressDialog dialog = new ProgressDialog(getActivity(), R.style.Dialog1);
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.setTitle("Please wait...");
+        dialog.setCancelable(false);
+        dialog.show();
+*/
+        // Directory where all saved receipts are stored
+        String fileDir = "/data/user/0/com.finalyearproject.dan.ocraccountingapp/files/" +
+                "s3_ocraccountingapp-userfiles-mobilehub-1024067420/private/" +
+                "eu-west-1:020b39f2-0c66-4758-becc-d68957f19f07/content/";
+        // Path to file
+        final String filePath = fileDir + file;
+        final String recTitle = result.getFriendlyName();
+        final String recTotal = result.getTotal();
+        final String recDate = result.getDate();
+        final String recCatagory = result.getCategory();
+
+
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
             .setTitle(R.string.nosql_dialog_title_confirm_update_item_text)
             .setNegativeButton(android.R.string.cancel, null);
@@ -237,26 +260,45 @@ public class DisplayResultsFragment extends Fragment {
         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(final DialogInterface dialog, final int which) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            assert result != null;
-                            result.updateItem();
 
-                            ThreadUtils.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    listAdapter.notifyDataSetChanged();
-                                }
-                            });
-                        } catch (final AmazonClientException ex) {
-                            Log.e(LOG_TAG, "Failed saving updated item.", ex);
-                            DynamoDBUtils.showErrorDialogForServiceException(getActivity(),
-                                getString(R.string.nosql_dialog_title_failed_update_item_text), ex);
-                        }
+                // fetch file
+                userFileManager.getContent(file, new ContentProgressListener() {
+                    @Override
+                    public void onSuccess(final ContentItem contentItem) {
+                        dialog.dismiss();
                     }
-                }).start();
+                    @Override
+                    public void onProgressUpdate(final String fileName, final boolean isWaiting,
+                                                 final long bytesCurrent, final long bytesTotal) {
+                    }
+
+                    @Override
+                    public void onError(final String fileName, final Exception ex) {
+                        dialog.dismiss();
+                        //showError(R.string.error_message_download_file, ex.getMessage());
+                    }
+                });
+
+                // create instance of SQLObj
+                SQLObj sqlObj = new SQLObj();
+                sqlObj.setObj(result);
+
+
+                Bundle args = new Bundle();
+                args.putSerializable("SQLObj", sqlObj);
+                args.putString("file_path_arg", filePath);
+                args.putString("TITLE", recTitle);
+                args.putString("TOTAL", recTotal);
+                args.putString("DATE", recDate);
+                args.putString("CATAGORY", recCatagory);
+
+                Fragment fragment = new EditFragment();
+                fragment.setArguments(args);
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                FragmentTransaction transaction = manager.beginTransaction();
+                transaction.replace(R.id.main_fragment_container, fragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
             }
         });
         builder.show();
@@ -272,9 +314,9 @@ public class DisplayResultsFragment extends Fragment {
         final String file = result.getFilePath();
         Log.e("FilePath: ", file);
 
-        final ProgressDialog dialog = new ProgressDialog(getActivity());
-        dialog.setTitle(R.string.content_progress_dialog_title_wait);
-        dialog.setMax((int) new File(file).length());
+        final ProgressDialog dialog = new ProgressDialog(getActivity(), R.style.Dialog1);
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.setTitle("Please wait...");
         dialog.setCancelable(false);
         dialog.show();
 

@@ -538,4 +538,211 @@ I have modified it to:
 * Words that are not in the dictionary file and have no suggestion are removed.
 * Prices and dates are ignored as suggestions would not work correctly and removal is not an option.
 
-The dictionary file and word probability list also has to be modified to account for names and other words common to receipts that would not be present.
+The dictionary file and file used to calculate word probability also have to be modified to account for names and other words common to receipts that would not be present.
+
+The results are shown below:
+
+![word correction algorithm applied ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/wordcorrection.jpg)
+
+There has been a significant improvement after this algorithm has been applied. I am still fine tuning this at the moment to further increase accuracy.
+
+## Blog entry 21 - Text Extraction
+App performance suffered from the word correction algorithm in the previous blog entry. Instead I have now built an algorithm that clears anything that is not considered a word from the extracted text and only applies word correction to the receipt line that the title is present on. I have made a dictionary file of list of the most common irish retailers and restaurants to reference against and correct accordingly. It then places this corrected title in the "title" edittext field. The date and total are extracted from the receipt by similar algorithms, The code is below:
+
+### Date:
+```java
+public String getDate(String dirPath) {
+        String date = "";
+        String potentials = "";
+
+        try {
+            FileReader fr = new FileReader(dirPath);
+            BufferedReader br = new BufferedReader(fr);
+
+            while (br.ready()) {
+                String s = br.readLine().toLowerCase();;
+
+                String[] words = s.split("\\s");
+
+                // search for the line that contains information about date
+                for (int x=0; x<words.length; x++) {
+                    if(words[x].matches("[^A-Z]+/[0-9a-z]+/[^A-Z]+")) {
+
+                        String dateOnly = words[x];
+
+                        if(dateOnly.contains("/")) {
+                            StringBuilder sb = new StringBuilder(dateOnly);
+                            sb.indexOf("/");
+                            sb.lastIndexOf("/");
+                            System.out.println("first index: " + sb.indexOf("/"));
+                            System.out.println("last index: " + sb.lastIndexOf("/"));
+
+                            // remove any extra characters that may have been added on to the end
+                            if (dateOnly.length() > sb.lastIndexOf("/") + 5) {
+                                System.out.println(dateOnly.substring(0, sb.lastIndexOf("/") + 5));
+                                dateOnly = dateOnly.substring(0, sb.lastIndexOf("/") + 5);
+                            }
+
+                            // remove extra characters added on the the start of the date
+                            if(sb.indexOf("/") != 2) {
+                                // find the difference between the correct index and the actual index
+                                int temp = sb.indexOf("/") - 2;
+                                // remove the difference from the start of the string
+                                System.out.println(dateOnly.substring(temp));
+                                dateOnly = dateOnly.substring(temp);
+                            }
+                        }
+
+
+                        potentials +=dateOnly;
+                    }
+                }
+                potentials += "\r\n";
+            }
+            System.out.println(potentials);
+
+            br.close();
+
+            String[] datePotentials = potentials.split("\\r?\\n");
+            for(int i = 0; i<datePotentials.length;i++){
+                if(datePotentials[i].matches("[0-9][0-9]/[0-9][0-9]/[0-9]{4}")) {
+                    date = datePotentials[i];
+                }
+            }
+
+            System.out.println("Date: " + date);
+
+        } catch (IOException i) {
+            i.printStackTrace();
+        }
+
+        // if date is not found, default to todays day
+        if(date.equals("")) {
+            date = new SimpleDateFormat("dd/MM/yyyy").format(Calendar.getInstance().getTime());
+        }
+
+        return date;
+    }
+
+```
+
+### Total:
+``` java
+public String getTotal(String dirPath) {
+        double total = 0;
+
+        // last resort will contain all words that contain '€'
+        String lastResort = "";
+
+        try {
+            FileReader fr = new FileReader(dirPath);
+            BufferedReader br = new BufferedReader(fr);
+
+            String cleanedText = "";
+
+
+            while (br.ready()) {
+                String s = br.readLine().toLowerCase();
+                String[] words = s.split("\\s");
+
+                // search for the line that contains information about total
+                for (int x=0; x<words.length; x++) {
+                    if(s.contains("total") || s.contains("tot") || s.contains("otal") || s.contains("sale") ) { // || s.contains("tal") || s.matches("\\d[t|l][a-z]{3}[l|1|i]")
+
+                        String extractedPrice = findTotal(words[x]);
+                        cleanedText += extractedPrice + " ";
+
+                    }
+                    // "tal" is more common than "tot" and "otal", needs to be more specific
+                    else if(words[x].matches("[a-z][a-z]tal")) {
+                        String extractedPrice = findTotal(words[x+1]);
+                        cleanedText += extractedPrice + " ";
+                    }
+                    else if(words[x].contains("€")){
+                        lastResort += words[x] + " ";
+                    }
+                }
+                cleanedText += "\r\n";
+            }
+
+            br.close();
+            System.out.println("TOTAL: " + cleanedText);
+
+            String lines[] = cleanedText.split("\\r?\\n");
+            //loop through lines until text is found
+
+            double[] potentialTotals = new double[lines.length];
+            Arrays.fill(potentialTotals,0);
+
+            for(int i = 0; i<lines.length;i++){
+                if(lines[i].matches("(\\s)*[0-9]+\\.[0-9][0-9](\\s)*")) {
+                    potentialTotals[i] = Double.parseDouble(lines[i]);
+                }
+            }
+
+            total = 0;
+            for(int i=0; i<potentialTotals.length; i++){
+                if (potentialTotals[i] > total) {
+                    total = potentialTotals[i];
+                }
+            }
+
+        } catch (IOException i) {
+            i.printStackTrace();
+        }
+
+        //if no value was found for total yet, check lastResort
+        if(total==0) {
+            // store every word in lastResort in an array
+            String[] potentials = lastResort.split(" ");
+            double temp = 0;
+            double max = 0;
+
+            for(int i=0; i<potentials.length; i++) {
+                String extractedPrice = findTotal(potentials[i]);
+                System.out.println(extractedPrice);
+                if(extractedPrice.matches("(\\s)*[0-9]+\\.[0-9][0-9](\\s)*")) {
+                    temp = Double.parseDouble(extractedPrice);
+                    if(temp>max && temp <500){
+                        max = temp;
+                    }
+                }
+            }
+            return String.valueOf(max);
+        }
+
+        String totalString = String.valueOf(total);
+        //add an extra 0 if the total ends in a 0 to achieve the format €xx.xx
+        if(totalString.substring(totalString.length()-1).equals("0")) {
+            totalString = totalString + "0";
+        }
+
+        return totalString;
+    }
+```
+
+And finally the category is selected by searching the extracted receipt text for words exclusively present on receipts of that category. For example, "fresh" would most likely only ever occur on food receipts, or "shoe" would most likely only occur on clothing receipts.
+
+## Blog entry 21 - Improving performance
+The application performs the image processing task and the OCR task which can both take an uncomfortable amount of time to complete, depending on the processing power of the device. For this reason I have modified my application to execute the img processing code as soon as the image is captured instead of waiting for the users button click cue. This reduces the wait time significantly. I have done the same with the OCR task.
+
+## Blog entry 22 - Charts and Statistics
+I have added a fragment that displays charts based on the users spending patterns. The charts are part of the MPAndroidChart library accessed here: https://github.com/PhilJay/MPAndroidChart.
+
+Below are images of the 4 charts:
+
+![comparing training results 1 ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/clusteringVSnoclustering1.jpg)
+
+![comparing training results 1 ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/clusteringVSnoclustering1.jpg)
+
+![comparing training results 1 ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/clusteringVSnoclustering1.jpg)
+
+![comparing training results 1 ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/clusteringVSnoclustering1.jpg)
+
+## Blog entry 23 - User testing 1
+At the end of my first round of user tests I have discovered the following issues:
+Displaying "passwords do not match" notification falsely.
+Not allowing users to activate account.
+Case sensitive email addresses.
+Receipts being displayed mirrored when captured.
+Some fragment overlaying issues.

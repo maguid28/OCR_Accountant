@@ -26,7 +26,7 @@ public class CamActivity extends BaseActivity {
             }
             else {
                 Log.e("CAMERA2", " ");
-                return new Camera2Controller(cameraView, rotation);
+                return new Camera2ControllerAPI24(cameraView, rotation);
             }
         } else {
             return new Camera1Controller(cameraView, rotation);

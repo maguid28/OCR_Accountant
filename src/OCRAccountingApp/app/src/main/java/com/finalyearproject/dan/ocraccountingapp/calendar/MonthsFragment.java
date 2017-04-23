@@ -51,7 +51,7 @@ public class MonthsFragment extends Fragment {
 
         Log.i("YEAR IS", year);
 
-        // The NoSQL Table demo operations will be run against
+        // The NoSQL Table operations will be run against
         NoSQLTableFactory.instance(getContext()
                 .getApplicationContext())
                 .getNoSQLTableByTableName(tableName);

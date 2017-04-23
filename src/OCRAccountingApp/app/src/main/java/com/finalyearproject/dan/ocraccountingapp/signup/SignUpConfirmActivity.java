@@ -36,13 +36,17 @@ public class SignUpConfirmActivity extends Activity {
      * @param view the Android View
      */
     public void confirmAccount(final View view) {
-        final String username =
+        String username =
                 ViewHelper.getStringValue(this, R.id.confirm_account_username);
         final String verificationCode =
                 ViewHelper.getStringValue(this, R.id.confirm_account_confirmation_code);
 
-        Log.d(LOG_TAG, "username = " + username);
-        Log.d(LOG_TAG, "verificationCode = " + verificationCode);
+        Log.d(LOG_TAG, "confirm username before = " + username);
+        String[] temp = username.split("@");
+        username = temp[0].toLowerCase();
+
+        Log.d(LOG_TAG, "confirm username after = " + username);
+        Log.d(LOG_TAG, "confirm verificationCode = " + verificationCode);
 
         final Intent intent = new Intent();
         intent.putExtra(CognitoUserPoolsSignInProvider.AttributeKeys.USERNAME, username);

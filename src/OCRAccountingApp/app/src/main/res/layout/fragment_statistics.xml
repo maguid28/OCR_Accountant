@@ -1,15 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.finalyearproject.dan.ocraccountingapp.statistics.StatisticsFragment">
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.finalyearproject.dan.ocraccountingapp.statistics.StatisticsFragment">
 
-    <TextView
-        android:text="STATS"
-        android:layout_width="wrap_content"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:orientation="horizontal"
+        android:weightSum="1"
+        android:layout_alignParentTop="true"
+        android:id="@+id/linearLayout">
+
+        <Spinner
+            android:id="@+id/MonthSpin"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:layout_weight=".33"
+            android:popupBackground="@color/colorPrimaryLight"
+            android:layout_marginTop="20dp" />
+
+        <Spinner
+            android:id="@+id/YearSpin"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="20dp"
+            android:layout_weight=".33"
+            android:paddingLeft="10dp"
+            android:popupBackground="@color/colorPrimaryLight"
+            android:layout_below="@+id/MonthSpin" />
+
+        <Button
+            android:id="@+id/goButton"
+            android:layout_width="0dp"
+            android:layout_weight=".33"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="GO"
+            android:textColor="#FFFFFF"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+
+        </LinearLayout>
+
+
+    <FrameLayout
+        android:id="@+id/chartContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_weight="1"
+        android:layout_below="@+id/linearLayout">
+
+    </FrameLayout>
+
 
 </RelativeLayout>

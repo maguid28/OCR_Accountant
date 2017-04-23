@@ -134,7 +134,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:inputType="textPersonName"
+                    android:inputType="numberDecimal"
                     android:textColor="#ffffffff" />
 
 
@@ -149,30 +149,7 @@
                     android:textColor="#ffffffff"
                     android:textSize="18dp" />
 
-                    <TextView
-                        android:id="@+id/textView51"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor = "#ffffffff"
-                        android:text="Item 1" />
-                    <EditText
-                        android:id="@+id/editText33"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor = "#ffffffff"
-                        android:ems="10"
-                        android:inputType="textPersonName"
-                        android:text="Item" />
-                    <EditText
-                        android:id="@+id/editText32"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor = "#ffffffff"
-                        android:ems="10"
-                        android:inputType="textPersonName"
-                        android:text="Price" />
-
-                </LinearLayout>
+            </LinearLayout>
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fab"

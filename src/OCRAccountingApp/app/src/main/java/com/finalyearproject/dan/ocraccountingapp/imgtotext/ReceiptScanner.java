@@ -1,4 +1,4 @@
-package com.finalyearproject.dan.ocraccountingapp;
+package com.finalyearproject.dan.ocraccountingapp.imgtotext;
 
 import android.util.Log;
 
@@ -8,7 +8,9 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.photo.Photo;
 import org.opencv.utils.Converters;
 
-import java.io.File;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,11 +19,13 @@ import static org.opencv.imgproc.Imgproc.THRESH_BINARY;
 import static org.opencv.imgproc.Imgproc.circle;
 import static org.opencv.imgproc.Imgproc.rectangle;
 
-public final class RECSCANNER_UPDATE {
+public final class ReceiptScanner {
+
+    String dirPath = "/storage/emulated/0/Android/data/com.finalyearproject.dan.ocraccountingapp/files/Pictures/TesseractSample/imgs/";
 
     public static void main(String[] args) {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        String a = new RECSCANNER_UPDATE().getTextFromReceiptImage("/Users/daniel/IdeaProjects/opcvtest/src/main/resources/receipt12.jpg");
+        String a = new ReceiptScanner().getTextFromReceiptImage("/Users/daniel/IdeaProjects/opcvtest/src/main/resources/receipt12.jpg");
         System.out.println(a);
     }
 
@@ -66,6 +70,9 @@ public final class RECSCANNER_UPDATE {
     }
 
     private Mat CannyEdge(Mat srcImage) {
+
+        Imgcodecs.imwrite(dirPath + "srcimg.jpg", srcImage);
+
         //mat gray image holder
         Mat imageGrey = new Mat();
         //mat canny image
@@ -165,19 +172,39 @@ public final class RECSCANNER_UPDATE {
         source.add(p3);
         source.add(p4);
 
+        System.out.println("p1:" + p1);
+        System.out.println("p2:" + p2);
+        System.out.println("p3:" + p3);
+        System.out.println("p4:" + p4);
+        try{
+            BufferedWriter bw = new BufferedWriter(new FileWriter(dirPath + "point_locations.txt"));
+            bw.write("p1:" + p1 + "   (white)");
+            bw.newLine();
+            bw.write("p2:" + p2 + "   (blue)");
+            bw.newLine();
+            bw.write("p3:" + p3 + "   (red)");
+            bw.newLine();
+            bw.write("p4:" + p4 + "   (green)");
+            bw.newLine();
+            bw.flush();
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         int distp1p2=(int) Math.sqrt((p2.x-p1.x)*(p2.x-p1.x) + (p2.y-p1.y)*(p2.y-p1.y));
         int distp2p3=(int) Math.sqrt((p3.x-p2.x)*(p3.x-p2.x) + (p3.y-p2.y)*(p3.y-p2.y));
 
 
         Mat startM = Converters.vector_Point2f_to_Mat(source);
         Mat result=extract(srcImg, startM, distp1p2, distp2p3);
-        //Imgcodecs.imwrite(pathname + "_circled_points.jpg", cannyImg);
+        Imgcodecs.imwrite(dirPath + "debug_circled_points.jpg", cannyImg);
 
         if(p2.x > p1.x){
             Core.flip(result, result,1);
         }
 
-        //Imgcodecs.imwrite(pathname + "_outputtest.jpg", result);
+        Imgcodecs.imwrite(dirPath + "debug_check.jpg", result);
         return result;
     }
 

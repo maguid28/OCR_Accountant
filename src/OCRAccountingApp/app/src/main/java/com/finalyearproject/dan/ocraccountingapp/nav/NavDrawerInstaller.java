@@ -147,8 +147,15 @@ public class NavDrawerInstaller {
         AWSMobileClient.defaultMobileClient().getIdentityManager().getCachedUserID();
         final IdentityManager identityManager = AWSMobileClient.defaultMobileClient().getIdentityManager();
         final IdentityProvider identityProvider = identityManager.getCurrentIdentityProvider();
-        Log.e("IDENTITY PROVIDER ", identityProvider.getUserName());
-        return identityProvider.getUserName();
+
+        if(identityProvider.getUserName()!=null) {
+            Log.e("IDENTITY PROVIDER ", identityProvider.getUserName());
+            return identityProvider.getUserName();
+        }
+        else {
+            //REPLACE WITH SHAREDPREFS OF STORED USER NAME
+            return "User";
+        }
     }
 
 
