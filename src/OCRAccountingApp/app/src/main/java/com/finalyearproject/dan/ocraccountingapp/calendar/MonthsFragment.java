@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -110,14 +111,15 @@ public class MonthsFragment extends Fragment {
         private final Context context;
         private final String[] values;
 
-        public MyColoringAdapter(Context context, String[] values) {
+        MyColoringAdapter(Context context, String[] values) {
             super(context, R.layout.month_list_item, values);
             this.context = context;
             this.values = values;
         }
 
+        @NonNull
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
             LayoutInflater inflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View rowView = inflater.inflate(R.layout.month_list_item, parent, false);

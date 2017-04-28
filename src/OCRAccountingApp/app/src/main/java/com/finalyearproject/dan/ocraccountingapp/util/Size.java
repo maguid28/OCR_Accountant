@@ -12,15 +12,6 @@ public class Size {
     private int width;
     private int height;
 
-    public Size() {
-        width = 0;
-        height = 0;
-    }
-
-    public Size(int width, int height) {
-        this.width = width;
-        this.height = height;
-    }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public Size(android.util.Size size) {
@@ -34,18 +25,6 @@ public class Size {
         this.height = size.height;
     }
 
-    @SuppressWarnings("deprecation")
-    public static List<Size> fromList(List<Camera.Size> sizes) {
-        if (sizes == null) return null;
-        List<Size> result = new ArrayList<>(sizes.size());
-
-        for (Camera.Size size : sizes) {
-            result.add(new Size(size));
-        }
-
-        return result;
-    }
-
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static Size[] fromArray2(android.util.Size[] sizes) {
         if (sizes == null) return null;
@@ -56,10 +35,6 @@ public class Size {
         }
 
         return result;
-    }
-
-    public int getWidth() {
-        return width;
     }
 
     public int getHeight() {

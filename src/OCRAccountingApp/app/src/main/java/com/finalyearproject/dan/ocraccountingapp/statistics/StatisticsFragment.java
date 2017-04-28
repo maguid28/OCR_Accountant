@@ -134,7 +134,7 @@ public class StatisticsFragment extends Fragment {
 
 
                 Log.i("year = ", String.valueOf(selectedYear));
-                Log.i("month = ", String.valueOf(selectedMonth));;
+                Log.i("month = ", String.valueOf(selectedMonth));
                 Log.i("date = ", String.valueOf(date));
 
                 // DB operation that specifies to retrieve the receipts for the queried month

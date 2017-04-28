@@ -6,8 +6,8 @@ import android.widget.TextView;
 
 import com.finalyearproject.dan.ocraccountingapp.R;
 
-public class NoSQLOperationListHeader implements NoSQLOperationListItem {
-    final String headerText;
+class NoSQLOperationListHeader implements NoSQLOperationListItem {
+    private final String headerText;
 
     NoSQLOperationListHeader(final String headerText) {
         this.headerText = headerText;

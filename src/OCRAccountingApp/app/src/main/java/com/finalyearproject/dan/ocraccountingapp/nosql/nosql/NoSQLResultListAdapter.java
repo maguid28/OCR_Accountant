@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
 public class NoSQLResultListAdapter extends ArrayAdapter<NoSQLResult> {
-    final Context context;
+    private final Context context;
 
     public NoSQLResultListAdapter(final Context context) {
         super(context, -1);

@@ -18,6 +18,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:layout_weight=".33"
             android:popupBackground="@color/colorPrimaryLight"
             android:layout_marginTop="20dp" />
@@ -26,12 +27,11 @@
             android:id="@+id/YearSpin"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
             android:layout_marginTop="20dp"
             android:layout_weight=".33"
             android:paddingLeft="10dp"
-            android:popupBackground="@color/colorPrimaryLight"
-            android:layout_below="@+id/MonthSpin" />
+            android:paddingRight="10dp"
+            android:popupBackground="@color/colorPrimaryLight" />
 
         <Button
             android:id="@+id/goButton"
@@ -40,9 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="GO"
-            android:textColor="#FFFFFF"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true" />
+            android:textColor="#FFFFFF" />
 
         </LinearLayout>
 
@@ -52,7 +50,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
-        android:layout_weight="1"
         android:layout_below="@+id/linearLayout">
 
     </FrameLayout>

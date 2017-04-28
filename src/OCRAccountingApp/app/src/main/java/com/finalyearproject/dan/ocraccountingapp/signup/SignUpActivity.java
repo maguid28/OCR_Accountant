@@ -147,14 +147,6 @@ public class SignUpActivity extends Activity {
         return valid;
     }
 
-
-
-    public void onSignupSuccess() {
-        //_signupButton.setEnabled(true);
-        setResult(RESULT_OK, null);
-        finish();
-    }
-
     public void onSignupFailed() {
         Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
 

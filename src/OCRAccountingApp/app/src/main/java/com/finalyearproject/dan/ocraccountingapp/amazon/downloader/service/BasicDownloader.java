@@ -105,7 +105,7 @@ public class BasicDownloader implements DownloadTask.DownloadListener,
 
         runningDownloads = new LongSparseArray<>();
         wifiLocks = new LongSparseArray<>();
-        final WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        final WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         int wifiMode = WifiManager.WIFI_MODE_FULL;
         if (android.os.Build.VERSION.SDK_INT >= ANDROID_SDK_VERSION_12) {
             wifiMode = WifiManager.WIFI_MODE_FULL_HIGH_PERF;

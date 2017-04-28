@@ -16,7 +16,7 @@ import com.finalyearproject.dan.ocraccountingapp.nosql.ReceiptDataDO;
 
 import java.util.Set;
 
-public class NoSQLReceiptDataResult implements NoSQLResult {
+class NoSQLReceiptDataResult implements NoSQLResult {
     private static final int KEY_TEXT_COLOR = 0xFF333333;
     private final ReceiptDataDO result;
 

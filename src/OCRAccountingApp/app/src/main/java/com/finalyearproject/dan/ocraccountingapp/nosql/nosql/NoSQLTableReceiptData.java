@@ -17,7 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class NoSQLTableReceiptData extends NoSQLTableBase {
+class NoSQLTableReceiptData extends NoSQLTableBase {
     private static final String LOG_TAG = NoSQLTableReceiptData.class.getSimpleName();
 
     /** Inner classes use this value to determine how many results to retrieve per service call. */
@@ -26,7 +26,7 @@ public class NoSQLTableReceiptData extends NoSQLTableBase {
 
 
 
-    public class QueryWithPartitionKeyAndFilter extends NoSQLOperationBase {
+    private class QueryWithPartitionKeyAndFilter extends NoSQLOperationBase {
 
         private PaginatedQueryList<ReceiptDataDO> results;
         private Iterator<ReceiptDataDO> resultsIterator;
@@ -108,36 +108,13 @@ public class NoSQLTableReceiptData extends NoSQLTableBase {
     /** The DynamoDB object mapper for accessing DynamoDB. */
     private final DynamoDBMapper mapper;
 
-    public NoSQLTableReceiptData() {
+    NoSQLTableReceiptData() {
         mapper = AWSMobileClient.defaultMobileClient().getDynamoDBMapper();
     }
 
     @Override
     public String getTableName() {
         return "receiptData";
-    }
-
-    @Override
-    public String getPartitionKeyName() {
-        return "Artist";
-    }
-
-    public String getPartitionKeyType() {
-        return "String";
-    }
-
-    @Override
-    public String getSortKeyName() {
-        return "recName";
-    }
-
-    public String getSortKeyType() {
-        return "String";
-    }
-
-    @Override
-    public int getNumIndexes() {
-        return 0;
     }
 
     private List<NoSQLOperationListItem> getSupportedDemoOperations(final Context context) {
@@ -152,8 +129,7 @@ public class NoSQLTableReceiptData extends NoSQLTableBase {
 
     @Override
     public NoSQLOperation getSupportedOperation(final Context context) {
-        NoSQLOperation noSQLOperation = new QueryWithPartitionKeyAndFilter(context);
-        return noSQLOperation;
+        return new QueryWithPartitionKeyAndFilter(context);
     }
 
     // modified function, changed void to NoSQLOperation

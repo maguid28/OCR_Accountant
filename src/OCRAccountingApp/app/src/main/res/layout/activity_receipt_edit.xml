@@ -10,7 +10,7 @@
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <Button
@@ -19,8 +19,8 @@
             android:layout_height="wrap_content"
             android:background="@color/colorPrimaryLight"
             android:drawableRight="@android:drawable/arrow_down_float"
-            android:onClick="expandableButton1"
             android:paddingRight="10dp"
+            android:paddingLeft="10dp"
             android:groupIndicator="@null"
             android:text="View receipt"
             android:textColor="#fff" />
@@ -29,7 +29,6 @@
             android:id="@+id/expandableLayout1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/expandableButton1"
             android:background="@color/veryLightGreen"
             android:padding="16dp"
             app:ael_duration="400"
@@ -41,8 +40,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
+                android:contentDescription="Receipt Image that has been captured."
                 app:srcCompat="@drawable/receipt12_roi"
-
                 android:id="@+id/receipt_display"/>
 
         </com.github.aakira.expandablelayout.ExpandableRelativeLayout>
@@ -71,7 +70,7 @@
                         android:textColor = "#ffffffff"
                         android:textStyle="bold"
                         android:text="EDIT RECEIPT DETAILS"
-                        android:textSize="20dp" />
+                        android:textSize="20sp" />
 
                     <TextView
                         android:id="@+id/textView5"
@@ -84,6 +83,7 @@
                     android:id="@+id/recNameEdit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:hint="Receipt name edit field"
                     android:ems="10"
                     android:inputType="textPersonName"
                     android:paddingBottom="20dp"
@@ -101,7 +101,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:inputType="textPersonName"
+                    android:hint="Receipt date edit field"
+                    android:inputType="datetime"
                     android:paddingBottom="20dp"
                     android:textColor="#ffffff" />
 
@@ -134,6 +135,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
+                    android:hint="Receipt total edit field"
                     android:inputType="numberDecimal"
                     android:textColor="#ffffffff" />
 
@@ -147,7 +149,7 @@
                     android:paddingTop="30dp"
                     android:text="Receipt items"
                     android:textColor="#ffffffff"
-                    android:textSize="18dp" />
+                    android:textSize="18sp" />
 
             </LinearLayout>
 

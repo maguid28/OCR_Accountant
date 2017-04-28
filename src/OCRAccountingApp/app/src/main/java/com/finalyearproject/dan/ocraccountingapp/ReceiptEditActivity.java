@@ -33,6 +33,7 @@ import com.finalyearproject.dan.ocraccountingapp.amazon.content.ContentProgressL
 import com.finalyearproject.dan.ocraccountingapp.amazon.content.UserFileManager;
 import com.finalyearproject.dan.ocraccountingapp.amazon.util.ThreadUtils;
 import com.finalyearproject.dan.ocraccountingapp.nosql.ReceiptDataDO;
+import com.finalyearproject.dan.ocraccountingapp.nosql.noSQLObj;
 import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
 
 import java.io.File;
@@ -48,7 +49,6 @@ import static com.finalyearproject.dan.ocraccountingapp.util.Orientation.exifToD
 public class ReceiptEditActivity extends AppCompatActivity {
 
     private static final String TAG = ReceiptEditActivity.class.getSimpleName();
-
 
     ExpandableRelativeLayout expandableLayout1;
     ImageView receiptDisplayImageView;
@@ -67,11 +67,6 @@ public class ReceiptEditActivity extends AppCompatActivity {
     EditText recTotalEditText, recNameEditText;
     String selectedSpinnerItem;
     EditText recDateEditText;
-
-    // id of the fragment or activity that passed information to this
-    String afID;
-
-    SQLObj sqlObj;
 
     // The user file manager.
     private UserFileManager userFileManager;

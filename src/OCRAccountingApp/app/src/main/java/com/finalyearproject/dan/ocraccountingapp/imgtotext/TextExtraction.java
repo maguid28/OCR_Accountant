@@ -6,16 +6,26 @@ import android.util.Log;
 import com.finalyearproject.dan.ocraccountingapp.wordcorrection.SpellChecker;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TextExtraction {
+
+    private Map<String, Integer> wordFrequencyMap = new HashMap<String, Integer>();
 
     public String getTitle(String dirPath, Activity activity) {
         String title = "";
@@ -50,29 +60,226 @@ public class TextExtraction {
                 cleanedText += "\r\n";
             }
             //System.out.println(cleanedText);
-            Log.e("text", cleanedText);
+            System.out.println("text: " + cleanedText);
             br.close();
 
+            // split text up by lines
             String lines[] = cleanedText.split("\\r?\\n");
             System.out.println("CHECK LINE 0: " + lines[0]);
 
-            //loop through lines until text is found
-            for(int i = 0; i<lines.length;i++){
+            LinkedList<String> potentials = new LinkedList<String>();
+
+            // loop through first 5 lines
+            for(int i = 0; i<3;i++){
                 if(lines[i].matches("[a-zA-Z0-9]+(\\s[a-zA-Z0-9]+)*?(\\s)?") && lines[i].length()>3) {
 
-                    //ADD DICTIONARY CHECK HERE
-                    SpellChecker spellChecker = new SpellChecker();
+                    // ADD DICTIONARY CHECK HERE
                     // correct misspelled words
-                    String corrected = spellChecker.correctWord(lines[i], "title", activity);
-                    return corrected;
+                    String corrected = correctWord(lines[i], "title", activity);
+
+                    potentials.add(corrected);
                 }
             }
+
+            // keep track of the most number of words present in dictionary on any one line
+            int largest = 0;
+            // Store the best match for the title
+            String bestMatch = "";
+
+            for(int i=0; i<potentials.size(); i++) {
+
+                // keep track of the line with the most words present in the dictionary
+                int realWordCount = 0;
+
+                System.out.println("potential: " + potentials.get(i));
+                String[] temp = potentials.get(i).split(" ");
+
+
+                for(int j=0; j<temp.length; j++) {
+                    System.out.println(wordFrequencyMap.containsKey(temp[j].toLowerCase()));
+                    // count how many words on line are present in the dictionary
+                    if(wordFrequencyMap.containsKey(temp[j].toLowerCase())){
+                        realWordCount++;
+                    }
+                }
+
+                // if line has the most words present in dict
+                if(realWordCount>largest) {
+                    largest=realWordCount;
+                    bestMatch = potentials.get(i);
+                }
+            }
+            return bestMatch;
+
+
+
         } catch (IOException i) {
             i.printStackTrace();
         }
 
         return title;
     }
+
+
+
+    public String correctWord(String line, String dicttype, Activity activity) {
+
+        final String DATA_PATH = activity.getFilesDir() + "/TesseractSample/tessdata/";
+
+        String correctedLine = "";
+        SpellChecker s = new SpellChecker();
+
+
+        System.out.println("WORKING!");
+        try {
+
+            createWordCountMap(DATA_PATH + "titleDict");
+
+            // store each word in an array
+            String[] words = line.split(" ");
+            String output;
+
+            for(int i=0; i<words.length; i++) {
+                String word = words[i].toLowerCase();
+                if(word.length() > 2) {
+                    String correction = getCorrectedWord(word);
+                    //capatilise the first letter of each word
+                    output = correction.substring(0, 1).toUpperCase() + correction.substring(1);
+                }
+                else {
+                    output = word.toUpperCase();
+                }
+                correctedLine += output + " ";
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return correctedLine;
+    }
+
+
+    private void createWordCountMap(String filename) throws IOException {
+        File file = new File(filename);
+        BufferedReader br = new BufferedReader(new InputStreamReader(
+                new FileInputStream(file)));
+        String line = null;
+        while ((line = br.readLine()) != null) {
+            String[] tokens = line.toLowerCase().split("[\\s\\p{Punct}]+");
+            for (String word : tokens) {
+                if (word.length() != 0) {
+                    wordFrequencyMap
+                            .put(word,
+                                    ((wordFrequencyMap.containsKey(word)) ? wordFrequencyMap
+                                            .get(word) + 1 : 1));
+                }
+            }
+        }
+
+    }
+
+    private Map<Integer, Set<String>> getPossibleWords(String wrongWord) {
+        Map<Integer, Set<String>> possibleWordsMap = new HashMap<Integer, Set<String>>();
+        Set<String> editDist1Words = getEditDistance1WordList(wrongWord);
+        Set<String> editDist2Words = new HashSet<String>();
+        for (String word : editDist1Words) {
+            Set<String> temp = getEditDistance1WordList(word);
+            temp.retainAll(wordFrequencyMap.keySet());
+            editDist2Words.addAll(temp);
+        }
+        editDist1Words.retainAll(wordFrequencyMap.keySet());
+        possibleWordsMap.put(1, editDist1Words);
+        possibleWordsMap.put(2, editDist2Words);
+        return possibleWordsMap;
+    }
+
+    private Set<String> getEditDistance1WordList(String wrongWord) {
+        Set<String> wordSet = new HashSet<String>();
+        String alphabet = "abcdefghijklmnopqrstuvwxyz";
+
+        for (int j = 0; j < alphabet.length(); j++)
+            wordSet.add(wrongWord + alphabet.charAt(j));
+        for (int i = 0; i < wrongWord.length(); i++) {
+
+            for (int j = 0; j < alphabet.length(); j++) {
+                wordSet.add(wrongWord.substring(0, i) + alphabet.charAt(j)
+                        + wrongWord.substring(i));
+                wordSet.add(wrongWord.substring(0, i) + alphabet.charAt(j)
+                        + wrongWord.substring(i + 1));
+
+            }
+
+            wordSet.add(wrongWord.substring(0, i) + wrongWord.substring(i + 1));
+
+            if (i < wrongWord.length() - 1)
+                wordSet.add(wrongWord.substring(0, i) + wrongWord.charAt(i + 1)
+                        + wrongWord.charAt(i) + wrongWord.substring(i + 2));
+
+        }
+
+        return wordSet;
+    }
+
+    private String getCorrectedWord(String wrongWord) {
+        Map<Integer, Set<String>> possibleWords = getPossibleWords(wrongWord);
+        int max = Integer.MIN_VALUE;
+        String correction = wrongWord;
+
+        if (wordFrequencyMap.containsKey(wrongWord))
+            return wrongWord;
+        else if (!possibleWords.get(1).isEmpty()) {
+
+            for (String word : possibleWords.get(1)) {
+                if (wordFrequencyMap.get(word) > max) {
+                    max = wordFrequencyMap.get(word);
+                    correction = word;
+                }
+            }
+            return correction;
+        } else if (!possibleWords.get(2).isEmpty()) {
+            for (String word : possibleWords.get(2)) {
+                if (wordFrequencyMap.get(word) > max) {
+                    max = wordFrequencyMap.get(word);
+                    correction = word;
+                }
+            }
+
+            return correction;
+        } else
+            return correction;
+    }
+
+    @Override
+    public String toString() {
+        return "SpellChecker [wordFrequencyMap=" + wordFrequencyMap + "]";
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     public String getDate(String dirPath) {
@@ -84,38 +291,68 @@ public class TextExtraction {
             BufferedReader br = new BufferedReader(fr);
 
             while (br.ready()) {
-                String s = br.readLine().toLowerCase();;
+                String s = br.readLine().toLowerCase();
 
                 String[] words = s.split("\\s");
 
                 // search for the line that contains information about date
                 for (int x=0; x<words.length; x++) {
-                    if(words[x].matches("[^A-Z]+/[0-9a-z]+/[^A-Z]+")) {
+                    if(words[x].matches("[0-9a-zA-Z]+/[0-9a-zA-Z]{2}/[0-9a-zA-Z]+")
+                            || words[x].matches("[0-9a-zA-Z]+[.][0-9a-zA-Z]{2}[.][0-9a-zA-Z]+")
+                            || words[x].matches("[0-9a-zA-Z]+[-][0-9a-zA-Z]{2}[-][0-9a-zA-Z]+")) {
 
                         String dateOnly = words[x];
 
-                        if(dateOnly.contains("/")) {
-                            StringBuilder sb = new StringBuilder(dateOnly);
-                            sb.indexOf("/");
-                            sb.lastIndexOf("/");
-                            System.out.println("first index: " + sb.indexOf("/"));
-                            System.out.println("last index: " + sb.lastIndexOf("/"));
+                        // replace mistaken 1's
+                        dateOnly = dateOnly.replaceAll("l", "1");
+                        dateOnly = dateOnly.replaceAll("I", "1");
+                        dateOnly = dateOnly.replaceAll("i", "1");
+                        // replace mistaken 0's
+                        dateOnly = dateOnly.replaceAll("o", "0");
+                        dateOnly = dateOnly.replaceAll("O", "0");
+                        //change '.' and '-' to '/'
+                        dateOnly = dateOnly.replaceAll("[.]", "/");
+                        dateOnly = dateOnly.replaceAll("-", "/");
 
-                            // remove any extra characters that may have been added on to the end
-                            if (dateOnly.length() > sb.lastIndexOf("/") + 5) {
-                                System.out.println(dateOnly.substring(0, sb.lastIndexOf("/") + 5));
-                                dateOnly = dateOnly.substring(0, sb.lastIndexOf("/") + 5);
-                            }
+                        dateOnly = dateOnly.replaceAll(",", "");
 
-                            // remove extra characters added on the the start of the date
-                            if(sb.indexOf("/") != 2) {
-                                // find the difference between the correct index and the actual index
-                                int temp = sb.indexOf("/") - 2;
-                                // remove the difference from the start of the string
-                                System.out.println(dateOnly.substring(temp));
-                                dateOnly = dateOnly.substring(temp);
+                        System.out.println(dateOnly);
+
+
+                        try {
+                            if (dateOnly.contains("/")) {
+                                StringBuilder sb = new StringBuilder(dateOnly);
+                                sb.indexOf("/");
+                                sb.lastIndexOf("/");
+                                System.out.println("first index: " + sb.indexOf("/"));
+                                System.out.println("last index: " + sb.lastIndexOf("/"));
+
+                                // if the date is in the form xx/xx/20xx
+                                if (dateOnly.substring(sb.lastIndexOf("/") + 1, sb.lastIndexOf("/") + 3).equals("20")) {
+                                    // remove any extra characters that may have been added on to the end
+                                    if (dateOnly.length() > sb.lastIndexOf("/") + 5) {
+                                        System.out.println(dateOnly.substring(0, sb.lastIndexOf("/") + 5));
+                                        dateOnly = dateOnly.substring(0, sb.lastIndexOf("/") + 5);
+                                    }
+                                }
+                                // if the date is in the form xx/xx/xx
+                                else {
+                                    if (dateOnly.length() > sb.lastIndexOf("/") + 3) {
+                                        System.out.println(dateOnly.substring(0, sb.lastIndexOf("/") + 3));
+                                        dateOnly = dateOnly.substring(0, sb.lastIndexOf("/") + 3);
+                                    }
+                                }
+
+                                // remove extra characters added on the the start of the date
+                                if (sb.indexOf("/") != 2) {
+                                    // find the difference between the correct index and the actual index
+                                    int temp = sb.indexOf("/") - 2;
+                                    // remove the difference from the start of the string
+                                    System.out.println(dateOnly.substring(temp));
+                                    dateOnly = dateOnly.substring(temp);
+                                }
                             }
-                        }
+                        } catch (Exception e) {}
 
 
                         potentials +=dateOnly;
@@ -127,10 +364,40 @@ public class TextExtraction {
 
             br.close();
 
+            // store all found potential dates in an array
             String[] datePotentials = potentials.split("\\r?\\n");
+            // create another array to store the formatted dates
+            //String[] formattedDatePotentials = new String[datePotentials.length];
+            LinkedList<String> formattedDatePotentials = new LinkedList<String>();
+
             for(int i = 0; i<datePotentials.length;i++){
                 if(datePotentials[i].matches("[0-9][0-9]/[0-9][0-9]/[0-9]{4}")) {
-                    date = datePotentials[i];
+                    formattedDatePotentials.add(datePotentials[i]);
+                }
+                // if date is in the form xx/xx/xx
+                if(datePotentials[i].matches("[0-9][0-9]/[0-9][0-9]/[0-9]{2}")) {
+                    String[] temp = datePotentials[i].split("/");
+                    // get date in the form xx/xx/20xx
+                    formattedDatePotentials.add(temp[0] + "/" + temp[1] + "/20" + temp[2]);
+                }
+            }
+
+            //todays date
+            String todayString = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
+            int today = Integer.parseInt(todayString);
+
+            int theDate = 0;
+
+            // search formattedDatePotentials for the date closest to todays date
+            for(int i = 0; i<formattedDatePotentials.size(); i++) {
+
+                String[] tempStore = formattedDatePotentials.get(i).split("/");
+                String rightFormat = tempStore[2] + tempStore[1] + tempStore[0];
+                int tempDate = Integer.parseInt(rightFormat);
+
+                if((today-tempDate < today-theDate) && tempDate<today) {
+                    theDate = tempDate;
+                    date = formattedDatePotentials.get(i);
                 }
             }
 
@@ -147,8 +414,6 @@ public class TextExtraction {
 
         return date;
     }
-
-
 
 
 
@@ -223,18 +488,29 @@ public class TextExtraction {
             String[] potentials = lastResort.split(" ");
             double temp = 0;
             double max = 0;
+            double secondLargest = 0;
 
+            // loop through potentials and find the second largest number.
+            // largest number will be the cash tendered
             for(int i=0; i<potentials.length; i++) {
+                System.out.println("pot:" + potentials[i] );
                 String extractedPrice = findTotal(potentials[i]);
-                System.out.println(extractedPrice);
                 if(extractedPrice.matches("(\\s)*[0-9]+\\.[0-9][0-9](\\s)*")) {
                     temp = Double.parseDouble(extractedPrice);
                     if(temp>max && temp <500){
+
+                        secondLargest = max;
+
                         max = temp;
                     }
                 }
             }
-            return String.valueOf(max);
+            if(secondLargest!=0) {
+                return String.valueOf(secondLargest);
+            }
+            else {
+                return String.valueOf(max);
+            }
         }
 
         String totalString = String.valueOf(total);
@@ -307,8 +583,8 @@ public class TextExtraction {
                 "mace", "gala", "costcutter", "applegreen", "supermacs", "mcdonalds", "rockets", "kfc"
         };
         String[] utilitiesArray = {
-                "electricity", "phone", "bill", "electric", "pinergy", "vodafone", "meteor", "maxol",
-                "topaz", "eir",
+                "electricity", "bill", "electric", "pinergy", "vodafone", "meteor", "maxol",
+                "topaz", "eir", "hardware", "electrical"
         };
         String[] transportArray = {
                 "bus", "train", "petrol", "fuel", "car", "luas"
@@ -317,7 +593,7 @@ public class TextExtraction {
                 "shoes", "boot", "jeans", "top", "dress","penneys", "tk", "maxx"
         };
         String[] recreationArray = {
-                "bar", "movie", "cinema", "music", "electronic", "book", "game"
+                "bar", "movie", "cinema", "music", "electronic", "book", "game", "accessories"
         };
         String[] healthArray = {
                 "pharmacy", "doctor", "health", "boots","lloyds","mccabes","hickeys"

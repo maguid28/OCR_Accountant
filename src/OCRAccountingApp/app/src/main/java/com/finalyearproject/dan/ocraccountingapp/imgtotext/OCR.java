@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
@@ -27,11 +26,9 @@ public class OCR {
 
     private static final String TESSDATA = "tessdata";
 
-    String result = "empty";
+    private String result = "empty";
 
-    Uri outputFileUri;
-
-    String DATA_PATH = "";
+    private String DATA_PATH = "";
 
 
 
@@ -42,11 +39,9 @@ public class OCR {
         //create folder and store tessdata here
         prepareTesseract(activity);
 
-        outputFileUri = Uri.fromFile(new File(img_path));
+        Uri outputFileUri = Uri.fromFile(new File(img_path));
 
-        String OCRText = startOCR(outputFileUri);
-
-        return OCRText;
+        return startOCR(outputFileUri);
     }
 
 
@@ -79,7 +74,7 @@ public class OCR {
 
 
     //Copy tessdata files (located on assets/tessdata) to destination directory
-    private void copyTessDataFiles(String path, Activity activity) {
+    private void copyTessDataFiles(final String path, Activity activity) {
         try {
             String fileList[] = activity.getAssets().list(path);
 
@@ -209,23 +204,5 @@ public class OCR {
         }
         tessBaseApi.end();
         return extractedText;
-    }
-
-
-
-    private class RunOCRinBackground extends AsyncTask<Uri, Void, String> {
-
-        @Override
-        protected String doInBackground(Uri... params) {
-
-            Uri fileUri = params[0];
-
-            return startOCR(fileUri);
-        }
-        @Override
-        protected void onPreExecute() {}
-
-        @Override
-        protected void onProgressUpdate(Void... values) {}
     }
 }

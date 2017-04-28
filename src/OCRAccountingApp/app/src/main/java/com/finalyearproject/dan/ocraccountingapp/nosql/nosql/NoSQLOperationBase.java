@@ -7,8 +7,8 @@ import android.widget.TextView;
 
 import com.finalyearproject.dan.ocraccountingapp.R;
 
-public abstract class NoSQLOperationBase implements NoSQLOperation {
-    protected final String title, example;
+abstract class NoSQLOperationBase implements NoSQLOperation {
+    private final String title, example;
 
     NoSQLOperationBase(final String title, final String example) {
         this.title = title;
@@ -55,10 +55,5 @@ public abstract class NoSQLOperationBase implements NoSQLOperation {
         selectOpViewHolder.exampleTextView.setText(example);
 
         return listItemLayout;
-    }
-
-    @Override
-    public boolean isScan() {
-        return false;
     }
 }

@@ -18,6 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_marginTop="24dp"
             android:layout_marginBottom="24dp"
+            android:contentDescription="Application logo"
             android:layout_gravity="center_horizontal"
             android:layout_height="100dp" />
 
@@ -76,17 +77,17 @@
                 android:text="Create New Account"
                 android:textColor = "@color/veryLightGreen"
                 android:gravity="left"
-                android:textSize="16dip"/>
+                android:textSize="16sp"/>
 
             <TextView android:id="@+id/signIn_textView_ForgotPassword"
-                android:layout_width="fill_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2dp"
                 android:layout_weight="1"
                 android:textColor = "@color/veryLightGreen"
                 android:text="Forgot Password?"
                 android:gravity="right"
-                android:textSize="16dip"/>
+                android:textSize="16sp"/>
 
 
 
@@ -101,14 +102,14 @@
             android:layout_marginTop="10dp">
 
             <TextView android:id="@+id/signIn_textView_verifyAccount"
-                android:layout_width="fill_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2dp"
                 android:layout_weight="1"
                 android:textColor = "@color/veryLightGreen"
                 android:text="Verify Account"
                 android:gravity="center"
-                android:textSize="16dip"/>
+                android:textSize="16sp"/>
 
 
 
@@ -138,6 +139,7 @@
         <ImageButton android:src="@drawable/fb_login_button_image"
             android:layout_width="308dp"
             android:layout_gravity="center_horizontal"
+            android:contentDescription="Facebook login button"
             android:layout_height="49dp"
             android:id="@+id/fb_login_button" />
 

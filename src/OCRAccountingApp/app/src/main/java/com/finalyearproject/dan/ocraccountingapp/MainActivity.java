@@ -1,9 +1,7 @@
 package com.finalyearproject.dan.ocraccountingapp;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -12,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.finalyearproject.dan.ocraccountingapp.amazon.AWSMobileClient;
 import com.finalyearproject.dan.ocraccountingapp.calendar.ViewPagerFragment;
@@ -93,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Copy tessdata files (located on assets/tessdata) to destination directory
-    private void copyTessDataFiles(String path) {
+    private void copyTessDataFiles(final String path) {
         try {
             String fileList[] = this.getAssets().list(path);
 

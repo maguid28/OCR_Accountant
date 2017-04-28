@@ -1,12 +1,13 @@
 package com.finalyearproject.dan.ocraccountingapp.nosql.nosql;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
-public class NoSQLOperationListAdapter extends ArrayAdapter<NoSQLOperationListItem> {
+class NoSQLOperationListAdapter extends ArrayAdapter<NoSQLOperationListItem> {
 
     public enum ViewType {
         HEADER, OPERATION
@@ -26,9 +27,10 @@ public class NoSQLOperationListAdapter extends ArrayAdapter<NoSQLOperationListIt
         return ViewType.values().length;
     }
 
+    @NonNull
     @Override
     public View getView(final int position, final View convertView,
-                        final ViewGroup parent) {
+                        @NonNull final ViewGroup parent) {
         final LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
 
         final NoSQLOperationListItem listItem = getItem(position);

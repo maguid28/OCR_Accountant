@@ -2,7 +2,6 @@ package com.finalyearproject.dan.ocraccountingapp.statistics.listviewitems;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -17,8 +16,6 @@ import com.github.mikephil.charting.data.ChartData;
 
 public class BarChartItem extends ChartItem {
     
-    private Typeface mTf;
-    
     public BarChartItem(ChartData<?> cd, Context c) {
         super(cd);
     }
@@ -31,7 +28,7 @@ public class BarChartItem extends ChartItem {
     @Override
     public View getView(int position, View convertView, Context c) {
 
-        ViewHolder holder = null;
+        ViewHolder holder;
 
         if (convertView == null) {
 
@@ -54,7 +51,6 @@ public class BarChartItem extends ChartItem {
 
         XAxis xAxis = holder.chart.getXAxis();
         xAxis.setPosition(XAxisPosition.BOTTOM);
-        xAxis.setTypeface(mTf);
         xAxis.setDrawGridLines(false);
         xAxis.setDrawAxisLine(true);
         xAxis.setTextColor(Color.WHITE);
@@ -63,7 +59,6 @@ public class BarChartItem extends ChartItem {
         YAxis leftAxis = holder.chart.getAxisLeft();
         leftAxis.setTextColor(Color.WHITE);
         leftAxis.setTextSize(12f);
-        leftAxis.setTypeface(mTf);
         leftAxis.setLabelCount(5, false);
         leftAxis.setSpaceTop(20f);
         leftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
@@ -71,12 +66,9 @@ public class BarChartItem extends ChartItem {
         YAxis rightAxis = holder.chart.getAxisRight();
         rightAxis.setTextColor(Color.WHITE);
         rightAxis.setTextSize(12f);
-        rightAxis.setTypeface(mTf);
         rightAxis.setLabelCount(5, false);
         rightAxis.setSpaceTop(20f);
         rightAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
-
-        mChartData.setValueTypeface(mTf);
         
         // set data
         holder.chart.setData((BarData) mChartData);

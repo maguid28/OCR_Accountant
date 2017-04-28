@@ -20,11 +20,7 @@ import com.finalyearproject.dan.ocraccountingapp.R;
 import com.finalyearproject.dan.ocraccountingapp.signup.util.ViewHelper;
 
 
-/**
- * Activity to prompt for a new password along with the verification code.
- */
 public class ForgotPasswordActivity extends Activity {
-    /** Log tag. */
     private static final String LOG_TAG = ForgotPasswordActivity.class.getSimpleName();
 
     @Override
@@ -33,15 +29,11 @@ public class ForgotPasswordActivity extends Activity {
         setContentView(R.layout.activity_forgot_password);
     }
 
-    /**
-     * Retrieve input and return to caller.
-     * @param view the Android View
-     */
     public void forgotPassword(final View view) {
         final String password =
                 ViewHelper.getStringValue(this, R.id.forgot_password_password);
         final String verificationCode =
-                ViewHelper.getStringValue(this, R.id.forgot_password_verification_code);
+                ViewHelper.getStringValue(this, R.id.verification_code);
 
         Log.d(LOG_TAG, "verificationCode = " + verificationCode);
 

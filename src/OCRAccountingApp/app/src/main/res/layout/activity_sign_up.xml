@@ -17,6 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="72dp"
             android:layout_marginBottom="24dp"
+            android:contentDescription="Application logo"
             android:layout_gravity="center_horizontal" />
 
         <!-- Name Label -->
@@ -105,7 +106,7 @@
             android:layout_marginBottom="24dp"
             android:text="Already a member? Login"
             android:gravity="center"
-            android:textSize="16dip"/>
+            android:textSize="16sp"/>
 
     </LinearLayout>
 </ScrollView>

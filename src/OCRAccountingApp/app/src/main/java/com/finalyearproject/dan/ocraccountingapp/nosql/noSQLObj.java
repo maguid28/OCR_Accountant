@@ -1,10 +1,10 @@
-package com.finalyearproject.dan.ocraccountingapp;
+package com.finalyearproject.dan.ocraccountingapp.nosql;
 
 import com.finalyearproject.dan.ocraccountingapp.nosql.nosql.NoSQLResult;
 
 import java.io.Serializable;
 
-public class SQLObj implements Serializable {
+public class noSQLObj implements Serializable {
 
     private NoSQLResult noSQLResult;
 

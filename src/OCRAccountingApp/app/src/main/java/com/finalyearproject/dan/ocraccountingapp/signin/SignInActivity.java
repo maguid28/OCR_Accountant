@@ -19,7 +19,6 @@ import com.finalyearproject.dan.ocraccountingapp.amazon.user.IdentityProvider;
 import com.finalyearproject.dan.ocraccountingapp.amazon.user.signin.CognitoUserPoolsSignInProvider;
 import com.finalyearproject.dan.ocraccountingapp.amazon.user.signin.FacebookSignInProvider;
 import com.finalyearproject.dan.ocraccountingapp.amazon.user.signin.SignInManager;
-import com.finalyearproject.dan.ocraccountingapp.camera.ui.camactivities.CamActivity;
 import com.finalyearproject.dan.ocraccountingapp.signup.SignUpConfirmActivity;
 
 public class SignInActivity extends Activity {

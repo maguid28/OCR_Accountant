@@ -4,7 +4,6 @@ package com.finalyearproject.dan.ocraccountingapp.calendar;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -20,9 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.amazonaws.AmazonClientException;
-import com.finalyearproject.dan.ocraccountingapp.MainActivity;
-import com.finalyearproject.dan.ocraccountingapp.ReceiptEditActivity;
-import com.finalyearproject.dan.ocraccountingapp.SQLObj;
+import com.finalyearproject.dan.ocraccountingapp.nosql.noSQLObj;
 import com.finalyearproject.dan.ocraccountingapp.amazon.content.ContentItem;
 import com.finalyearproject.dan.ocraccountingapp.amazon.content.ContentProgressListener;
 import com.finalyearproject.dan.ocraccountingapp.amazon.content.UserFileManager;
@@ -31,12 +28,10 @@ import com.finalyearproject.dan.ocraccountingapp.amazon.AWSConfiguration;
 import com.finalyearproject.dan.ocraccountingapp.amazon.util.ThreadUtils;
 import com.amazonaws.regions.Regions;
 import com.finalyearproject.dan.ocraccountingapp.R;
-import com.finalyearproject.dan.ocraccountingapp.camera.ui.camactivities.PreviewActivity;
 import com.finalyearproject.dan.ocraccountingapp.nosql.nosql.DynamoDBUtils;
 import com.finalyearproject.dan.ocraccountingapp.nosql.nosql.NoSQLOperation;
 import com.finalyearproject.dan.ocraccountingapp.nosql.nosql.NoSQLResult;
 import com.finalyearproject.dan.ocraccountingapp.nosql.nosql.NoSQLResultListAdapter;
-import com.finalyearproject.dan.ocraccountingapp.statistics.StatisticsFragment;
 import com.finalyearproject.dan.ocraccountingapp.util.ContentHelper;
 
 import java.io.File;
@@ -206,14 +201,25 @@ public class DisplayResultsFragment extends Fragment {
                     public void run() {
                         try {
                             result.deleteItem();
-
-                            ThreadUtils.runOnUiThread(new Runnable() {
+                            userFileManager.deleteRemoteContent(result.getFilePath(), new UserFileManager.ResponseHandler() {
                                 @Override
-                                public void run() {
-                                    listAdapter.remove(result);
-                                    listAdapter.notifyDataSetChanged();
+                                public void onSuccess() {
+                                    dialog.dismiss();
+                                    ThreadUtils.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            listAdapter.remove(result);
+                                            listAdapter.notifyDataSetChanged();
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void onError(final AmazonClientException ex) {
+                                    dialog.dismiss();
                                 }
                             });
+
                         } catch (final AmazonClientException ex) {
                             Log.e(LOG_TAG, "Failed deleting item.", ex);
                             DynamoDBUtils.showErrorDialogForServiceException(getActivity(),
@@ -279,13 +285,13 @@ public class DisplayResultsFragment extends Fragment {
                     }
                 });
 
-                // create instance of SQLObj
-                SQLObj sqlObj = new SQLObj();
-                sqlObj.setObj(result);
+                // create instance of noSQLObj
+                noSQLObj noSqlObj = new noSQLObj();
+                noSqlObj.setObj(result);
 
 
                 Bundle args = new Bundle();
-                args.putSerializable("SQLObj", sqlObj);
+                args.putSerializable("noSQLObj", noSqlObj);
                 args.putString("file_path_arg", filePath);
                 args.putString("TITLE", recTitle);
                 args.putString("TOTAL", recTotal);

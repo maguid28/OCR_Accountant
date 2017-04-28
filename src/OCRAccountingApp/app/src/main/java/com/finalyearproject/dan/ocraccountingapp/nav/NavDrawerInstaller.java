@@ -10,8 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
-import com.finalyearproject.dan.ocraccountingapp.camera.ui.camactivities.CamActivity;
-import com.finalyearproject.dan.ocraccountingapp.filebrowser.FileBrowserFragment;
+import com.finalyearproject.dan.ocraccountingapp.camera.OpenCVCamera;
 import com.finalyearproject.dan.ocraccountingapp.R;
 import com.finalyearproject.dan.ocraccountingapp.calendar.ViewPagerFragment;
 import com.finalyearproject.dan.ocraccountingapp.signin.SignInActivity;
@@ -19,7 +18,6 @@ import com.finalyearproject.dan.ocraccountingapp.statistics.StatisticsFragment;
 import com.finalyearproject.dan.ocraccountingapp.amazon.AWSMobileClient;
 import com.finalyearproject.dan.ocraccountingapp.amazon.user.IdentityManager;
 import com.finalyearproject.dan.ocraccountingapp.amazon.user.IdentityProvider;
-import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.itemanimators.AlphaCrossFadeAnimator;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -63,12 +61,10 @@ public class NavDrawerInstaller {
                 .withAccountHeader(headerResult)
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName("Calendar").withIcon(R.drawable.nav_calendar_icon).withIdentifier(1),
-                        new PrimaryDrawerItem().withName("Receipt Capture").withIcon(R.drawable.nav_receipt_icon).withIdentifier(2),
+                        new PrimaryDrawerItem().withName("Receipt Capture").withIcon(R.drawable.nav_camera_icon).withIdentifier(2),
                         new PrimaryDrawerItem().withName("Statistics").withIcon(R.drawable.nav_statistics_icon).withIdentifier(3),
-                        new PrimaryDrawerItem().withName("File Browser").withIcon(R.drawable.nav_receipt_icon).withIdentifier(5),
                         new SectionDrawerItem().withName("Account"),
-                        new SecondaryDrawerItem().withName("Settings").withIcon(FontAwesome.Icon.faw_cog),
-                        new SecondaryDrawerItem().withName("Log Out").withIcon(R.drawable.nav_logout_icon).withIdentifier(6)
+                        new SecondaryDrawerItem().withName("Log Out").withIcon(R.drawable.nav_logout_icon).withIdentifier(4)
                 ) // add the items we want to use with our Drawer
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -92,7 +88,7 @@ public class NavDrawerInstaller {
                             if (drawerItem.getIdentifier() == 2) {
                                 Intent cameraIntent;
 
-                                cameraIntent = new Intent(activity, CamActivity.class);
+                                cameraIntent = new Intent(activity, OpenCVCamera.class);
 
                                 //Intent cameraIntent = new Intent(activity, CamActivity.class);
                                 activity.startActivity(cameraIntent);
@@ -105,15 +101,7 @@ public class NavDrawerInstaller {
                                 transaction.commit();
                                 //intent = new Intent(activity, ReceiptCaptureActivity.class);
                             }
-                            if (drawerItem.getIdentifier() == 5) {
-                                Fragment fragment = new FileBrowserFragment();
-                                FragmentManager manager = activity.getSupportFragmentManager();
-                                FragmentTransaction transaction = manager.beginTransaction();
-                                transaction.replace(R.id.main_fragment_container, fragment);
-                                transaction.commit();
-                            }
-                            if (drawerItem.getIdentifier() == 6) {
-
+                            if (drawerItem.getIdentifier() == 4) {
                                 // Obtain a reference to the mobile client. It is created in the Application class,
                                 // but in case a custom Application class is not used, we initialize it here if necessary.
                                 AWSMobileClient.initializeMobileClientIfNecessary(activity);
@@ -148,7 +136,7 @@ public class NavDrawerInstaller {
         final IdentityManager identityManager = AWSMobileClient.defaultMobileClient().getIdentityManager();
         final IdentityProvider identityProvider = identityManager.getCurrentIdentityProvider();
 
-        if(identityProvider.getUserName()!=null) {
+        if(!identityProvider.getUserName().equals(null)) {
             Log.e("IDENTITY PROVIDER ", identityProvider.getUserName());
             return identityProvider.getUserName();
         }

@@ -29,8 +29,4 @@ public interface NoSQLOperation extends NoSQLOperationListItem {
      */
     String getTitle();
 
-    /**
-     * @return true if this operation is a scan.
-     */
-    boolean isScan();
 }

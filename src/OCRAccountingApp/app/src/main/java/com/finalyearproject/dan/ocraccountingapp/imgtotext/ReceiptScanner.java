@@ -244,7 +244,7 @@ public final class ReceiptScanner {
     }
 
 
-    private Mat imageClean(Mat srcImage){
+    public Mat imageClean(Mat srcImage){
         //convert to grey
         Imgproc.cvtColor(srcImage, srcImage, Imgproc.COLOR_BGR2GRAY);
         //remove noise from image
@@ -262,7 +262,7 @@ public final class ReceiptScanner {
 
 
 
-    private Mat removeArtifacts(Mat srcImage){
+    public Mat removeArtifacts(Mat srcImage){
 
         Mat rgbImg = new Mat();
 

@@ -9,13 +9,13 @@ import java.util.List;
 
 
 public class NoSQLTableFactory {
-    /** Singleton instance. */
+    // Singleton instance.
     private volatile static NoSQLTableFactory instance;
 
-    /** Map containing an instance of each of the supporting tables by table name. */
+    // Map containing an instance of each of the supporting tables by table name.
     private LinkedHashMap<String, NoSQLTableBase> supportedTablesMap = new LinkedHashMap<>();
 
-    NoSQLTableFactory(final Context context) {
+    private NoSQLTableFactory(final Context context) {
         final List<NoSQLTableBase> supportedTablesList = new ArrayList<>();
         supportedTablesList.add(new NoSQLTableReceiptData());
         for (final NoSQLTableBase table : supportedTablesList) {

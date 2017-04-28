@@ -10,30 +10,6 @@ public abstract class NoSQLTableBase {
     public abstract String getTableName();
 
     /**
-     * @return the primary partition key for the table.
-     */
-    public abstract String getPartitionKeyName();
-
-    /**
-     * @return the human readable partition key type.
-     */
-    public abstract String getPartitionKeyType();
-    /**
-     * @return the secondary partition key for the table.
-     */
-    public abstract String getSortKeyName();
-
-    /**
-     * @return the human readable sort key type.
-     */
-    public abstract String getSortKeyType();
-
-    /**
-     * @return the number of secondary indexes for the table.
-     */
-    public abstract int getNumIndexes();
-
-    /**
      * Handler interface to retrieve the supported table operations.
      */
     public interface SupportedOperationsHandler {

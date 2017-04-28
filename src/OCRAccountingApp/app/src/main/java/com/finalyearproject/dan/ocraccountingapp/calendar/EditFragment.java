@@ -28,7 +28,7 @@ import android.widget.TextView;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.regions.Regions;
 import com.finalyearproject.dan.ocraccountingapp.R;
-import com.finalyearproject.dan.ocraccountingapp.SQLObj;
+import com.finalyearproject.dan.ocraccountingapp.nosql.noSQLObj;
 import com.finalyearproject.dan.ocraccountingapp.amazon.AWSConfiguration;
 import com.finalyearproject.dan.ocraccountingapp.amazon.AWSMobileClient;
 import com.finalyearproject.dan.ocraccountingapp.amazon.content.UserFileManager;
@@ -66,7 +66,7 @@ public class EditFragment extends Fragment {
     ImageView receiptDisplayImageView;
 
     NoSQLResult noSQLResult;
-    SQLObj sqlObj;
+    noSQLObj noSqlObj;
 
     ExpandableRelativeLayout expandableLayout1;
 
@@ -95,8 +95,9 @@ public class EditFragment extends Fragment {
             receiptTotal = bundle.getString("TOTAL");
             receiptDate = bundle.getString("DATE");
             receiptCatagory = bundle.getString("CATAGORY");
-            sqlObj = (SQLObj) bundle.getSerializable("SQLObj");
-            noSQLResult = sqlObj.getObj();
+            noSqlObj = (noSQLObj) bundle.getSerializable("noSQLObj");
+            assert noSqlObj != null;
+            noSQLResult = noSqlObj.getObj();
             System.out.println("theresult " + noSQLResult);
 
 
@@ -246,12 +247,6 @@ public class EditFragment extends Fragment {
             }
         }
         return index;
-    }
-
-
-    public void expandableButton1(View view) {
-        expandableLayout1 = (ExpandableRelativeLayout) view.findViewById(R.id.expandableLayout1);
-        expandableLayout1.toggle(); // toggle expand and collapse
     }
 
 

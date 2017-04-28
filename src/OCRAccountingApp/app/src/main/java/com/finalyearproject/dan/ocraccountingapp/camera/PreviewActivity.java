@@ -1,4 +1,4 @@
-package com.finalyearproject.dan.ocraccountingapp.camera.ui.camactivities;
+package com.finalyearproject.dan.ocraccountingapp.camera;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -21,12 +21,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.MediaController;
 
-import com.finalyearproject.dan.ocraccountingapp.imgtotext.OCR;
 import com.finalyearproject.dan.ocraccountingapp.R;
-import com.finalyearproject.dan.ocraccountingapp.imgtotext.ReceiptScanner;
-import com.finalyearproject.dan.ocraccountingapp.imgtotext.TextExtraction;
-import com.finalyearproject.dan.ocraccountingapp.camera.ui.BaseActivity;
 import com.finalyearproject.dan.ocraccountingapp.ReceiptEditActivity;
+import com.finalyearproject.dan.ocraccountingapp.imgtotext.OCR;
+import com.finalyearproject.dan.ocraccountingapp.imgtotext.TextExtraction;
 import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.view.UCropView;
 
@@ -34,7 +32,6 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
-import org.opencv.imgcodecs.Imgcodecs;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -50,16 +47,18 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
     private final static String OCR_TEXT = "ocr_text_arg";
 
     private String previewFilePath;
-    private String displayFilePath;
     private UCropView imagePreview;
     private ViewGroup preprocessPanel;
     private ViewGroup postprocessPanel;
+
+    public static final int ACTION_CONFIRM = 900;
+    public static final int ACTION_RETAKE = 901;
+    public static final int ACTION_CANCEL = 902;
 
     private MediaController mediaController;
     private MediaPlayer mediaPlayer;
 
     Bitmap imageBitmap;
-    Bitmap displayBitmap;
     Mat test2;
 
     ProgressDialog mProgressDialog;
@@ -75,15 +74,14 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
     public static boolean ocrButtonClicked = false;
 
 
-    public static Intent newIntent(Context context, int mediaAction,
-                                   String filePath) {
+    public static Intent newIntent(Context context, String filePath) {
 
         return new Intent(context, PreviewActivity.class)
                 .putExtra(FILE_PATH, filePath);
     }
 
     public static boolean isResultConfirm(@NonNull Intent resultIntent) {
-        return BaseActivity.ACTION_CONFIRM == resultIntent.getIntExtra(RESPONSE_CODE, -1);
+        return ACTION_CONFIRM == resultIntent.getIntExtra(RESPONSE_CODE, -1);
     }
 
     public static String getMediaFilePath(@NonNull Intent resultIntent) {
@@ -91,7 +89,7 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     public static boolean isResultCancel(@NonNull Intent resultIntent) {
-        return BaseActivity.ACTION_CANCEL == resultIntent.getIntExtra(RESPONSE_CODE, -1);
+        return ACTION_CANCEL == resultIntent.getIntExtra(RESPONSE_CODE, -1);
     }
 
 
@@ -110,7 +108,8 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
         postprocessPanel = (ViewGroup) findViewById(R.id.post_process_panel);
 
         // Hide the post process panel until processing is complete
-        postprocessPanel.setVisibility(View.GONE);
+        preprocessPanel.setVisibility(View.GONE);
+        //postprocessPanel.setVisibility(View.GONE);
 
         mProgressDialog = new ProgressDialog(this);
 
@@ -217,7 +216,7 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
         } else if (view.getId() == R.id.re_take_media) {
             processButtonClicked = false;
             deleteMediaFile();
-            resultIntent.putExtra(RESPONSE_CODE, BaseActivity.ACTION_RETAKE);
+            resultIntent.putExtra(RESPONSE_CODE, ACTION_RETAKE);
             setResult(RESULT_OK, resultIntent);
             finish();
         }
@@ -225,20 +224,20 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
             processButtonClicked = false;
             ocrButtonClicked = false;
             deleteMediaFile();
-            resultIntent.putExtra(RESPONSE_CODE, BaseActivity.ACTION_RETAKE);
+            resultIntent.putExtra(RESPONSE_CODE, ACTION_RETAKE);
             setResult(RESULT_OK, resultIntent);
             finish();
         } else if (view.getId() == R.id.cancel_media_action) {
             processButtonClicked = false;
             deleteMediaFile();
-            resultIntent.putExtra(RESPONSE_CODE, BaseActivity.ACTION_CANCEL);
+            resultIntent.putExtra(RESPONSE_CODE, ACTION_CANCEL);
             setResult(RESULT_OK, resultIntent);
             finish();
         } else if (view.getId() == R.id.cancel_media_action2) {
             processButtonClicked = false;
             ocrButtonClicked = false;
             deleteMediaFile();
-            resultIntent.putExtra(RESPONSE_CODE, BaseActivity.ACTION_CANCEL);
+            resultIntent.putExtra(RESPONSE_CODE, ACTION_CANCEL);
             setResult(RESULT_OK, resultIntent);
             finish();
         }
@@ -348,7 +347,6 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
         String dirPath = a[0] + "ocrtext.txt";
 
 
-
         TextExtraction te = new TextExtraction();
 
         String recTitle = te.getTitle(dirPath, this);
@@ -379,13 +377,6 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
 
 
 
-
-
-
-
-
-
-
     @Override
     public void onBackPressed() {
         super.onBackPressed();
@@ -396,55 +387,6 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
         File mediaFile = new File(previewFilePath);
         return mediaFile.delete();
     }
-
-    private class ProcessImageTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected void onPreExecute() {
-            isProcessTaskRunning = true;
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-
-            ReceiptScanner rec = new ReceiptScanner();
-            // get the directory of the previewfilepath
-            // find the last occurence of '/'
-            int p=previewFilePath.lastIndexOf("/");
-            // e is the string value after the last occurence of '/'
-            String e=previewFilePath.substring(p+1);
-            // split the string at the value of e to remove the it from the string and get the dir path
-            String[] a = previewFilePath.split(e);
-            String dirPath = a[0];
-
-            System.out.println("previewfilepath " + previewFilePath);
-            System.out.println("dirpath " + dirPath);
-            displayFilePath = dirPath + "displayImage.jpg";
-
-            test2 = rec.correctReceipt(previewFilePath);
-            Imgcodecs.imwrite(previewFilePath, test2);
-
-            Imgcodecs.imwrite(displayFilePath, test2);
-            return "Executed";
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-
-            isProcessTaskRunning = false;
-            Log.e("IMGTASK COMPLETE? ", "YES");
-
-            // If user has already clicked the process button
-            if(processButtonClicked) {
-                mProgressDialog.dismiss();
-                postProcess();
-            }
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {}
-    }
-
 
 
 
@@ -463,10 +405,6 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(previewFilePath, bmOptions);
-
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-
 
         //decode the image file into a bitmap sized to fill the view
         bmOptions.inJustDecodeBounds = false;
@@ -526,8 +464,9 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
         Log.e("Height of preview...", String.valueOf(height));
         Log.e("Width of preview", String.valueOf(width));
 
-        ProcessImageTask processImageTask = new ProcessImageTask();
-        processImageTask.execute();
+        // run ocr in asynctask
+        OCRTask OCRTask = new OCRTask();
+        OCRTask.execute();
     }
 
 
