@@ -53,7 +53,7 @@ public class OCR {
             e.printStackTrace();
         }
 
-        copyTessDataFiles(TESSDATA, activity);
+        copyTessDataFiles(activity);
     }
 
 
@@ -74,18 +74,18 @@ public class OCR {
 
 
     //Copy tessdata files (located on assets/tessdata) to destination directory
-    private void copyTessDataFiles(final String path, Activity activity) {
+    private void copyTessDataFiles(Activity activity) {
         try {
-            String fileList[] = activity.getAssets().list(path);
+            String fileList[] = activity.getAssets().list(TESSDATA);
 
             for (String fileName : fileList) {
 
                 // open file within the assets folder
                 // if it is not already there copy it to the sdcard
-                String pathToDataFile = DATA_PATH + path + "/" + fileName;
+                String pathToDataFile = DATA_PATH + TESSDATA + "/" + fileName;
                 if (!(new File(pathToDataFile)).exists()) {
 
-                    InputStream in = activity.getAssets().open(path + "/" + fileName);
+                    InputStream in = activity.getAssets().open(TESSDATA + "/" + fileName);
 
                     OutputStream out = new FileOutputStream(pathToDataFile);
 

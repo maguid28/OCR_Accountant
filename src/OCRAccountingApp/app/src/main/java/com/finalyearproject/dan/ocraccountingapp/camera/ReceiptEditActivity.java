@@ -1,4 +1,4 @@
-package com.finalyearproject.dan.ocraccountingapp;
+package com.finalyearproject.dan.ocraccountingapp.camera;
 
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
@@ -26,6 +26,8 @@ import android.widget.TextView;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.regions.Regions;
+import com.finalyearproject.dan.ocraccountingapp.MainActivity;
+import com.finalyearproject.dan.ocraccountingapp.R;
 import com.finalyearproject.dan.ocraccountingapp.amazon.AWSConfiguration;
 import com.finalyearproject.dan.ocraccountingapp.amazon.AWSMobileClient;
 import com.finalyearproject.dan.ocraccountingapp.amazon.content.ContentItem;
@@ -33,7 +35,6 @@ import com.finalyearproject.dan.ocraccountingapp.amazon.content.ContentProgressL
 import com.finalyearproject.dan.ocraccountingapp.amazon.content.UserFileManager;
 import com.finalyearproject.dan.ocraccountingapp.amazon.util.ThreadUtils;
 import com.finalyearproject.dan.ocraccountingapp.nosql.ReceiptDataDO;
-import com.finalyearproject.dan.ocraccountingapp.nosql.noSQLObj;
 import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
 
 import java.io.File;
@@ -241,7 +242,7 @@ public class ReceiptEditActivity extends AppCompatActivity {
 
 
     private void renameAndUploadFile() {
-        boolean bool = false;
+        boolean bool;
         //path to file we want to rename
         File oldName = new File(filePath);
 
@@ -388,7 +389,6 @@ public class ReceiptEditActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                AmazonClientException lastException = null;
                 try {
                     //save the new entry to the db
                     dynamoDBMapper.save(receipt);
@@ -401,7 +401,6 @@ public class ReceiptEditActivity extends AppCompatActivity {
                 } catch (final AmazonClientException ex) {
                     Log.e("INSERT DATA", "Failed saving item : " + ex.getMessage(), ex);
                     //Toast.makeText(getActivity(), "FAILED!", Toast.LENGTH_LONG).show();
-                    lastException = ex;
                 }
             }
         }).start();
@@ -430,12 +429,16 @@ public class ReceiptEditActivity extends AppCompatActivity {
 
         try {
             //Display image in the correct orientation
-            ExifInterface exif = new ExifInterface(filePath);
-            int rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-            int rotationInDegrees = exifToDegrees(rotation);
-            Matrix matrix = new Matrix();
-            if (rotation != 0f) {matrix.preRotate(rotationInDegrees);}
-            imageBitmap = Bitmap.createBitmap(imageBitmap,0,0, imageBitmap.getWidth(),imageBitmap.getHeight(), matrix, true);
+            if(filePath!=null) {
+                ExifInterface exif = new ExifInterface(filePath);
+                int rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+                int rotationInDegrees = exifToDegrees(rotation);
+                Matrix matrix = new Matrix();
+                if (rotation != 0f) {
+                    matrix.preRotate(rotationInDegrees);
+                }
+                imageBitmap = Bitmap.createBitmap(imageBitmap, 0, 0, imageBitmap.getWidth(), imageBitmap.getHeight(), matrix, true);
+            }
 
         }catch(IOException ex){
             Log.e("Failed to get Exif data", "ex");

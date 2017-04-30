@@ -10,7 +10,6 @@ import com.finalyearproject.dan.ocraccountingapp.nosql.ReceiptDataDO;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.finalyearproject.dan.ocraccountingapp.R;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 class NoSQLTableReceiptData extends NoSQLTableBase {
-    private static final String LOG_TAG = NoSQLTableReceiptData.class.getSimpleName();
 
     /** Inner classes use this value to determine how many results to retrieve per service call. */
     private static final int RESULTS_PER_RESULT_GROUP = 40;
@@ -115,16 +113,6 @@ class NoSQLTableReceiptData extends NoSQLTableBase {
     @Override
     public String getTableName() {
         return "receiptData";
-    }
-
-    private List<NoSQLOperationListItem> getSupportedDemoOperations(final Context context) {
-        List<NoSQLOperationListItem> noSQLOperationsList = new ArrayList<NoSQLOperationListItem>();
-
-        noSQLOperationsList.add(new NoSQLOperationListHeader(
-                context.getString(R.string.nosql_operation_header_primary_queries)));
-        noSQLOperationsList.add(new QueryWithPartitionKeyAndFilter(context));
-
-        return noSQLOperationsList;
     }
 
     @Override

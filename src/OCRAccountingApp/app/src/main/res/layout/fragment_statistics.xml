@@ -39,7 +39,7 @@
             android:layout_weight=".33"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="GO"
+            android:text="@string/go"
             android:textColor="#FFFFFF" />
 
         </LinearLayout>

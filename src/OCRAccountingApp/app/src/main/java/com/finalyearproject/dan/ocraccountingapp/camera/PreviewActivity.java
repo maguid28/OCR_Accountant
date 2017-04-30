@@ -3,11 +3,8 @@ package com.finalyearproject.dan.ocraccountingapp.camera;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Matrix;
-import android.media.ExifInterface;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -17,12 +14,9 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.MediaController;
 
 import com.finalyearproject.dan.ocraccountingapp.R;
-import com.finalyearproject.dan.ocraccountingapp.ReceiptEditActivity;
 import com.finalyearproject.dan.ocraccountingapp.imgtotext.OCR;
 import com.finalyearproject.dan.ocraccountingapp.imgtotext.TextExtraction;
 import com.yalantis.ucrop.UCrop;
@@ -38,8 +32,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import static com.finalyearproject.dan.ocraccountingapp.util.Orientation.exifToDegrees;
-
 public class PreviewActivity extends AppCompatActivity implements View.OnClickListener {
 
     private final static String FILE_PATH = "file_path_arg";
@@ -48,8 +40,6 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
 
     private String previewFilePath;
     private UCropView imagePreview;
-    private ViewGroup preprocessPanel;
-    private ViewGroup postprocessPanel;
 
     public static final int ACTION_CONFIRM = 900;
     public static final int ACTION_RETAKE = 901;
@@ -58,15 +48,15 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
     private MediaController mediaController;
     private MediaPlayer mediaPlayer;
 
-    Bitmap imageBitmap;
     Mat test2;
 
     ProgressDialog mProgressDialog;
 
     String ocrResult;
 
+    String recTitle, recTotal, recDate, recCategory;
+
     // marked as true when the image processing task is in operation
-    public static boolean isProcessTaskRunning = false;
     public static boolean processButtonClicked = false;
 
     // marked as true when the image ocr task is in operation
@@ -104,47 +94,30 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
 
 
         imagePreview = (UCropView) findViewById(R.id.image_view);
-        preprocessPanel = (ViewGroup) findViewById(R.id.pre_process_panel);
-        postprocessPanel = (ViewGroup) findViewById(R.id.post_process_panel);
-
-        // Hide the post process panel until processing is complete
-        preprocessPanel.setVisibility(View.GONE);
-        //postprocessPanel.setVisibility(View.GONE);
 
         mProgressDialog = new ProgressDialog(this);
 
         View confirmMediaResult = findViewById(R.id.confirm_media_result);
-        View reTakeMedia = findViewById(R.id.re_take_media);
         View reTakeMedia2 = findViewById(R.id.re_take_media2);
-        View cancelMediaAction = findViewById(R.id.cancel_media_action);
         View cancelMediaAction2 = findViewById(R.id.cancel_media_action2);
-        View processImageAction = findViewById(R.id.process_media);
 
         if (confirmMediaResult != null)
             confirmMediaResult.setOnClickListener(this);
 
-        if (reTakeMedia != null)
-            reTakeMedia.setOnClickListener(this);
-
         if (reTakeMedia2 != null)
             reTakeMedia2.setOnClickListener(this);
-
-        if (cancelMediaAction != null)
-            cancelMediaAction.setOnClickListener(this);
 
         if (cancelMediaAction2 != null)
             cancelMediaAction2.setOnClickListener(this);
 
-        if (processImageAction != null)
-            processImageAction.setOnClickListener(this);
-
         Bundle args = getIntent().getExtras();
 
-        previewFilePath = args.getString(FILE_PATH);
+        try {
+            previewFilePath = args.getString(FILE_PATH);
+            displayImage();
+            processMediaFile();
 
-        displayImage();
-
-        processMediaFile();
+        } catch (Exception ignored){}
     }
 
     @Override
@@ -213,24 +186,12 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
                 startReceiptEdit();
             }
 
-        } else if (view.getId() == R.id.re_take_media) {
-            processButtonClicked = false;
-            deleteMediaFile();
-            resultIntent.putExtra(RESPONSE_CODE, ACTION_RETAKE);
-            setResult(RESULT_OK, resultIntent);
-            finish();
         }
         else if (view.getId() == R.id.re_take_media2) {
             processButtonClicked = false;
             ocrButtonClicked = false;
             deleteMediaFile();
             resultIntent.putExtra(RESPONSE_CODE, ACTION_RETAKE);
-            setResult(RESULT_OK, resultIntent);
-            finish();
-        } else if (view.getId() == R.id.cancel_media_action) {
-            processButtonClicked = false;
-            deleteMediaFile();
-            resultIntent.putExtra(RESPONSE_CODE, ACTION_CANCEL);
             setResult(RESULT_OK, resultIntent);
             finish();
         } else if (view.getId() == R.id.cancel_media_action2) {
@@ -240,21 +201,6 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
             resultIntent.putExtra(RESPONSE_CODE, ACTION_CANCEL);
             setResult(RESULT_OK, resultIntent);
             finish();
-        }
-        else if (view.getId() == R.id.process_media) {
-            processButtonClicked = true;
-            // if process task is running
-            if(isProcessTaskRunning) {
-                Log.e("IMGTASK COMPLETE? ", "NO");
-                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                mProgressDialog.setMessage("Processing, please wait...");
-                mProgressDialog.setCancelable(false);
-                mProgressDialog.show();
-            }
-            else {
-                // execute post process instructions
-                postProcess();
-            }
         }
     }
 
@@ -297,7 +243,6 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
                 FileWriter fw = new FileWriter(file);
                 BufferedWriter bw = new BufferedWriter(fw);
                 bw.write(ocrText);
-
                 bw.close();
                 System.out.println("done!!");
 
@@ -305,8 +250,13 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
                 i.printStackTrace();
             }
 
-            //new spellchecker12(dirPath, fileString, PreviewActivity.this);
-            //new WordCorrect(dirPath, fileString, PreviewActivity.this);
+            // extract text on this thread
+            TextExtraction te = new TextExtraction();
+
+            recTitle = te.getTitle(fileString, PreviewActivity.this);
+            recTotal = te.getTotal(fileString);
+            recDate = te.getDate(fileString);
+            recCategory = te.getCategory(fileString, recTitle);
 
             return ocrText;
         }
@@ -337,22 +287,10 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
     private void startReceiptEdit() {
         ocrButtonClicked = false;
 
-        // Write the result to a txt file and store it in the same dir as the temp img
-        // find the last occurence of '/'
-        int p=previewFilePath.lastIndexOf("/");
-        // e is the string value after the last occurence of '/'
-        String e=previewFilePath.substring(p+1);
-        // split the string at the value of e to remove the it from the string and get the dir path
-        String[] a = previewFilePath.split(e);
-        String dirPath = a[0] + "ocrtext.txt";
-
-
-        TextExtraction te = new TextExtraction();
-
-        String recTitle = te.getTitle(dirPath, this);
-        String recTotal = te.getTotal(dirPath);
-        String recDate = te.getDate(dirPath);
-        String recCatagory = te.getCatagory(dirPath, recTitle);
+        System.out.println(recTitle);
+        System.out.println(recDate);
+        System.out.println(recCategory);
+        System.out.println(recTotal);
 
         Intent i;
         i = new Intent(PreviewActivity.this, ReceiptEditActivity.class);
@@ -365,7 +303,7 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
         i.putExtra("TITLE", recTitle);
         i.putExtra("TOTAL", recTotal);
         i.putExtra("DATE", recDate);
-        i.putExtra("CATAGORY", recCatagory);
+        i.putExtra("CATEGORY", recCategory);
         // Start receipt edit activity
         PreviewActivity.this.startActivityForResult(i, 111);
         finish();
@@ -391,66 +329,6 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
 
 
 
-    private void postProcess() {
-
-        // reset button clicked to false
-        processButtonClicked = false;
-
-        //turn off the image preview to allow for the processed image to be displayed
-        imagePreview.setVisibility(View.GONE);
-
-        ImageView processedImage = (ImageView) findViewById(R.id.processed_Image);
-
-        //Get the dimensions of the bitmap
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(previewFilePath, bmOptions);
-
-        //decode the image file into a bitmap sized to fill the view
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = 4;
-
-        imageBitmap = BitmapFactory.decodeFile(previewFilePath, bmOptions);
-
-        try {
-            //Display image in the correct orientation
-            ExifInterface exif = new ExifInterface(previewFilePath);
-            int rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-            int rotationInDegrees = exifToDegrees(rotation);
-            Matrix matrix = new Matrix();
-            if (rotation != 0f) {matrix.preRotate(rotationInDegrees);}
-            imageBitmap = Bitmap.createBitmap(imageBitmap,0,0, imageBitmap.getWidth(),imageBitmap.getHeight(), matrix, true);
-
-        }catch(IOException ex){
-            Log.e("Failed to get Exif data", "ex");
-        }
-
-        imageBitmap = BitmapFactory.decodeFile(previewFilePath, bmOptions);
-
-
-
-        //displayBitmap
-
-
-        // set image view to the processed bitmap image
-        processedImage.setImageBitmap(imageBitmap);
-
-        Log.e("BITMAP WIDTH ", String.valueOf(imageBitmap.getWidth()));
-        Log.e("BITMAP HEIGHT ", String.valueOf(imageBitmap.getHeight()));
-
-        // Hide the preprocess panel
-        preprocessPanel.setVisibility(View.GONE);
-        // Bring the post process panel into view
-        postprocessPanel.setVisibility(View.VISIBLE);
-
-        // run ocr in asynctask
-        OCRTask OCRTask = new OCRTask();
-        OCRTask.execute();
-    }
-
-
-
-
 
 
 
@@ -468,7 +346,6 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
         OCRTask OCRTask = new OCRTask();
         OCRTask.execute();
     }
-
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override

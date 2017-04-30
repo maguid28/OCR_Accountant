@@ -12,11 +12,7 @@
 
     <!-- Strings related to title screen -->
 
-    <string name="date_format">dd/MM/yyyy</string>
-    <string name="date_format2">yyyyMMdd</string>
-    <string name="week_date_format">dd</string>
     <string name="year_date_format">yyyy</string>
-    <string name="month_date_format">MMMM yyyy</string>
 
     <!-- REQUIRED FOR GENERAL APP FUNCTIONALITY - YOU MAY WANT TO KEEP THESE -->
     <string name="title_activity_sign_in">Sign-in</string>
@@ -31,9 +27,8 @@
     <string name="forgot_password_input_code_hint">Verification code</string>
     <string name="forgot_password_button_hint">Set password</string>
     <string name="mfa_header">MFA verification is required to authenticate.</string>
-    <string name="mfa_code_sent_message">Code sent.</string>
+    <string name="mfa_code_sent_message">Code sent to email address.</string>
     <string name="verify_button_text">Verify</string>
-    <string name="username_text">Username</string>
     <string name="sign_up_confirm_code">Confirmation code</string>
     <string name="sign_up_confirm_text">Confirm</string>
     <string name="sign_up_confirm_code_sent">A confirmation code was sent to the registered email address.</string>
@@ -50,42 +45,6 @@
 
 
     <string name="content_dialog_ok">OK</string>
-    <string name="content_cache_summary_text">Cache Summary</string>
-    <string name="content_cache_limit_text">Limit</string>
-    <string name="content_cache_use_text">In Use</string>
-    <string name="content_cache_available_text">Available</string>
-    <string name="content_cache_pinned_text">Pinned</string>
-    <string name="content_refresh_text">Refresh</string>
-    <string name="content_download_recent_text">Download Recent</string>
-    <string name="content_set_cache_size_text">Set Cache Size</string>
-    <string name="content_clear_cache_text">Clear Cache</string>
-    <string name="content_path_prefix_text">Path:\u0020</string>
-    <string name="content_folder_text">This is a folder.</string>
-    <string name="content_context_menu_open">Open</string>
-    <string name="content_context_menu_open_remote">Open Remote URL</string>
-    <string name="content_context_menu_download">Download</string>
-    <string name="content_context_menu_download_latest">Download Latest Version</string>
-    <string name="content_context_menu_pin">Pin</string>
-    <string name="content_context_menu_download_pin">Download &amp; Pin</string>
-    <string name="content_context_menu_unpin">Unpin</string>
-    <string name="content_context_menu_delete_local">Delete Local Copy</string>
-    <string name="content_progress_dialog_title_wait">Please wait &#8230;</string>
-    <string name="content_progress_dialog_message_load_local_content">Loading local content</string>
-    <string name="content_progress_dialog_message_load_content">Loading S3 objects list</string>
-    <string name="content_list_failure_text">Failure Listing Content</string>
-    <string name="content_transfer_failure_text">Transfer Failure</string>
-    <string name="content_removal_error_text">Content Removal Error</string>
-    <string name="content_permission_failure_title_text">Permission Failure</string>
-    <string name="content_permission_failure_text">Denial of Read External Storage Permission has disabled the ability to upload user files.</string>
-    <string name="user_files_browser_upload_text">Upload</string>
-    <string name="user_files_browser_new_folder_text">New Folder</string>
-    <string name="user_files_browser_context_menu_delete">Delete Remote File</string>
-    <string name="user_files_browser_dialog_create_folder_title">New folder</string>
-    <string name="user_files_browser_progress_dialog_message_create_folder">Creating folder \'%s\'</string>
-    <string name="user_files_browser_progress_dialog_message_delete_item">Deleting \'%s\'</string>
-    <string name="user_files_browser_progress_dialog_message_upload_file">Uploading file \'%s\'</string>
-    <string name="user_files_browser_error_message_create_folder">Failed to create folder due to \'%s\'.</string>
-    <string name="user_files_browser_error_message_delete_item">Failed to delete item due to \'%s\'.</string>
     <string name="user_files_browser_error_message_upload_file">Failed to upload file due to \'%s\'.</string>
 
     <string name="content_helper_error_title">No Content Viewer</string>
@@ -119,9 +78,34 @@
     <string name="nosql_dialog_message_confirm_update_item_text">Are you sure you want to update the selected item?</string>
     <string name="nosql_dialog_title_confirm_delete_item_text">Confirm Delete</string>
 
-    <!-- Preview Activity -->
-    <string name="preview_controls_confirm">Save</string>
     <string name="preview_controls_retake">Recapture</string>
     <string name="preview_controls_cancel">Cancel</string>
+    <string name="view_receipt">View receipt</string>
+    <string name="receipt_image_that_has_been_captured">Receipt Image that has been captured.</string>
+    <string name="edit_receipt_details">EDIT RECEIPT DETAILS</string>
+    <string name="receipt_name">Receipt Name</string>
+    <string name="no_receipt_name_found">No Receipt name found</string>
+    <string name="date">Date</string>
+    <string name="receipt_date_edit_field">Receipt date edit field</string>
+    <string name="category">Category</string>
+    <string name="total">Total</string>
+    <string name="receipt_total_edit_field">Receipt total edit field</string>
+    <string name="receipt_items">Receipt items</string>
+    <string name="application_logo">Application logo</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="create_new_account">Create New Account</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="or">OR</string>
+    <string name="facebook_login_button">Facebook login button</string>
+    <string name="verify_account">Verify Account</string>
+    <string name="image_capture_button">Image capture button</string>
+    <string name="processed_image">Processed Image</string>
+    <string name="proceed">Proceed</string>
+    <string name="go">GO</string>
+    <string name="dateval">Date</string>
+    <string name="totalval">Total</string>
+    <string name="recnameval">Receipt Name</string>
+    <string name="categoryval">Category</string>
 
 </resources>

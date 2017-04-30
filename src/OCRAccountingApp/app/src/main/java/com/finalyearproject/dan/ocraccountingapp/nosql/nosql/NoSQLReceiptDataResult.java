@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.amazonaws.AmazonClientException;
+import com.finalyearproject.dan.ocraccountingapp.R;
 import com.finalyearproject.dan.ocraccountingapp.amazon.AWSMobileClient;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.finalyearproject.dan.ocraccountingapp.nosql.ReceiptDataDO;
@@ -105,28 +106,7 @@ class NoSQLReceiptDataResult implements NoSQLResult {
         setKeyTextViewStyle(keyTextView);
         setValueTextViewStyle(valueTextView);
     }
-
-    private static String bytesToHexString(byte[] bytes) {
-        final StringBuilder builder = new StringBuilder();
-        builder.append(String.format("%02X", bytes[0]));
-        for(int index = 1; index < bytes.length; index++) {
-            builder.append(String.format(" %02X", bytes[index]));
-        }
-        return builder.toString();
-    }
-
-    private static String byteSetsToHexStrings(Set<byte[]> bytesSet) {
-        final StringBuilder builder = new StringBuilder();
-        int index = 0;
-        for (byte[] bytes : bytesSet) {
-            builder.append(String.format("%d: ", ++index));
-            builder.append(bytesToHexString(bytes));
-            if (index < bytesSet.size()) {
-                builder.append("\n");
-            }
-        }
-        return builder.toString();
-    }
+    
 
     @Override
     public View getView(final Context context, final View convertView, int position) {
@@ -206,13 +186,13 @@ class NoSQLReceiptDataResult implements NoSQLResult {
         }
 
         resultNumberTextView.setText(String.format("#%d", + position+1));
-        dateKeyTextView.setText("Date");
+        dateKeyTextView.setText(R.string.dateval);
         dateValueTextView.setText(result.getDate());
-        totalKeyTextView.setText("Total");
+        totalKeyTextView.setText(R.string.totalval);
         totalValueTextView.setText(result.getTotal());
-        friendlyNameKeyTextView.setText("Receipt Name");
+        friendlyNameKeyTextView.setText(R.string.recnameval);
         friendlyNameValueTextView.setText(result.getFriendlyName());
-        categoryKeyTextView.setText("Category");
+        categoryKeyTextView.setText(R.string.categoryval);
         categoryValueTextView.setText(result.getCategory());
         return layout;
     }

@@ -3,8 +3,6 @@ package com.finalyearproject.dan.ocraccountingapp.imgtotext;
 import android.app.Activity;
 import android.util.Log;
 
-import com.finalyearproject.dan.ocraccountingapp.wordcorrection.SpellChecker;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -65,17 +63,22 @@ public class TextExtraction {
 
             // split text up by lines
             String lines[] = cleanedText.split("\\r?\\n");
-            System.out.println("CHECK LINE 0: " + lines[0]);
 
             LinkedList<String> potentials = new LinkedList<String>();
 
-            // loop through first 5 lines
-            for(int i = 0; i<3;i++){
+            int count;
+            // prevents out of bounds exception
+            if(lines.length<3) count = lines.length;
+            else count = 3;
+
+
+            // loop through first 3 lines
+            for(int i = 0; i<count;i++){
                 if(lines[i].matches("[a-zA-Z0-9]+(\\s[a-zA-Z0-9]+)*?(\\s)?") && lines[i].length()>3) {
 
                     // ADD DICTIONARY CHECK HERE
                     // correct misspelled words
-                    String corrected = correctWord(lines[i], "title", activity);
+                    String corrected = correctWord(lines[i], activity);
 
                     potentials.add(corrected);
                 }
@@ -122,12 +125,11 @@ public class TextExtraction {
 
 
 
-    public String correctWord(String line, String dicttype, Activity activity) {
+    private String correctWord(String line, Activity activity) {
 
         final String DATA_PATH = activity.getFilesDir() + "/TesseractSample/tessdata/";
 
         String correctedLine = "";
-        SpellChecker s = new SpellChecker();
 
 
         System.out.println("WORKING!");
@@ -352,7 +354,7 @@ public class TextExtraction {
                                     dateOnly = dateOnly.substring(temp);
                                 }
                             }
-                        } catch (Exception e) {}
+                        } catch (Exception ignored) {}
 
 
                         potentials +=dateOnly;
@@ -573,9 +575,9 @@ public class TextExtraction {
     }
 
 
-    public String getCatagory(String dirPath, String titleCorrect) {
+    public String getCategory(String dirPath, String titleCorrect) {
 
-        String catagory = "";
+        String category = "";
 
         String[] foodArray = {
                 "food", "grocery", "fat", "rice", "chips", "fresh", "eggs", "fruit", "meat", "aldi",
@@ -628,12 +630,12 @@ public class TextExtraction {
 
         for(int i=0; i<words.length; i++) {
             if(wordStore.containsKey(words[i])) {
-                catagory = wordStore.get(words[i]);
+                category = wordStore.get(words[i]);
             }
         }
 
         // if catagory has still not been decided
-        if(catagory.equals("")) {
+        if(category.equals("")) {
 
             String cleanedText = "";
 
@@ -669,13 +671,13 @@ public class TextExtraction {
                 for(int i=0; i<wordList.length; i++) {
                     if(wordStore.containsKey(wordList[i])) {
                         System.out.println("found word in wordstore is: " + wordList[i]);
-                        catagory = wordStore.get(wordList[i]);
-                        return catagory;
+                        category = wordStore.get(wordList[i]);
+                        return category;
                     }
                 }
 
             }catch (IOException ignored) {}
         }
-        return catagory;
+        return category;
     }
 }

@@ -84,7 +84,7 @@ public class RadarChartItem extends ChartItem {
         yAxis.setTextSize(20f);
         yAxis.setTextColor(Color.WHITE);
         yAxis.setAxisMinimum(0f);
-        yAxis.setAxisMaximum(80f);
+        yAxis.setAxisMaximum(200f);
         yAxis.setDrawLabels(false);
 
         // set data

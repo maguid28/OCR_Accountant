@@ -26,11 +26,11 @@ public class SignInActivity extends Activity {
 
     private SignInManager signInManager;
 
-    EditText _emailText;
-    EditText _passwordText;
-    Button _loginButton;
-    TextView _signupLink;
-    TextView _verifyAccount;
+    EditText emailText;
+    EditText passwordText;
+    Button loginButton;
+    TextView signupLink;
+    TextView verifyAccount;
 
     /** Start of Intent request codes owned by the Cognito User Pools app. */
     private static final int REQUEST_CODE_START = 0x2970;
@@ -109,24 +109,24 @@ public class SignInActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
-        _emailText = (EditText) findViewById(R.id.signIn_editText_email);
-        _passwordText = (EditText) findViewById(R.id.signIn_editText_password);
-        _loginButton = (Button) findViewById(R.id.signIn_imageButton_login);
-        _signupLink = (TextView) findViewById(R.id.signIn_textView_CreateNewAccount);
-        _verifyAccount = (TextView) findViewById(R.id.signIn_textView_verifyAccount);
+        emailText = (EditText) findViewById(R.id.signIn_editText_email);
+        passwordText = (EditText) findViewById(R.id.signIn_editText_password);
+        loginButton = (Button) findViewById(R.id.signIn_imageButton_login);
+        signupLink = (TextView) findViewById(R.id.signIn_textView_CreateNewAccount);
+        verifyAccount = (TextView) findViewById(R.id.signIn_textView_verifyAccount);
         signInManager = SignInManager.getInstance(this);
 
 
         signInManager.setResultsHandler(this, new SignInResultsHandler());
 
-        _loginButton.setOnClickListener(new View.OnClickListener() {
+        loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 login();
             }
         });
 
-        _verifyAccount.setOnClickListener(new View.OnClickListener() {
+        verifyAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent cameraIntent;
@@ -183,7 +183,7 @@ public class SignInActivity extends Activity {
             return;
         }
 
-        _loginButton.setEnabled(false);
+        loginButton.setEnabled(false);
 
 
         // TODO: Implement your own authentication logic here.
@@ -201,34 +201,34 @@ public class SignInActivity extends Activity {
 
 
     public void onLoginSuccess() {
-        _loginButton.setEnabled(true);
+        loginButton.setEnabled(true);
         finish();
     }
 
     public void onLoginFailed() {
         Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
 
-        _loginButton.setEnabled(true);
+        loginButton.setEnabled(true);
     }
 
     public boolean validate() {
         boolean valid = true;
 
-        String email = _emailText.getText().toString();
-        String password = _passwordText.getText().toString();
+        String email = emailText.getText().toString();
+        String password = passwordText.getText().toString();
 
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            _emailText.setError("enter a valid email address");
+            emailText.setError("enter a valid email address");
             valid = false;
         } else {
-            _emailText.setError(null);
+            emailText.setError(null);
         }
 
         if (password.isEmpty() || password.length() < 4 || password.length() > 20) {
-            _passwordText.setError("between 4 and 20 alphanumeric characters");
+            passwordText.setError("between 4 and 20 alphanumeric characters");
             valid = false;
         } else {
-            _passwordText.setError(null);
+            passwordText.setError(null);
         }
 
         return valid;

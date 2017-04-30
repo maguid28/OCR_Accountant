@@ -18,11 +18,9 @@ import com.finalyearproject.dan.ocraccountingapp.amazon.user.signin.CognitoUserP
 import com.finalyearproject.dan.ocraccountingapp.R;
 import com.finalyearproject.dan.ocraccountingapp.signup.util.ViewHelper;
 
-/**
- * Activity to prompt for a a verification code.
- */
+// Activity to prompt for a a verification code.
 public class MFAActivity extends Activity {
-    /** Log tag. */
+
     private static final String LOG_TAG = MFAActivity.class.getSimpleName();
 
     @Override
@@ -31,10 +29,7 @@ public class MFAActivity extends Activity {
         setContentView(R.layout.activity_mfa);
     }
 
-    /**
-     * Retrieve input and return to caller.
-     * @param view the Android View
-     */
+    // Retrieve input and return to caller.
     public void verify(final View view) {
         final String verificationCode = ViewHelper.getStringValue(this, R.id.mfa_code);
 

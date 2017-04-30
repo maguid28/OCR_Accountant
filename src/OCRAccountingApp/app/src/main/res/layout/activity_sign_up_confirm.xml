@@ -101,14 +101,15 @@
         android:id="@+id/confirm_account_space5" />
 
     <Button
+        android:id="@+id/confirm_account_button"
         android:layout_width="match_parent"
         android:layout_height="@dimen/activity_button_height"
+        android:layout_below="@id/confirm_account_space5"
+        android:layout_centerHorizontal="true"
+        android:onClick="confirmAccount"
         android:text="@string/sign_up_confirm_text"
         android:textAllCaps="false"
-        android:textSize="@dimen/activity_button_text_size"
         android:textColor="@color/white"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/confirm_account_space5"
-        android:onClick="confirmAccount"/>
+        android:textSize="@dimen/activity_button_text_size" />
 
 </RelativeLayout>

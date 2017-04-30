@@ -72,7 +72,7 @@
         <!-- End Log in/Sign up activities -->
 
         <activity
-            android:name=".ReceiptEditActivity"
+            android:name=".camera.ReceiptEditActivity"
             android:windowSoftInputMode="stateHidden|adjustResize"/>
 
         <!--Camera activities -->

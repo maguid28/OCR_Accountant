@@ -7,12 +7,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
-import android.hardware.Camera;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -39,7 +39,6 @@ import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.photo.Photo;
-import org.opencv.utils.Converters;
 
 
 import java.io.File;
@@ -56,18 +55,12 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
 
     // marked as true when the image processing task is in operation
     public static boolean isProcessTaskRunning = false;
-    public static boolean processButtonClicked = false;
 
     protected static final int REQUEST_PREVIEW_CODE = 1001;
-    protected int PHOTO_ACTION_CODE = 101;
 
     Bitmap imageBitmap = null;
     Point p1,p2,p3,p4;
-    List<Point> source = new ArrayList<Point>();
-
-    static {
-        System.loadLibrary("opencv_java3");
-    }
+    List<Point> source = new ArrayList<>();
 
     ProgressDialog mProgressDialog;
 
@@ -106,7 +99,7 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(grantResults[0]== PackageManager.PERMISSION_GRANTED){
             MediaStore.Images.Media.insertImage(getContentResolver(), imageBitmap,"asdasdasd" , "Asd");
@@ -136,20 +129,18 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.camera_activity);
-        mOpenCvCameraView = (JavaCameraView) findViewById(R.id.tutorial1_activity_java_surface_view);
+        mOpenCvCameraView = (JavaCameraView) findViewById(R.id.camera_surface_view);
         mOpenCvCameraView.setVisibility(View.VISIBLE);
 
         mOpenCvCameraView.setMaxFrameSize(4000,4000);
         mOpenCvCameraView.setMinimumHeight(1920);
         mOpenCvCameraView.setMinimumHeight(1080);
 
-        final Camera camera = Camera.open();
-        Camera.Size size = camera.new Size(3840, 2160);
         mOpenCvCameraView.setCvCameraViewListener(this);
 
         mProgressDialog = new ProgressDialog(this);
 
-        boolean check = isStoragePermissionGranted();
+        isStoragePermissionGranted();
 
         ImageButton capture = (ImageButton) findViewById(R.id.captureBTN);
         capture.setOnClickListener(new View.OnClickListener() {
@@ -220,7 +211,7 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
         Mat mask2 = Mat.zeros(bw.size(), CvType.CV_8UC1);
 
 
-        List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+        List<MatOfPoint> contours = new ArrayList<>();
         Imgproc.findContours(connected, contours, new Mat(), Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE, new Point(0, 0));
 
         Mat mask = Mat.zeros(bw.size(), CvType.CV_8UC1);
@@ -281,11 +272,6 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
         @Override
         protected String doInBackground(String... params) {
 
-            System.out.println("p1 = " + p1);
-            System.out.println("p2 = " + p2);
-            System.out.println("p3 = " + p3);
-            System.out.println("p4 = " + p4);
-
             source.add(p1);
             source.add(p2);
             source.add(p3);
@@ -294,7 +280,7 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
             int distp1p2=(int) Math.sqrt((p2.x-p1.x)*(p2.x-p1.x) + (p2.y-p1.y)*(p2.y-p1.y));
             int distp2p3=(int) Math.sqrt((p3.x-p2.x)*(p3.x-p2.x) + (p3.y-p2.y)*(p3.y-p2.y));
 
-            Mat startM = Converters.vector_Point2f_to_Mat(source);
+            //Mat startM = Converters.vector_Point2f_to_Mat(source);
             //Mat result=extract(mRgba, startM, distp1p2, distp2p3);
 
             Rect roi = new Rect((int)p1.x+15, (int)p1.y+15, distp2p3-15, distp1p2-15);
@@ -311,19 +297,15 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
             Photo.fastNlMeansDenoising(result, result);
             Imgproc.adaptiveThreshold(result,result, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, 55, 2);
 
-
             imageBitmap = Bitmap.createBitmap(result.cols(), result.rows(), Bitmap.Config.ARGB_8888);
             Utils.matToBitmap(result, imageBitmap);
 
             imageBitmap = RotateBitmap(imageBitmap);
 
-
-
             Core.transpose(result, result);
             Core.flip(result, result,1);
 
             Imgproc.cvtColor(result, result, Imgproc.COLOR_BayerBG2RGB);
-
 
             result = removeArtifacts(result);
 
@@ -337,7 +319,7 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
             //returned = removeArtifacts(returned);
 
             String pathToFile = getOutputFile(OpenCVCamera.this).toString();
-            boolean i = Imgcodecs.imwrite(pathToFile, result);
+            Imgcodecs.imwrite(pathToFile, result);
 
             MediaStore.Images.Media.insertImage(getContentResolver(), imageBitmap,"asdasdasd" , "Asd");
 
@@ -353,7 +335,6 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
             mProgressDialog.dismiss();
             String pathToFile = getOutputFile(OpenCVCamera.this).toString();
             startPreviewActivity(pathToFile);
-
         }
 
         @Override
@@ -473,7 +454,7 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
         //apply canny edge detection
         Imgproc.Canny(imageGrey, imageGrey, 50, 140, 5, true);
         // find the contours
-        List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+        List<MatOfPoint> contours = new ArrayList<>();
         Imgproc.findContours(imageGrey, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
 
         double maxVal = 0;

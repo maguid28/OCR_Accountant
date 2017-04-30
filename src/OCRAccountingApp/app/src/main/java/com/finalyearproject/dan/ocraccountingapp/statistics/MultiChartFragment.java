@@ -541,7 +541,16 @@ public class MultiChartFragment extends Fragment {
 
         // space between slices
         d.setSliceSpace(2f);
-        d.setColors(ColorTemplate.MATERIAL_COLORS);
+
+        ArrayList<Integer> colors = new ArrayList<Integer>();
+
+        for (int c : ColorTemplate.JOYFUL_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.VORDIPLOM_COLORS)
+            colors.add(c);
+
+        d.setColors(colors);
 
         PieData cd = new PieData(d);
         return cd;

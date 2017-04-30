@@ -225,7 +225,7 @@ public class StatisticsFragment extends Fragment {
     }
 
 
-    static class QueryDatabaseTask extends AsyncTask<MyTaskParams, Void, NoSQLOperation> {
+    private static class QueryDatabaseTask extends AsyncTask<MyTaskParams, Void, NoSQLOperation> {
 
         @Override
         protected NoSQLOperation doInBackground(MyTaskParams... params) {

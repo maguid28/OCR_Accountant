@@ -22,11 +22,9 @@ import com.finalyearproject.dan.ocraccountingapp.amazon.user.signin.CognitoUserP
 import com.finalyearproject.dan.ocraccountingapp.R;
 import com.finalyearproject.dan.ocraccountingapp.signup.util.ViewHelper;
 
-/**
- * Activity to prompt for account sign up information.
- */
+//Activity to prompt for account sign up information.
 public class SignUpActivity extends Activity {
-    /** Log tag. */
+
     private static final String LOG_TAG = SignUpActivity.class.getSimpleName();
 
     EditText _nameText, _emailText, _passwordText, _reEnterPasswordText;

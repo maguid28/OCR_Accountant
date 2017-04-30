@@ -240,13 +240,7 @@ public class DisplayResultsFragment extends Fragment {
         assert result != null;
         final String file = result.getFilePath();
         Log.e("FilePath: ", file);
-/*
-        final ProgressDialog dialog = new ProgressDialog(getActivity(), R.style.Dialog1);
-        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        dialog.setTitle("Please wait...");
-        dialog.setCancelable(false);
-        dialog.show();
-*/
+
         // Directory where all saved receipts are stored
         String fileDir = "/data/user/0/com.finalyearproject.dan.ocraccountingapp/files/" +
                 "s3_ocraccountingapp-userfiles-mobilehub-1024067420/private/" +

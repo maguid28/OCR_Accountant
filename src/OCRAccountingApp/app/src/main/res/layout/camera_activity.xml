@@ -9,7 +9,7 @@
 
 
         <org.opencv.android.JavaCameraView
-            android:id="@+id/tutorial1_activity_java_surface_view"
+            android:id="@+id/camera_surface_view"
             android:layout_width="match_parent"
             android:layout_height="652dp"
             opencv:show_fps="true"/>
@@ -29,7 +29,7 @@
                 android:background="@null"
                 android:cropToPadding="false"
                 android:scaleType="fitXY"
-                android:contentDescription="Image capture button"
+                android:contentDescription="@string/image_capture_button"
                 opencv:srcCompat="@drawable/camera_btn" />
 
         </RelativeLayout>

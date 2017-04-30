@@ -37,7 +37,7 @@ public class NavDrawerInstaller {
 
     public void installOnActivity(final AppCompatActivity activity, Toolbar toolbar) {
 
-        String userName = getUserName(activity);
+        String userName = getUserName();
         Bitmap userImage = getUserImage();
 
         // Create the profile
@@ -76,7 +76,6 @@ public class NavDrawerInstaller {
                         //those items don't contain a drawerItem
 
                         if (drawerItem != null) {
-                            Intent intent = null;
                             if (drawerItem.getIdentifier() == 1) {
                                 Fragment fragment = new ViewPagerFragment();
                                 FragmentManager manager = activity.getSupportFragmentManager();
@@ -116,21 +115,17 @@ public class NavDrawerInstaller {
                                 activity.startActivity(new Intent(activity, SignInActivity.class));
                                 activity.finish();
                             }
-                            if (intent != null) {
-                                activity.startActivity(intent);
-                            }
                         }
 
                         return false;
                     }
                 })
                 .withShowDrawerOnFirstLaunch(true)
-//                .withShowDrawerUntilDraggedOpened(true)
                 .build();
     }
 
 
-    private String getUserName(AppCompatActivity activity) {
+    private String getUserName() {
 
         AWSMobileClient.defaultMobileClient().getIdentityManager().getCachedUserID();
         final IdentityManager identityManager = AWSMobileClient.defaultMobileClient().getIdentityManager();

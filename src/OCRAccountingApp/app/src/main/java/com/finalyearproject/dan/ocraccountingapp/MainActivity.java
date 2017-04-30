@@ -10,8 +10,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.widget.EditText;
 
 import com.finalyearproject.dan.ocraccountingapp.amazon.AWSMobileClient;
+import com.finalyearproject.dan.ocraccountingapp.calendar.EditFragment;
 import com.finalyearproject.dan.ocraccountingapp.calendar.ViewPagerFragment;
 import com.finalyearproject.dan.ocraccountingapp.nav.NavDrawerInstaller;
 
@@ -86,22 +88,22 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        copyTessDataFiles(TESSDATA);
+        copyTessDataFiles();
     }
 
     //Copy tessdata files (located on assets/tessdata) to destination directory
-    private void copyTessDataFiles(final String path) {
+    private void copyTessDataFiles() {
         try {
-            String fileList[] = this.getAssets().list(path);
+            String fileList[] = this.getAssets().list(TESSDATA);
 
             for (String fileName : fileList) {
 
                 // open file within the assets folder
                 // if it is not already there copy it to the sdcard
-                String pathToDataFile = DATA_PATH + path + "/" + fileName;
+                String pathToDataFile = DATA_PATH + TESSDATA + "/" + fileName;
                 if (!(new File(pathToDataFile)).exists()) {
 
-                    InputStream in = this.getAssets().open(path + "/" + fileName);
+                    InputStream in = this.getAssets().open(TESSDATA + "/" + fileName);
 
                     OutputStream out = new FileOutputStream(pathToDataFile);
 

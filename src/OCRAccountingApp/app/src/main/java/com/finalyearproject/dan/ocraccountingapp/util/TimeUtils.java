@@ -12,12 +12,9 @@ import com.finalyearproject.dan.ocraccountingapp.R;
 public class TimeUtils {
 
 
-    public static final Calendar FIRST_DAY_OF_TIME;
-    public static final Calendar LAST_DAY_OF_TIME;
-    public static final int DAYS_OF_TIME;
+    private static final Calendar FIRST_DAY_OF_TIME;
+    private static final Calendar LAST_DAY_OF_TIME;
     public static final int WEEKS_OF_TIME;
-    public static final int MONTHS_OF_TIME;
-    public static final int YEARS_OF_TIME;
 
 
     static {
@@ -25,10 +22,7 @@ public class TimeUtils {
         FIRST_DAY_OF_TIME.set(1900, Calendar.JANUARY, 1);
         LAST_DAY_OF_TIME = Calendar.getInstance();
         LAST_DAY_OF_TIME.set(2100, Calendar.DECEMBER, 31);
-        DAYS_OF_TIME = 73413; //(int) ((LAST_DAY_OF_TIME.getTimeInMillis() - FIRST_DAY_OF_TIME.getTimeInMillis()) / (24 * 60 * 60 * 1000));
         WEEKS_OF_TIME = 10487; // (int) ((LAST_DAY_OF_TIME.getTimeInMillis() - FIRST_DAY_OF_TIME.getTimeInMillis()) / (7 * 24 * 60 * 60 * 1000));
-        MONTHS_OF_TIME = 2400; // (int) ((LAST_DAY_OF_TIME.getTimeInMillis() - FIRST_DAY_OF_TIME.getTimeInMillis()) / (12 * 7 * 24 * 60 * 60 * 1000));
-        YEARS_OF_TIME = 200; //(int) ((LAST_DAY_OF_TIME.getTimeInMillis() - FIRST_DAY_OF_TIME.getTimeInMillis()) / (24 * 60 * 60 * 1000));
     }
 
 

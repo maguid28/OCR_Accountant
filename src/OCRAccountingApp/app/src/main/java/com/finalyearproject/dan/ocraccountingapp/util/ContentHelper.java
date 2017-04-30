@@ -25,11 +25,6 @@ import java.io.File;
  */
 public class ContentHelper {
 
-    /**
-     * Open file in external viewer.
-     * @param context context
-     * @param file file
-     */
     public static void openFileViewer(final Context context,
                                       final File file) {
 
