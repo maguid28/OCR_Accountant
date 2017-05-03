@@ -287,10 +287,10 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
     private void startReceiptEdit() {
         ocrButtonClicked = false;
 
-        System.out.println(recTitle);
-        System.out.println(recDate);
-        System.out.println(recCategory);
-        System.out.println(recTotal);
+        System.out.println("title " + recTitle);
+        System.out.println("dat " + recDate);
+        System.out.println("cat: " + recCategory);
+        System.out.println("total " + recTotal);
 
         Intent i;
         i = new Intent(PreviewActivity.this, ReceiptEditActivity.class);

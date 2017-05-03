@@ -64,7 +64,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:paddingTop="30dp"
-                        android:paddingBottom="30dp"
+                        android:paddingBottom="40dp"
                         android:textColor = "#ffffffff"
                         android:textStyle="bold"
                         android:text="@string/edit_receipt_details"
@@ -74,7 +74,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/receipt_name"
-                    android:textColor="#ffffffff" />
+                    android:textColor="@color/veryLightGreen" />
 
                 <EditText
                     android:id="@+id/recNameEdit"
@@ -83,7 +83,6 @@
                     android:hint="@string/no_receipt_name_found"
                     android:ems="10"
                     android:inputType="textPersonName"
-                    android:paddingBottom="20dp"
                     android:textColor="#ffffff" />
 
                 <TextView
@@ -91,7 +90,7 @@
                     android:layout_height="wrap_content"
                     android:paddingTop="30dp"
                     android:text="@string/date"
-                    android:textColor="#ffffff" />
+                    android:textColor="@color/veryLightGreen" />
                 <EditText
                     android:id="@+id/dateEdit"
                     android:layout_width="match_parent"
@@ -108,7 +107,7 @@
                     android:paddingBottom="13dp"
                     android:paddingTop="30dp"
                     android:text="@string/category"
-                    android:textColor="#ffffff" />
+                    android:textColor="@color/veryLightGreen" />
 
                 <Spinner
                     android:id="@+id/expense_spinner"
@@ -122,7 +121,7 @@
                     android:layout_height="wrap_content"
                     android:paddingTop="30dp"
                     android:text="@string/total"
-                    android:textColor="#ffffffff" />
+                    android:textColor="@color/veryLightGreen" />
 
                 <EditText
                     android:id="@+id/total_edit"
@@ -133,6 +132,12 @@
                     android:inputType="numberDecimal"
                     android:textColor="#ffffffff" />
 
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@+id/confirm_account_title"
+                    android:id="@+id/confirm_account_space1" />
 
                 <TextView
                     android:id="@+id/ocr_textview"
@@ -140,7 +145,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:paddingBottom="30dp"
-                    android:paddingTop="30dp"
+                    android:paddingTop="40dp"
                     android:text="@string/receipt_items"
                     android:textColor="#ffffffff"
                     android:textSize="18sp" />

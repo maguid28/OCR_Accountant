@@ -575,7 +575,14 @@ public class TextExtraction {
     }
 
 
+
+
+
+
+
     public String getCategory(String dirPath, String titleCorrect) {
+
+        System.out.println("TITLE CORRECT:" + titleCorrect);
 
         String category = "";
 
@@ -633,6 +640,7 @@ public class TextExtraction {
                 category = wordStore.get(words[i]);
             }
         }
+        System.out.println("Category: " + category);
 
         // if catagory has still not been decided
         if(category.equals("")) {

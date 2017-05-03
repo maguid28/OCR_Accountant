@@ -98,7 +98,7 @@ public class ReceiptEditActivity extends AppCompatActivity {
             receiptTitle = bundle.getString("TITLE");
             receiptTotal = bundle.getString("TOTAL");
             receiptDate = bundle.getString("DATE");
-            receiptCatagory = bundle.getString("CATAGORY");
+            receiptCatagory = bundle.getString("CATEGORY");
             TextView ocrtextview = (TextView) findViewById(R.id.ocr_textview);
 
             recNameEditText.setText(receiptTitle, TextView.BufferType.EDITABLE);
@@ -107,6 +107,7 @@ public class ReceiptEditActivity extends AppCompatActivity {
 
             ocrtextview.setText(OCRText);
             Log.i("prev activity: ", filePath);
+            ocrtextview.setVisibility(View.GONE);
         }
         catch (NullPointerException ignored) {}
 

@@ -2,7 +2,6 @@ package com.finalyearproject.dan.ocraccountingapp.calendar;
 
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -28,7 +27,6 @@ import android.widget.TextView;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.regions.Regions;
-import com.finalyearproject.dan.ocraccountingapp.MainActivity;
 import com.finalyearproject.dan.ocraccountingapp.R;
 import com.finalyearproject.dan.ocraccountingapp.nosql.noSQLObj;
 import com.finalyearproject.dan.ocraccountingapp.amazon.AWSConfiguration;
@@ -36,12 +34,10 @@ import com.finalyearproject.dan.ocraccountingapp.amazon.AWSMobileClient;
 import com.finalyearproject.dan.ocraccountingapp.amazon.content.UserFileManager;
 import com.finalyearproject.dan.ocraccountingapp.nosql.nosql.DynamoDBUtils;
 import com.finalyearproject.dan.ocraccountingapp.nosql.nosql.NoSQLResult;
-import com.finalyearproject.dan.ocraccountingapp.util.OnBackPressedListener;
 import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 

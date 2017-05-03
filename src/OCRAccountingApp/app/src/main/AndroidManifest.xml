@@ -46,6 +46,9 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".TestActivity" />
+
         <!-- Log in/Sign up activities -->
         <activity
             android:name=".signin.SignInActivity"

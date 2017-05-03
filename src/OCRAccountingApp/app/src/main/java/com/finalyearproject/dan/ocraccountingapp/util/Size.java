@@ -9,7 +9,6 @@ import java.util.List;
 
 public class Size {
 
-    private int width;
     private int height;
 
     public int getHeight() {

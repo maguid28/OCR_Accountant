@@ -28,10 +28,18 @@ class NoSQLReceiptDataResult implements NoSQLResult {
     public void updateItem(String title, String total, String date, String category) {
         final DynamoDBMapper mapper = AWSMobileClient.defaultMobileClient().getDynamoDBMapper();
 
+        String d = date.substring(0,2);
+        String m = date.substring(3,5);
+        String y = date.substring(6,10);
+
+        String formattedDate = y + m + d;
+
         result.setFriendlyName(title);
         result.setDate(date);
         result.setTotal(total);
         result.setCategory(category);
+        result.setFormattedDate(formattedDate);
+
         try {
             mapper.save(result);
         } catch (final AmazonClientException ex) {

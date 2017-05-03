@@ -109,29 +109,31 @@ public class MultiChartFragment extends Fragment {
                         public void run() {
                             doneRetrievingResults = false;
                             //resultsListAdapter.addAll(results);
-                            for(int i=0; i<results.size(); i++) {
-                                System.out.println(results.get(i).getCategory());
+                            if(results!=null) {
+                                for (int i = 0; i < results.size(); i++) {
+                                    System.out.println(results.get(i).getCategory());
+                                }
+                                for (int i = 0; i < yearResults.size(); i++) {
+                                    System.out.println("yr: " + yearResults.get(i).getCategory());
+                                }
+
+                                //Create a list for storing the charts
+                                ArrayList<ChartItem> list = new ArrayList<ChartItem>();
+
+                                list.add(new PieChartItem(generateDataPie(), getActivity()));
+
+                                list.add(new BarChartItem(generateDataBar(), getActivity()));
+
+                                list.add(new RadarChartItem(generateDataRadar(), getActivity()));
+
+                                list.add(new LineChartItem(generateDataLine(), getActivity()));
+
+
+                                Log.e("NOSQLOP = ", String.valueOf(noSQLOperation));
+
+                                ChartDataAdapter cda = new ChartDataAdapter(getActivity(), list);
+                                lv.setAdapter(cda);
                             }
-                            for(int i=0; i<yearResults.size(); i++) {
-                                System.out.println("yr: " + yearResults.get(i).getCategory());
-                            }
-
-                            //Create a list for storing the charts
-                            ArrayList<ChartItem> list = new ArrayList<ChartItem>();
-
-                            list.add(new PieChartItem(generateDataPie(), getActivity()));
-
-                            list.add(new BarChartItem(generateDataBar(), getActivity()));
-
-                            list.add(new RadarChartItem(generateDataRadar(), getActivity()));
-
-                            list.add(new LineChartItem(generateDataLine(), getActivity()));
-
-
-                            Log.e("NOSQLOP = ", String.valueOf(noSQLOperation));
-
-                            ChartDataAdapter cda = new ChartDataAdapter(getActivity(), list);
-                            lv.setAdapter(cda);
 
                         }
                     });
@@ -428,7 +430,7 @@ public class MultiChartFragment extends Fragment {
             }
         }
 
-        BarDataSet d = new BarDataSet(entries, "Daily Breakdown");
+        BarDataSet d = new BarDataSet(entries, "Daily Expense Breakdown");
         d.setColors(ColorTemplate.MATERIAL_COLORS);
         d.setHighLightAlpha(255);
         // disable values appearing above bars
@@ -546,7 +548,8 @@ public class MultiChartFragment extends Fragment {
 
         for (int c : ColorTemplate.JOYFUL_COLORS)
             colors.add(c);
-
+        for (int c : ColorTemplate.MATERIAL_COLORS)
+            colors.add(c);
         for (int c : ColorTemplate.VORDIPLOM_COLORS)
             colors.add(c);
 
@@ -555,7 +558,6 @@ public class MultiChartFragment extends Fragment {
         PieData cd = new PieData(d);
         return cd;
     }
-
 
     @Override
     public void onDestroyView() {

@@ -10,10 +10,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.widget.EditText;
 
 import com.finalyearproject.dan.ocraccountingapp.amazon.AWSMobileClient;
-import com.finalyearproject.dan.ocraccountingapp.calendar.EditFragment;
 import com.finalyearproject.dan.ocraccountingapp.calendar.ViewPagerFragment;
 import com.finalyearproject.dan.ocraccountingapp.nav.NavDrawerInstaller;
 

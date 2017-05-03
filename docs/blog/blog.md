@@ -296,51 +296,61 @@ The checks make sure that the user has:
 
 ```java
 public boolean validate() {
-       boolean valid = true;
+        boolean valid = true;
 
-       String name = ViewHelper.getStringValue(this, R.id.signup_given_name);
-       String email = ViewHelper.getStringValue(this, R.id.signup_email);
-       String password = ViewHelper.getStringValue(this, R.id.signup_password);
-       String reEnterPassword = ViewHelper.getStringValue(this, R.id.input_reEnterPassword);
+        String name = ViewHelper.getStringValue(this, R.id.signup_given_name);
+        String email = ViewHelper.getStringValue(this, R.id.signup_email);
+        String password = ViewHelper.getStringValue(this, R.id.signup_password);
+        String reEnterPassword = ViewHelper.getStringValue(this, R.id.input_reEnterPassword);
 
-       boolean hasUppercase = !password.equals(password.toLowerCase());
-       boolean hasLowercase = !password.equals(password.toUpperCase());
+        boolean hasUppercase = !password.equals(password.toLowerCase());
+        boolean hasLowercase = !password.equals(password.toUpperCase());
 
-       if (name.isEmpty() || name.length() < 3) {
-           _nameText.setError("at least 3 characters");
-           valid = false;
-       } else {
-           _nameText.setError(null);
-       }
+        if (name.isEmpty() || name.length() < 3) {
+            _nameText.setError("at least 3 characters");
+            valid = false;
+        } else {
+            _nameText.setError(null);
+        }
 
-       if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-           _emailText.setError("enter a valid email address");
-           valid = false;
-       } else {
-           _emailText.setError(null);
-       }
+        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            _emailText.setError("enter a valid email address");
+            valid = false;
+        } else {
+            _emailText.setError(null);
+        }
 
+        if (password.isEmpty() || password.length() < 8) {
+            _passwordText.setError("at least 8 characters");
+            valid = false;
+        } else {
+            _passwordText.setError(null);
+        }
+        if(!hasLowercase || !hasUppercase || !(password.matches(".*\\d.*"))) {
+            _passwordText.setError("Password must contain uppcase, lowercase and numeric characters");
+            valid = false;
+        } else {
+            _passwordText.setError(null);
+        }
 
-       if (password.isEmpty() || password.length() < 8) {
-           _passwordText.setError("at least 8 characters");
-           valid = false;
-       }
-       if(!hasLowercase || !hasUppercase || !(password.matches(".*\\d.*"))) {
-           _passwordText.setError("Password must contain uppcase, lowercase and numeric characters");
-           valid = false;
-       } else {
-           _passwordText.setError(null);
-       }
+        if (reEnterPassword.isEmpty()) {
+            _reEnterPasswordText.setError("Field cannot be empty");
+            valid = false;
+        }
+        else if(reEnterPassword.length() < 4) {
+            _reEnterPasswordText.setError("Password must be greater than 4 characters");
+            valid = false;
+        }
+        else if(!(reEnterPassword.equals(password))) {
+            _reEnterPasswordText.setError("Passwords do not match");
+            valid = false;
+        }
+        else {
+            _reEnterPasswordText.setError(null);
+        }
 
-       if (reEnterPassword.isEmpty() || reEnterPassword.length() < 4 || reEnterPassword.length() > 10 || !(reEnterPassword.equals(password))) {
-           _reEnterPasswordText.setError("Password Do not match");
-           valid = false;
-       } else {
-           _reEnterPasswordText.setError(null);
-       }
-
-       return valid;
-   }
+        return valid;
+    }
 ```
 
 Below is an example of the checks being triggered.
@@ -731,13 +741,8 @@ I have added a fragment that displays charts based on the users spending pattern
 
 Below are images of the 4 charts:
 
-![comparing training results 1 ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/clusteringVSnoclustering1.jpg)
+![comparing training results 1 ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/charts.jpg)
 
-![comparing training results 1 ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/clusteringVSnoclustering1.jpg)
-
-![comparing training results 1 ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/clusteringVSnoclustering1.jpg)
-
-![comparing training results 1 ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/clusteringVSnoclustering1.jpg)
 
 ## Blog entry 23 - User testing 1
 At the end of my first round of user tests I have discovered the following issues:

@@ -86,9 +86,11 @@ public class PieChartItem extends ChartItem {
     }
 
     private SpannableString generateCenterText() {
-        SpannableString s = new SpannableString("Expense\nCatagories");
-        s.setSpan(new RelativeSizeSpan(1.6f), 0, 7, 0);
-        s.setSpan(new RelativeSizeSpan(1.9f), 8, 18, 0);
+        SpannableString s = new SpannableString("This\nMonths\nExpense\nCategories");
+        s.setSpan(new RelativeSizeSpan(1.3f), 0, 4, 0);
+        s.setSpan(new RelativeSizeSpan(1.3f), 5, 11, 0);
+        s.setSpan(new RelativeSizeSpan(1.6f), 12, 19, 0);
+        s.setSpan(new RelativeSizeSpan(1.9f), 20, 30, 0);
         return s;
     }
 
