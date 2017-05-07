@@ -15,9 +15,10 @@ import com.finalyearproject.dan.ocraccountingapp.amazon.AWSMobileClient;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.finalyearproject.dan.ocraccountingapp.nosql.ReceiptDataDO;
 
+import java.io.Serializable;
 import java.util.Set;
 
-class NoSQLReceiptDataResult implements NoSQLResult {
+class NoSQLReceiptDataResult implements NoSQLResult, Serializable {
     private static final int KEY_TEXT_COLOR = 0xFF333333;
     private final ReceiptDataDO result;
 

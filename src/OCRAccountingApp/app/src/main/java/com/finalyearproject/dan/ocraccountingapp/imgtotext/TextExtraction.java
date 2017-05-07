@@ -1,6 +1,7 @@
 package com.finalyearproject.dan.ocraccountingapp.imgtotext;
 
 import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -23,9 +24,9 @@ import java.util.regex.Pattern;
 
 public class TextExtraction {
 
-    private Map<String, Integer> wordFrequencyMap = new HashMap<String, Integer>();
+    private Map<String, Integer> wordFrequencyMap = new HashMap<>();
 
-    public String getTitle(String dirPath, Activity activity) {
+    public String getTitle(String dirPath, String dataPath) {
         String title = "";
 
         try {
@@ -78,7 +79,7 @@ public class TextExtraction {
 
                     // ADD DICTIONARY CHECK HERE
                     // correct misspelled words
-                    String corrected = correctWord(lines[i], activity);
+                    String corrected = correctWord(lines[i], dataPath);
 
                     potentials.add(corrected);
                 }
@@ -125,9 +126,9 @@ public class TextExtraction {
 
 
 
-    private String correctWord(String line, Activity activity) {
+    private String correctWord(String line, final String DATA_PATH) {
 
-        final String DATA_PATH = activity.getFilesDir() + "/TesseractSample/tessdata/";
+        //final String DATA_PATH = activity.getFilesDir() + "/TesseractSample/tessdata/";
 
         String correctedLine = "";
 
@@ -165,7 +166,7 @@ public class TextExtraction {
         File file = new File(filename);
         BufferedReader br = new BufferedReader(new InputStreamReader(
                 new FileInputStream(file)));
-        String line = null;
+        String line;
         while ((line = br.readLine()) != null) {
             String[] tokens = line.toLowerCase().split("[\\s\\p{Punct}]+");
             for (String word : tokens) {
@@ -357,12 +358,12 @@ public class TextExtraction {
                         } catch (Exception ignored) {}
 
 
-                        potentials +=dateOnly;
+                        potentials +=dateOnly + "\r\n";
                     }
                 }
                 potentials += "\r\n";
             }
-            System.out.println(potentials);
+            System.out.println("date pots: " + potentials);
 
             br.close();
 
@@ -381,6 +382,16 @@ public class TextExtraction {
                     String[] temp = datePotentials[i].split("/");
                     // get date in the form xx/xx/20xx
                     formattedDatePotentials.add(temp[0] + "/" + temp[1] + "/20" + temp[2]);
+                }
+                // if date is in the form xx/xx/xxx usually if that last char was missed
+                if(datePotentials[i].matches("[0-9][0-9]/[0-9][0-9]/[0-9]{3}")) {
+                    String[] temp = datePotentials[i].split("/");
+                    // get the current year
+                    String tempYear = new SimpleDateFormat("yyyy").format(Calendar.getInstance().getTime());
+                    // extract the last character
+                    String lastChar = tempYear.substring(tempYear.length()-1);
+                    // get date in the form xx/xx/xxxx
+                    formattedDatePotentials.add(temp[0] + "/" + temp[1] + "/" + temp[2] + lastChar);
                 }
             }
 
@@ -414,8 +425,11 @@ public class TextExtraction {
             date = new SimpleDateFormat("dd/MM/yyyy").format(Calendar.getInstance().getTime());
         }
 
+        System.out.println("date is: " + date);
+
         return date;
     }
+
 
 
 
@@ -442,6 +456,15 @@ public class TextExtraction {
                 for (int x=0; x<words.length; x++) {
                     if(s.contains("total") || s.contains("tot") || s.contains("otal") || s.contains("sale") ) { // || s.contains("tal") || s.matches("\\d[t|l][a-z]{3}[l|1|i]")
 
+                        // accounts for totals that have become split up e.g. €1 2 . 3 4
+                        if(words[x].contains("€")) {
+                            s = s.replaceAll(" ", "");
+                            String[] temp = s.split("€");
+                            String extractedPrice = findTotal(temp[1]);
+                            cleanedText += extractedPrice + " \r\n";
+                        }
+
+                        System.out.println("words[x] = " + s);
                         String extractedPrice = findTotal(words[x]);
                         cleanedText += extractedPrice + " ";
 
@@ -470,6 +493,7 @@ public class TextExtraction {
             for(int i = 0; i<lines.length;i++){
                 if(lines[i].matches("(\\s)*[0-9]+\\.[0-9][0-9](\\s)*")) {
                     potentialTotals[i] = Double.parseDouble(lines[i]);
+                    System.out.println("potential total: " + potentialTotals[i]);
                 }
             }
 
@@ -480,6 +504,23 @@ public class TextExtraction {
                 }
             }
 
+            System.out.println("total is = " + total);
+
+            // check if first char of potential total was read falsely
+            for(int i=0; i<potentialTotals.length; i++){
+
+                String temp = String.valueOf(total);
+                temp = temp.substring(1, temp.length());
+
+                double intTemp = Double.parseDouble(temp);
+
+                if(intTemp==potentialTotals[i]) {
+                    total = intTemp;
+                    break;
+                }
+            }
+
+
         } catch (IOException i) {
             i.printStackTrace();
         }
@@ -488,7 +529,7 @@ public class TextExtraction {
         if(total==0) {
             // store every word in lastResort in an array
             String[] potentials = lastResort.split(" ");
-            double temp = 0;
+            double temp;
             double max = 0;
             double secondLargest = 0;
 
@@ -579,7 +620,6 @@ public class TextExtraction {
 
 
 
-
     public String getCategory(String dirPath, String titleCorrect) {
 
         System.out.println("TITLE CORRECT:" + titleCorrect);
@@ -602,7 +642,7 @@ public class TextExtraction {
                 "shoes", "boot", "jeans", "top", "dress","penneys", "tk", "maxx"
         };
         String[] recreationArray = {
-                "bar", "movie", "cinema", "music", "electronic", "book", "game", "accessories"
+                "bar", "tower records", "movie", "cinema", "music", "electronic", "book", "books", "game", "accessories"
         };
         String[] healthArray = {
                 "pharmacy", "doctor", "health", "boots","lloyds","mccabes","hickeys"

@@ -244,7 +244,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
     }
 
     private synchronized void removeNonExistingFileEntry(final CachedFileEntry cachedFileEntry) {
-        final File cachedFile = cachedFileEntry.file;
         // Remove the file that no longer exists from the cache.
         orderedCachedFileEntries.remove(cachedFileEntry);
 

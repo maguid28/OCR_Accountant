@@ -29,7 +29,7 @@ public class RadarChartItem extends ChartItem {
     @Override
     public View getView(int position, View convertView, Context c) {
 
-        ViewHolder holder = null;
+        ViewHolder holder;
 
         if (convertView == null) {
 

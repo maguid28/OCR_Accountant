@@ -5,9 +5,11 @@ import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBHashKey;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBRangeKey;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBTable;
 
+import java.io.Serializable;
+
 @DynamoDBTable(tableName = "ocraccountingapp-mobilehub-1024067420-receiptData")
 
-public class ReceiptDataDO {
+public class ReceiptDataDO implements Serializable {
     private String _userId;
     private String _recName;
     private String _date;

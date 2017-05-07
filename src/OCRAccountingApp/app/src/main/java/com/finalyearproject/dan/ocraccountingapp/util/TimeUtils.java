@@ -57,7 +57,7 @@ public class TimeUtils {
         if (pattern == null) {
             pattern = defaultPattern;
         }
-        SimpleDateFormat simpleDateFormat = null;
+        SimpleDateFormat simpleDateFormat;
         try {
             simpleDateFormat = new SimpleDateFormat(pattern);
         } catch (IllegalArgumentException e) {

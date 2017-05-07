@@ -181,8 +181,6 @@ public class MultiChartFragment extends Fragment {
 
     private RadarData generateDataRadar() {
 
-        float mult = 80;
-        float min = 20;
         int numEntries = 7;
 
 

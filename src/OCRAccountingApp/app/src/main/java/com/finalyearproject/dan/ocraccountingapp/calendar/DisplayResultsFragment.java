@@ -4,6 +4,7 @@ package com.finalyearproject.dan.ocraccountingapp.calendar;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -19,6 +20,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.amazonaws.AmazonClientException;
+import com.finalyearproject.dan.ocraccountingapp.MainActivity;
+import com.finalyearproject.dan.ocraccountingapp.camera.PreviewActivity;
+import com.finalyearproject.dan.ocraccountingapp.camera.ReceiptEditActivity;
 import com.finalyearproject.dan.ocraccountingapp.nosql.noSQLObj;
 import com.finalyearproject.dan.ocraccountingapp.amazon.content.ContentItem;
 import com.finalyearproject.dan.ocraccountingapp.amazon.content.ContentProgressListener;
@@ -283,8 +287,11 @@ public class DisplayResultsFragment extends Fragment {
                 noSQLObj noSqlObj = new noSQLObj();
                 noSqlObj.setObj(result);
 
+                Intent i;
+                i = new Intent(getActivity(), ReceiptEditActivity.class);
 
                 Bundle args = new Bundle();
+                args.putString("id", "results");
                 args.putSerializable("noSQLObj", noSqlObj);
                 args.putString("file_path_arg", filePath);
                 args.putString("TITLE", recTitle);
@@ -292,13 +299,10 @@ public class DisplayResultsFragment extends Fragment {
                 args.putString("DATE", recDate);
                 args.putString("CATAGORY", recCatagory);
 
-                Fragment fragment = new EditFragment();
-                fragment.setArguments(args);
-                FragmentManager manager = getActivity().getSupportFragmentManager();
-                FragmentTransaction transaction = manager.beginTransaction();
-                transaction.replace(R.id.main_fragment_container, fragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
+                i.putExtras(args);
+
+                // Start receipt edit activity
+                getActivity().startActivity(i);
             }
         });
         builder.show();

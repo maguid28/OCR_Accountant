@@ -253,7 +253,8 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
             // extract text on this thread
             TextExtraction te = new TextExtraction();
 
-            recTitle = te.getTitle(fileString, PreviewActivity.this);
+            String DATA_PATH = PreviewActivity.this.getFilesDir() + "/TesseractSample/tessdata/";
+            recTitle = te.getTitle(fileString, DATA_PATH);
             recTotal = te.getTotal(fileString);
             recDate = te.getDate(fileString);
             recCategory = te.getCategory(fileString, recTitle);
@@ -294,6 +295,9 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
 
         Intent i;
         i = new Intent(PreviewActivity.this, ReceiptEditActivity.class);
+
+        // pass an identifier to allow the edit activity to know which activity preceded it
+        i.putExtra("id", "preview");
         // Pass the file path and text result to the receipt edit activity
         i.putExtra(FILE_PATH, previewFilePath);
         Log.e("OCR TEXT: ", ocrResult);

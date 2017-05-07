@@ -9,6 +9,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -34,7 +37,11 @@ import com.finalyearproject.dan.ocraccountingapp.amazon.content.ContentItem;
 import com.finalyearproject.dan.ocraccountingapp.amazon.content.ContentProgressListener;
 import com.finalyearproject.dan.ocraccountingapp.amazon.content.UserFileManager;
 import com.finalyearproject.dan.ocraccountingapp.amazon.util.ThreadUtils;
+import com.finalyearproject.dan.ocraccountingapp.calendar.ViewPagerFragment;
 import com.finalyearproject.dan.ocraccountingapp.nosql.ReceiptDataDO;
+import com.finalyearproject.dan.ocraccountingapp.nosql.noSQLObj;
+import com.finalyearproject.dan.ocraccountingapp.nosql.nosql.DynamoDBUtils;
+import com.finalyearproject.dan.ocraccountingapp.nosql.nosql.NoSQLResult;
 import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
 
 import java.io.File;
@@ -62,6 +69,11 @@ public class ReceiptEditActivity extends AppCompatActivity {
     String receiptTotal;
     String receiptDate;
     String receiptCatagory;
+
+    NoSQLResult noSQLResult;
+    noSQLObj noSqlObj;
+
+    String senderID;
 
     Bitmap imageBitmap;
 
@@ -93,6 +105,8 @@ public class ReceiptEditActivity extends AppCompatActivity {
 
         try {
             //Extract the data passed from the previous activity
+            senderID = bundle.getString("id");
+            Log.i("Sender id is ", senderID);
             filePath = bundle.getString("file_path_arg");
             OCRText = bundle.getString("ocr_text_arg");
             receiptTitle = bundle.getString("TITLE");
@@ -107,7 +121,14 @@ public class ReceiptEditActivity extends AppCompatActivity {
 
             ocrtextview.setText(OCRText);
             Log.i("prev activity: ", filePath);
-            ocrtextview.setVisibility(View.GONE);
+            //ocrtextview.setVisibility(View.GONE);
+
+            if(senderID.equals("results")) {
+                noSqlObj = (noSQLObj) bundle.getSerializable("noSQLObj");
+                assert noSqlObj != null;
+                noSQLResult = noSqlObj.getObj();
+                System.out.println("theresult " + noSQLResult);
+            }
         }
         catch (NullPointerException ignored) {}
 
@@ -225,8 +246,16 @@ public class ReceiptEditActivity extends AppCompatActivity {
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
 
-                                // rename the captured file to unique name and upload it.
-                                renameAndUploadFile();
+                                // if the previous view was the preview activty
+                                if(senderID.equals("preview")) {
+                                    // rename the captured file to unique name and upload it.
+                                    renameAndUploadFile();
+                                }
+                                // if the previous view was the results fragment
+                                if(senderID.equals("results")) {
+                                    // update the database entry
+                                    updateReceipt();
+                                }
                             }
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -239,6 +268,33 @@ public class ReceiptEditActivity extends AppCompatActivity {
                 dialog.show();
             }
         });
+    }
+
+
+
+    public void updateReceipt() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    assert noSQLResult != null;
+                    noSQLResult.updateItem(
+                            recNameEditText.getText().toString(),
+                            recTotalEditText.getText().toString(),
+                            recDateEditText.getText().toString(),
+                            selectedSpinnerItem
+                    );
+                } catch (final AmazonClientException ex) {
+                    Log.e(TAG, "Failed saving updated item.", ex);
+                    DynamoDBUtils.showErrorDialogForServiceException(ReceiptEditActivity.this,
+                            getString(R.string.nosql_dialog_title_failed_update_item_text), ex);
+                }
+            }
+        }).start();
+
+        // launch the main activity
+        Intent main = new Intent(ReceiptEditActivity.this, MainActivity.class);
+        ReceiptEditActivity.this.startActivityForResult(main, 111);
     }
 
 

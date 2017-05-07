@@ -752,9 +752,22 @@ Case sensitive email addresses.
 Receipts being displayed mirrored when captured.
 Some fragment overlaying issues.
 
+The above issues have now been resolved.
+
 ## Blog entry 24 - Real-time image processing
 Due to the lower accuracy of results when capturing an image and then performing image processing on the still image I have modified the camera activity to perform some of the image processing in real time so that the user can be sure that the receipt will be captured successfully. In the previous implementation a still image would be captured, and once captured I would search for the 4 corners of the image and rotate the image accordingly. This worked approximately 70% of the time as sometimes the contrast between the receipt and the background was too indistinguishable by the application and would not work correctly or if the 4 corners were not well defined this would also cause the process to fail and would result in the user trying again while getting frustrated.
 In my current implementation the camera captures each frame, searches for the largest contour in the image, which should be outline of the receipt and then draws a bounding box around the receipt on the frame and passes the frame to the camera preview window. when the user clicks the capture button only the image within the bounding box is captured and the receipt cleaning process is executed. Once this process has completed, the user will be shown a preview of the cleaned image which user then has the option to recapture if they are not satisfied with the result, close the activity, or proceed to the receipt edit activity.
 The images below demonstrate this process.
 
 ![Real time image processing ](https://gitlab.computing.dcu.ie/maguid28/2017-ca400-maguid28/raw/master/docs/blog/images/realtime.jpg)
+
+
+## Blog entry 25 - User testing 2
+At the end of my second round of user tests I have discovered the following issues:
+The Date tuple updated when user updated the date field but formattedDate tuple did not.
+The Statistics Activity crashed when there was no entries in the database.
+Category field did not update in the receipt edit activity
+The data shown on the pie chart in the Statistics activity was not made clear what it was displaying.
+List of receipts disappearing when user clicks the back button on edit receipt fragment.
+
+The above issues have now been resolved.

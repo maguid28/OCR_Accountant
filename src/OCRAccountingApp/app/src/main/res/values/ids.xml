@@ -3,4 +3,5 @@
   <item name="nosql_context_menu_entry_view_image" type="id"/>
   <item name="nosql_context_menu_entry_update" type="id"/>
   <item name="nosql_context_menu_entry_delete" type="id"/>
+  <item name="test" type="id"/>
 </resources>

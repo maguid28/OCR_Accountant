@@ -280,7 +280,6 @@ public class StatisticsFragment extends Fragment {
         multiChartFragment.setOperation2(operation2);
 
         // Add the child fragment to Statistics fragment
-        Fragment fragment = new MultiChartFragment();
         FragmentManager manager = getChildFragmentManager();
         android.support.v4.app.FragmentTransaction transaction = manager.beginTransaction();
         transaction.replace(R.id.chartContainer, multiChartFragment);

@@ -110,10 +110,6 @@ public class OCR {
 
 
 
-
-
-
-
     private String startOCR(Uri imgUri) {
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
