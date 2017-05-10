@@ -98,26 +98,28 @@ public class ImageProcessing {
         //Mat result=extract(mRgba, startM, distp1p2, distp2p3);
 
         Rect roi = new Rect((int)p1.x+15, (int)p1.y+15, distp2p3-15, distp1p2-15);
+        Log.d("ROI:", roi.width + "\t" + roi.height);
         Mat result = new Mat(mRgba, roi);
 
         // temp, delete when done testing
         String pathToFile1 = tempgetOutputFile(activity).toString();
         Imgcodecs.imwrite(pathToFile1, result);
 
+        //remove noise from image
+        Photo.fastNlMeansDenoising(result, result);
+
         //resize image to x3 the size of original image
-        Size size2 = new Size((result.width() * 4), (result.height() * 4));
+        Size size2 = new Size((result.width() * 5), (result.height() * 5));
         Imgproc.resize(result, result, size2);
 
         // convert to greyscale
         Imgproc.cvtColor(result, result, Imgproc.COLOR_RGB2GRAY);
 
-        //remove noise from image
-        Photo.fastNlMeansDenoising(result, result);
 
         // changing this value increases thresholding, allowing less lines/creases in
-        int c = 3;
+        int c = 4;
         // thickness of the black data let through the threshold, keep blocksize at 55 for now, will possibly try 45 later
-        int blockSize = 45;
+        int blockSize = 55;
         Imgproc.adaptiveThreshold(result,result, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, blockSize, c);
 
         //Imgproc.adaptiveThreshold(result,result, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, 55, 2);
@@ -135,7 +137,7 @@ public class ImageProcessing {
         result = removeArtifacts(result);
 
         //resize image to x6 the size of original image
-        Size size3 = new Size((result.width() * 3), (result.height() * 3));
+        Size size3 = new Size((result.width() * 2), (result.height() * 2));
         Imgproc.resize(result, result, size3);
 
         Mat returned = new Mat();
@@ -222,7 +224,7 @@ public class ImageProcessing {
 
             double r = (double)Core.countNonZero(maskROI)/(rect.width*rect.height);
 
-            if (r > .35 && (rect.height > 10 && rect.width > 10) && (rect.height < 200)) {
+            if (r > .20 && (rect.height > 5 && rect.width > 5) && (rect.height < 200)) {
                 rectangle(rgbImg, rect.br() , new Point( rect.br().x-rect.width ,rect.br().y-rect.height),  new Scalar(0, 255, 0));
                 rectangle(mask2, rect.br() , new Point( rect.br().x-rect.width ,rect.br().y-rect.height),  new Scalar(255, 255, 255),Core.FILLED);
             }

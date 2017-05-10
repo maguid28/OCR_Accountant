@@ -41,6 +41,8 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
     private String previewFilePath;
     private UCropView imagePreview;
 
+    OCRTask OCRTask;
+
     public static final int ACTION_CONFIRM = 900;
     public static final int ACTION_RETAKE = 901;
     public static final int ACTION_CANCEL = 902;
@@ -50,7 +52,7 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
 
     Mat test2;
 
-    ProgressDialog mProgressDialog;
+    ProgressDialog progressDialog;
 
     String ocrResult;
 
@@ -95,7 +97,7 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
 
         imagePreview = (UCropView) findViewById(R.id.image_view);
 
-        mProgressDialog = new ProgressDialog(this);
+        progressDialog = new ProgressDialog(this);
 
         View confirmMediaResult = findViewById(R.id.confirm_media_result);
         View reTakeMedia2 = findViewById(R.id.re_take_media2);
@@ -177,10 +179,10 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
             ocrButtonClicked = true;
             if(isOCRTaskRunning){
                 Log.e("OCRTASK COMPLETE? ", "NO");
-                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                mProgressDialog.setMessage("Extracting text...");
-                mProgressDialog.setCancelable(false);
-                mProgressDialog.show();
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog.setMessage("Extracting text...");
+                progressDialog.setCancelable(false);
+                progressDialog.show();
             }
             else{
                 startReceiptEdit();
@@ -271,7 +273,7 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
 
             if(ocrButtonClicked) {
                 // dismiss the progress dialog
-                mProgressDialog.dismiss();
+                progressDialog.dismiss();
                 startReceiptEdit();
             }
 
@@ -322,6 +324,7 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        OCRTask.cancel(true);
         deleteMediaFile();
     }
 
@@ -347,7 +350,7 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
         Log.e("Width of preview", String.valueOf(width));
 
         // run ocr in asynctask
-        OCRTask OCRTask = new OCRTask();
+        OCRTask = new OCRTask();
         OCRTask.execute();
     }
 

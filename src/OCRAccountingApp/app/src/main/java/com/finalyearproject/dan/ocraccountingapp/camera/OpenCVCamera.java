@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.finalyearproject.dan.ocraccountingapp.R;
 
@@ -35,13 +36,11 @@ import static com.finalyearproject.dan.ocraccountingapp.camera.ImageProcessing.g
 
 public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
-    // marked as true when the image processing task is in operation
-    public static boolean isProcessTaskRunning = false;
-
     protected static final int REQUEST_PREVIEW_CODE = 1001;
 
     Bitmap imageBitmap = null;
     List<Point> rectCorners = new ArrayList<>();
+
 
     ProgressDialog mProgressDialog;
 
@@ -112,10 +111,12 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
         setContentView(R.layout.camera_activity);
         mOpenCvCameraView = (JavaCameraView) findViewById(R.id.camera_surface_view);
         mOpenCvCameraView.setVisibility(View.VISIBLE);
+        mOpenCvCameraView.enableView();
 
         mOpenCvCameraView.setMaxFrameSize(8000,8000);
         mOpenCvCameraView.setMinimumHeight(1920);
         mOpenCvCameraView.setMinimumHeight(1080);
+
 
         mOpenCvCameraView.setCvCameraViewListener(this);
 
@@ -128,18 +129,23 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
             @Override
             public void onClick(View v) {
 
+                Log.d("mRgba before async:", mRgba.width() + "\t" + mRgba.height());
+
+                final Mat setRGBA = mRgba;
+                Log.d("setRGBA:", setRGBA.width() + "\t" + setRGBA.height());
+
                 // hide the cameraview
                 ProcessImageTask processImageTask = new ProcessImageTask();
-                processImageTask.execute();
+                processImageTask.execute(setRGBA);
 
-
+                Log.d("setRGBA after:", setRGBA.width() + "\t" + setRGBA.height());
                 mOpenCvCameraView.disableView();
 
             }
         });
     }
 
-    private class ProcessImageTask extends AsyncTask<String, Void, String> {
+    private class ProcessImageTask extends AsyncTask<Mat, Void, Integer> {
 
         @Override
         protected void onPreExecute() {
@@ -150,25 +156,35 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
         }
 
         @Override
-        protected String doInBackground(String... params) {
+        protected Integer doInBackground(Mat... params) {
 
 
+            Mat mat = params[0];
+
+            if(mat.height()==0) return 0;
+            Log.d("mat:", mat.width() + "\t" + mat.height());
             ImageProcessing imageProcessing = new ImageProcessing();
             imageProcessing.writeToStorage(rectCorners.get(0), rectCorners.get(1),
-                    rectCorners.get(2), imageBitmap, mRgba, OpenCVCamera.this);
+                    rectCorners.get(2), imageBitmap, mat, OpenCVCamera.this);
 
-            return "Executed";
+            return 1;
         }
 
         @Override
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(Integer result) {
+            if (mProgressDialog.isShowing()) {
+                mProgressDialog.dismiss();
+            }
+            if(result==0){
+                mOpenCvCameraView.enableView();
+                Toast.makeText(getApplicationContext(),"Camera not ready, try again.",Toast.LENGTH_SHORT).show();
+            }
+            else {
+                Log.e("IMGTASK COMPLETE? ", "YES");
 
-            mProgressDialog.dismiss();
-            isProcessTaskRunning = false;
-            Log.e("IMGTASK COMPLETE? ", "YES");
-
-            String pathToFile = getOutputFile(OpenCVCamera.this).toString();
-            startPreviewActivity(pathToFile);
+                String pathToFile = getOutputFile(OpenCVCamera.this).toString();
+                startPreviewActivity(pathToFile);
+            }
         }
 
         @Override
@@ -176,6 +192,7 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
     }
 
     private void startPreviewActivity(String file) {
+        //progressDialog.dismiss();
         Intent intent = PreviewActivity.newIntent(this, file);
         startActivityForResult(intent, REQUEST_PREVIEW_CODE);
     }
@@ -191,6 +208,7 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
 
     @Override
     public void onCameraViewStarted(int width, int height) {
+        System.out.println("CAMERA VIEW STARTED");
         Log.d("Width", width + "\t" + height);
         mRgba = new Mat(height, width, CvType.CV_8UC4);
         mIntermediateMat = new Mat(height, width, CvType.CV_8UC4);
@@ -207,10 +225,13 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         // input frame has RGBA format
+
         mRgba = inputFrame.rgba();
         //mGray = inputFrame.gray();
         rectCorners = new ImageProcessing().drawBoundingRectangle(mRgba);
         //process(mRgba);
+        System.out.println("RGBA IN ONCAMERAFRAME");
+        Log.d("mRgba oncameraframe:", mRgba.width() + "\t" + mRgba.height());
         return mRgba;
     }
 
