@@ -16,7 +16,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.finalyearproject.dan.ocraccountingapp.R;
 
@@ -28,6 +27,7 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
+import org.opencv.core.Rect;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,16 +131,39 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
 
                 Log.d("mRgba before async:", mRgba.width() + "\t" + mRgba.height());
 
-                final Mat setRGBA = mRgba;
+                Mat setRGBA = new Mat();
+                if(mRgba.height()!=0) {
+                    setRGBA = mRgba;
+                    Log.d("it was mRGBA!", "!!!");
+                }
+                else if (mIntermediateMat.height()!=0) {
+
+                    setRGBA = mIntermediateMat;
+                    Log.d("it was intermediate!", "!!!");
+                }
+
                 Log.d("setRGBA:", setRGBA.width() + "\t" + setRGBA.height());
+
+                Point p1 = rectCorners.get(0);
+                Point p2 = rectCorners.get(1);
+                Point p3 = rectCorners.get(2);
+
+                int distp1p2 = (int) Math.sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y));
+                int distp2p3 = (int) Math.sqrt((p3.x - p2.x) * (p3.x - p2.x) + (p3.y - p2.y) * (p3.y - p2.y));
+
+                // issues with setRGBA becoming null in AsyncTask, possible bug in opencvCamera/asyncTask realtionship?
+                // moving code out of Async resolved issue
+                Rect roi = new Rect((int) p1.x + 15, (int) p1.y + 15, distp2p3 - 15, distp1p2 - 15);
+                Log.d("ROI:", roi.width + "\t" + roi.height);
+                Mat result = new Mat(setRGBA, roi);
+
 
                 // hide the cameraview
                 ProcessImageTask processImageTask = new ProcessImageTask();
-                processImageTask.execute(setRGBA);
+                processImageTask.execute(result);
 
                 Log.d("setRGBA after:", setRGBA.width() + "\t" + setRGBA.height());
                 mOpenCvCameraView.disableView();
-
             }
         });
     }
@@ -160,12 +183,9 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
 
 
             Mat mat = params[0];
-
-            if(mat.height()==0) return 0;
             Log.d("mat:", mat.width() + "\t" + mat.height());
             ImageProcessing imageProcessing = new ImageProcessing();
-            imageProcessing.writeToStorage(rectCorners.get(0), rectCorners.get(1),
-                    rectCorners.get(2), imageBitmap, mat, OpenCVCamera.this);
+            imageProcessing.writeToStorage(mat, OpenCVCamera.this);
 
             return 1;
         }
@@ -175,16 +195,12 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
             if (mProgressDialog.isShowing()) {
                 mProgressDialog.dismiss();
             }
-            if(result==0){
-                mOpenCvCameraView.enableView();
-                Toast.makeText(getApplicationContext(),"Camera not ready, try again.",Toast.LENGTH_SHORT).show();
-            }
-            else {
-                Log.e("IMGTASK COMPLETE? ", "YES");
 
-                String pathToFile = getOutputFile(OpenCVCamera.this).toString();
-                startPreviewActivity(pathToFile);
-            }
+            Log.e("IMGTASK COMPLETE? ", "YES");
+
+            String pathToFile = getOutputFile(OpenCVCamera.this).toString();
+            startPreviewActivity(pathToFile);
+
         }
 
         @Override
@@ -226,6 +242,7 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         // input frame has RGBA format
 
+        mIntermediateMat = mRgba;
         mRgba = inputFrame.rgba();
         //mGray = inputFrame.gray();
         rectCorners = new ImageProcessing().drawBoundingRectangle(mRgba);

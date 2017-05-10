@@ -8,6 +8,8 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import com.finalyearproject.dan.ocraccountingapp.util.SetupUtil;
+
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -89,17 +91,7 @@ public class ImageProcessing {
 
 
 
-    public void writeToStorage(Point p1, Point p2, Point p3, Bitmap imageBitmap, Mat mRgba, Activity activity) {
-
-        int distp1p2=(int) Math.sqrt((p2.x-p1.x)*(p2.x-p1.x) + (p2.y-p1.y)*(p2.y-p1.y));
-        int distp2p3=(int) Math.sqrt((p3.x-p2.x)*(p3.x-p2.x) + (p3.y-p2.y)*(p3.y-p2.y));
-
-        //Mat startM = Converters.vector_Point2f_to_Mat(source);
-        //Mat result=extract(mRgba, startM, distp1p2, distp2p3);
-
-        Rect roi = new Rect((int)p1.x+15, (int)p1.y+15, distp2p3-15, distp1p2-15);
-        Log.d("ROI:", roi.width + "\t" + roi.height);
-        Mat result = new Mat(mRgba, roi);
+    public void writeToStorage(Mat result, Activity activity) {
 
         // temp, delete when done testing
         String pathToFile1 = tempgetOutputFile(activity).toString();
@@ -124,10 +116,10 @@ public class ImageProcessing {
 
         //Imgproc.adaptiveThreshold(result,result, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, 55, 2);
 
-        imageBitmap = Bitmap.createBitmap(result.cols(), result.rows(), Bitmap.Config.ARGB_8888);
-        Utils.matToBitmap(result, imageBitmap);
+        //Bitmap imageBitmap = Bitmap.createBitmap(result.cols(), result.rows(), Bitmap.Config.ARGB_8888);
+        //Utils.matToBitmap(result, imageBitmap);
 
-        imageBitmap = RotateBitmap(imageBitmap);
+        //imageBitmap = RotateBitmap(imageBitmap);
 
         Core.transpose(result, result);
         Core.flip(result, result,1);
@@ -140,22 +132,13 @@ public class ImageProcessing {
         Size size3 = new Size((result.width() * 2), (result.height() * 2));
         Imgproc.resize(result, result, size3);
 
-        Mat returned = new Mat();
-        Utils.bitmapToMat(imageBitmap, returned);
+        //Mat returned = new Mat();
+        //Utils.bitmapToMat(imageBitmap, returned);
 
         //returned = removeArtifacts(returned);
 
         String pathToFile = getOutputFile(activity).toString();
         Imgcodecs.imwrite(pathToFile, result);
-    }
-
-    // rotate the bitmap correctly
-    public static Bitmap RotateBitmap(Bitmap source)
-    {
-        Matrix matrix = new Matrix();
-        // rotate 90 degrees
-        matrix.postRotate(90);
-        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
     }
 
 
@@ -262,7 +245,8 @@ public class ImageProcessing {
 
         String IMGS_PATH = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/TesseractSample/imgs";
         // checks if the directory exists, if not create it
-        prepareDirectory(IMGS_PATH);
+        SetupUtil setupUtil = new SetupUtil();
+        setupUtil.prepareDirectory(IMGS_PATH);
 
         //path to image is /storage/emulated/0/Android/data/com.finalyearproject.dan.ocraccountingapp/files/Pictures/TesseractSample/imgs/ocr.jpg
         String img_path = IMGS_PATH + "/ocr.jpg";
@@ -280,7 +264,8 @@ public class ImageProcessing {
 
         String IMGS_PATH = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/TesseractSample/imgs";
         // checks if the directory exists, if not create it
-        prepareDirectory(IMGS_PATH);
+        SetupUtil setupUtil = new SetupUtil();
+        setupUtil.prepareDirectory(IMGS_PATH);
 
         //path to image is /storage/emulated/0/Android/data/com.finalyearproject.dan.ocraccountingapp/files/Pictures/TesseractSample/imgs/ocr.jpg
         String img_path = IMGS_PATH + "/ocrUNPROCESSED.jpg";
@@ -290,18 +275,5 @@ public class ImageProcessing {
         filePath = new File(img_path);
 
         return filePath;
-    }
-
-    //Prepare directory on external storage
-    private static void prepareDirectory(String path) {
-
-        File dir = new File(path);
-        if (!dir.exists()) {
-            if (!dir.mkdirs()) {
-                Log.e(TAG, "ERROR: Creation of directory " + path + " failed, check does Android Manifest have permission to write to external storage.");
-            }
-        } else {
-            Log.i(TAG, "Created directory " + path);
-        }
     }
 }

@@ -14,6 +14,7 @@ import android.util.Log;
 import com.finalyearproject.dan.ocraccountingapp.amazon.AWSMobileClient;
 import com.finalyearproject.dan.ocraccountingapp.calendar.ViewPagerFragment;
 import com.finalyearproject.dan.ocraccountingapp.nav.NavDrawerInstaller;
+import com.finalyearproject.dan.ocraccountingapp.util.SetupUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,9 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CAMERA_PERMISSION = 200;
 
-    String DATA_PATH;
-
-    private static final String TESSDATA = "tessdata";
+    //private static final String TESSDATA = "tessdata";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,10 +37,12 @@ public class MainActivity extends AppCompatActivity {
 
         AWSMobileClient.initializeMobileClientIfNecessary(getApplicationContext());
 
-        DATA_PATH = this.getFilesDir() + "/TesseractSample/";
+        String DATA_PATH = this.getFilesDir() + "/TesseractSample/";
+        final String TESSDATA = "tessdata";
 
         //create folder and store tessdata here
-        prepareTesseract();
+        SetupUtil setupUtil = new SetupUtil();
+        setupUtil.prepareTesseract(DATA_PATH, TESSDATA, this);
 
         // Handle Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -61,69 +62,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
-
-
-
-
-    //Prepare directory on external storage
-    private void prepareDirectory(String path) {
-
-        File dir = new File(path);
-        if (!dir.exists()) {
-            if (!dir.mkdirs()) {
-                Log.e(TAG, "ERROR: Creation of directory " + path + " failed, check does Android Manifest have permission to write to external storage.");
-            }
-        } else {
-            Log.i(TAG, "Created directory " + path);
-        }
-    }
-
-    private void prepareTesseract() {
-        try {
-            prepareDirectory(DATA_PATH + TESSDATA);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        copyTessDataFiles();
-    }
-
-    //Copy tessdata files (located on assets/tessdata) to destination directory
-    private void copyTessDataFiles() {
-        try {
-            String fileList[] = this.getAssets().list(TESSDATA);
-
-            for (String fileName : fileList) {
-
-                // open file within the assets folder
-                // if it is not already there copy it to the sdcard
-                String pathToDataFile = DATA_PATH + TESSDATA + "/" + fileName;
-                if (!(new File(pathToDataFile)).exists()) {
-
-                    InputStream in = this.getAssets().open(TESSDATA + "/" + fileName);
-
-                    OutputStream out = new FileOutputStream(pathToDataFile);
-
-                    // Transfer bytes from in to out
-                    byte[] buf = new byte[1024];
-                    int len;
-
-                    while ((len = in.read(buf)) > 0) {
-                        out.write(buf, 0, len);
-                    }
-                    in.close();
-                    out.close();
-
-                    Log.d(TAG, "Copied " + fileName + " to tessdata");
-                    Log.d(TAG, "FILEPATH: " + pathToDataFile);
-                }
-            }
-        } catch (IOException e) {
-            Log.e(TAG, "Unable to copy files to tessdata " + e.toString());
-        }
-    }
-
 
 /*
     boolean doubleBackToExitPressedOnce = false;

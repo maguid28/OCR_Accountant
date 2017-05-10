@@ -326,6 +326,7 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
         super.onBackPressed();
         OCRTask.cancel(true);
         deleteMediaFile();
+        finish();
     }
 
     private boolean deleteMediaFile() {
