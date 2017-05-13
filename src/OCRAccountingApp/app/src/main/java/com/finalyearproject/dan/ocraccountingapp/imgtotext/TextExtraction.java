@@ -302,7 +302,9 @@ public class TextExtraction {
                 for (int x=0; x<words.length; x++) {
                     if(words[x].matches("[0-9a-zA-Z]+/[0-9a-zA-Z]{2}/[0-9a-zA-Z]+")
                             || words[x].matches("[0-9a-zA-Z]+[.][0-9a-zA-Z]{2}[.][0-9a-zA-Z]+")
-                            || words[x].matches("[0-9a-zA-Z]+[-][0-9a-zA-Z]{2}[-][0-9a-zA-Z]+")) {
+                            || words[x].matches("[0-9a-zA-Z]+[-][0-9a-zA-Z]{2}[-][0-9a-zA-Z]+")
+                            || words[x].contains("/")
+                            || words[x].contains("-")) {
 
                         String dateOnly = words[x];
 
@@ -313,14 +315,19 @@ public class TextExtraction {
                         // replace mistaken 0's
                         dateOnly = dateOnly.replaceAll("o", "0");
                         dateOnly = dateOnly.replaceAll("O", "0");
+                        // replace mistaken 2's
+                        dateOnly = dateOnly.replaceAll("z", "2");
+                        dateOnly = dateOnly.replaceAll("Z", "2");
+                        // replace mistaken 5's
+                        dateOnly = dateOnly.replaceAll("s", "5");
+                        dateOnly = dateOnly.replaceAll("S", "5");
                         //change '.' and '-' to '/'
                         dateOnly = dateOnly.replaceAll("[.]", "/");
                         dateOnly = dateOnly.replaceAll("-", "/");
 
                         dateOnly = dateOnly.replaceAll(",", "");
 
-                        System.out.println(dateOnly);
-
+                        System.out.println("DATEONLY: " + dateOnly);
 
                         try {
                             if (dateOnly.contains("/")) {
@@ -329,6 +336,7 @@ public class TextExtraction {
                                 sb.lastIndexOf("/");
                                 System.out.println("first index: " + sb.indexOf("/"));
                                 System.out.println("last index: " + sb.lastIndexOf("/"));
+
 
                                 // if the date is in the form xx/xx/20xx
                                 if (dateOnly.substring(sb.lastIndexOf("/") + 1, sb.lastIndexOf("/") + 3).equals("20")) {
@@ -369,11 +377,55 @@ public class TextExtraction {
 
             // store all found potential dates in an array
             String[] datePotentials = potentials.split("\\r?\\n");
+
+
+            for(int i=0; i<datePotentials.length;i++) {
+                System.out.println("mep: " +datePotentials[i]);
+
+                String[] tempSplit = datePotentials[i].split("/");
+                String tempDate = "";
+                for(int j = 0; j<tempSplit.length;j++) {
+                    // once the year is found
+                    if(tempSplit[j].matches("20[0-9][0-9]")) {
+                        tempDate = tempDate + tempSplit[j];
+                        datePotentials[0] = tempDate;
+                        System.out.println("DEDATE: " + datePotentials[0]);
+                        break;
+                    }
+
+                    if(!tempSplit[j].equals("")) {
+                        tempDate += tempSplit[j] + "/";
+                    }
+                }
+            }
+
+            if(datePotentials[0]!=null) {
+                String[] tempSplit = datePotentials[0].split("/");
+                String tempDate = "";
+                // removes unnessessary '/' that may have been read
+                for (int i = 0; i < tempSplit.length; i++) {
+                    if (i == tempSplit.length - 1) {
+                        tempDate = tempDate + tempSplit[i];
+                        datePotentials[0] = tempDate;
+                        break;
+                    }
+                    tempDate += tempSplit[i] + "/";
+                }
+            }
+
             // create another array to store the formatted dates
             //String[] formattedDatePotentials = new String[datePotentials.length];
             LinkedList<String> formattedDatePotentials = new LinkedList<String>();
 
             for(int i = 0; i<datePotentials.length;i++){
+                System.out.println("dates: " + datePotentials[i]);
+
+                // if last index is '/' remove it
+                if((datePotentials[i].lastIndexOf("/")==datePotentials[i].length()-1)&& (datePotentials[i].lastIndexOf("/")>2)) {
+                    datePotentials[i] = datePotentials[i].substring(0, datePotentials[i].length()-1);
+                    System.out.println("pop: " + datePotentials[i]);
+                }
+
                 if(datePotentials[i].matches("[0-9][0-9]/[0-9][0-9]/[0-9]{4}")) {
                     formattedDatePotentials.add(datePotentials[i]);
                 }
@@ -406,10 +458,10 @@ public class TextExtraction {
 
                 String[] tempStore = formattedDatePotentials.get(i).split("/");
                 String rightFormat = tempStore[2] + tempStore[1] + tempStore[0];
-                int tempDate = Integer.parseInt(rightFormat);
+                int tempDate1 = Integer.parseInt(rightFormat);
 
-                if((today-tempDate < today-theDate) && tempDate<today) {
-                    theDate = tempDate;
+                if((today-tempDate1 < today-theDate) && tempDate1<today) {
+                    theDate = tempDate1;
                     date = formattedDatePotentials.get(i);
                 }
             }
@@ -435,6 +487,7 @@ public class TextExtraction {
 
 
 
+
     public String getTotal(String dirPath) {
         double total = 0;
 
@@ -447,14 +500,13 @@ public class TextExtraction {
 
             String cleanedText = "";
 
-
             while (br.ready()) {
                 String s = br.readLine().toLowerCase();
                 String[] words = s.split("\\s");
 
                 // search for the line that contains information about total
                 for (int x=0; x<words.length; x++) {
-                    if(s.contains("total") || s.contains("tot") || s.contains("otal") || s.contains("sale") ) { // || s.contains("tal") || s.matches("\\d[t|l][a-z]{3}[l|1|i]")
+                    if((s.contains("total") || s.contains("tot") || s.contains("ota") || s.contains("otal")) && !s.contains("payment") || s.contains("sale") ) { // || s.contains("tal") || s.matches("\\d[t|l][a-z]{3}[l|1|i]")
 
                         // accounts for totals that have become split up e.g. €1 2 . 3 4
                         if(words[x].contains("€")) {
@@ -483,6 +535,8 @@ public class TextExtraction {
 
             br.close();
             System.out.println("TOTAL: " + cleanedText);
+            System.out.println("FIN");
+
 
             String lines[] = cleanedText.split("\\r?\\n");
             //loop through lines until text is found
@@ -491,6 +545,7 @@ public class TextExtraction {
             Arrays.fill(potentialTotals,0);
 
             for(int i = 0; i<lines.length;i++){
+                System.out.println("ANS: " + lines[i]);
                 if(lines[i].matches("(\\s)*[0-9]+\\.[0-9][0-9](\\s)*")) {
                     potentialTotals[i] = Double.parseDouble(lines[i]);
                     System.out.println("potential total: " + potentialTotals[i]);
@@ -505,7 +560,7 @@ public class TextExtraction {
             }
 
             System.out.println("total is = " + total);
-
+/*
             // check if first char of potential total was read falsely
             for(int i=0; i<potentialTotals.length; i++){
 
@@ -514,19 +569,23 @@ public class TextExtraction {
 
                 double intTemp = Double.parseDouble(temp);
 
+                System.out.println("intTemp " + intTemp);
+                System.out.println("pottot[i]" + potentialTotals[i]);
                 if(intTemp==potentialTotals[i]) {
                     total = intTemp;
                     break;
                 }
             }
-
-
+*/
+            System.out.println("TOTAL IS " + total);
         } catch (IOException i) {
             i.printStackTrace();
         }
 
         //if no value was found for total yet, check lastResort
         if(total==0) {
+
+            System.out.println("TOTAL IS " + total);
             // store every word in lastResort in an array
             String[] potentials = lastResort.split(" ");
             double temp;
@@ -574,10 +633,11 @@ public class TextExtraction {
         numberOnly = numberOnly.replaceAll("l", "1");
         // '1' is sometimes recognised as 'l'
         numberOnly = numberOnly.replaceAll("i", "1");
+        numberOnly = numberOnly.replaceAll("o", "0");
         // replace chars 'a'-'z' and '-' with .
         numberOnly = numberOnly.replaceAll("[a-z]|-", ".");
 
-        System.out.println("potential total: " + numberOnly);
+        System.out.println("potential total 1: " + numberOnly);
 
 
         if(numberOnly.length()>3) {
@@ -635,14 +695,14 @@ public class TextExtraction {
                 "electricity", "bill", "electric", "pinergy", "vodafone", "meteor", "maxol",
                 "topaz", "eir", "hardware", "electrical"
         };
+        String[] recreationArray = {
+                "tower records", "movie", "cinema", "music", "electronic", "book", "books", "game", "accessories"
+        };
         String[] transportArray = {
                 "bus", "train", "petrol", "fuel", "car", "luas"
         };
         String[] clothingArray = {
                 "shoes", "boot", "jeans", "top", "dress","penneys", "tk", "maxx"
-        };
-        String[] recreationArray = {
-                "bar", "tower records", "movie", "cinema", "music", "electronic", "book", "books", "game", "accessories"
         };
         String[] healthArray = {
                 "pharmacy", "doctor", "health", "boots","lloyds","mccabes","hickeys"
@@ -680,9 +740,15 @@ public class TextExtraction {
                 category = wordStore.get(words[i]);
             }
         }
-        System.out.println("Category: " + category);
 
-        // if catagory has still not been decided
+        // check if the full title is in the wordstore
+        if(wordStore.containsKey(titleCorrect)) {
+            category = wordStore.get(titleCorrect);
+        }
+
+        System.out.println("Category: " + category );
+
+        // if category has still not been decided
         if(category.equals("")) {
 
             String cleanedText = "";

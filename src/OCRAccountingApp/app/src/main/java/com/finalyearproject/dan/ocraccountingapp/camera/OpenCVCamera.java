@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.finalyearproject.dan.ocraccountingapp.R;
 
@@ -155,15 +156,22 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
                 // moving code out of Async resolved issue
                 Rect roi = new Rect((int) p1.x + 15, (int) p1.y + 15, distp2p3 - 15, distp1p2 - 15);
                 Log.d("ROI:", roi.width + "\t" + roi.height);
-                Mat result = new Mat(setRGBA, roi);
+
+                if(roi.height<1 || roi.width<1) {
+                    Toast toast=Toast.makeText(getApplicationContext(),"Receipt not found, try again",Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+                else {
+                    Mat result = new Mat(setRGBA, roi);
 
 
-                // hide the cameraview
-                ProcessImageTask processImageTask = new ProcessImageTask();
-                processImageTask.execute(result);
+                    // hide the cameraview
+                    ProcessImageTask processImageTask = new ProcessImageTask();
+                    processImageTask.execute(result);
 
-                Log.d("setRGBA after:", setRGBA.width() + "\t" + setRGBA.height());
-                mOpenCvCameraView.disableView();
+                    Log.d("setRGBA after:", setRGBA.width() + "\t" + setRGBA.height());
+                    mOpenCvCameraView.disableView();
+                }
             }
         });
     }
