@@ -69,8 +69,8 @@ public class TextExtraction {
 
             int count;
             // prevents out of bounds exception
-            if(lines.length<3) count = lines.length;
-            else count = 3;
+            if(lines.length<4) count = lines.length;
+            else count = 4;
 
 
             // loop through first 3 lines
@@ -102,8 +102,9 @@ public class TextExtraction {
                 for(int j=0; j<temp.length; j++) {
                     System.out.println(wordFrequencyMap.containsKey(temp[j].toLowerCase()));
                     // count how many words on line are present in the dictionary
-                    if(wordFrequencyMap.containsKey(temp[j].toLowerCase())){
+                    if(wordFrequencyMap.containsKey(temp[j].toLowerCase()) && (temp[j].length()>1)){
                         realWordCount++;
+                        System.out.println("realwordcount for " + temp[j] + ":" + realWordCount);
                     }
                 }
 
@@ -337,6 +338,20 @@ public class TextExtraction {
                                 System.out.println("first index: " + sb.indexOf("/"));
                                 System.out.println("last index: " + sb.lastIndexOf("/"));
 
+                                // fixes issue of first '/' not read correctly
+                                if((sb.indexOf("/")==sb.lastIndexOf("/") && sb.lastIndexOf("/")>3)) {
+                                    sb.setCharAt(sb.lastIndexOf("/")-3, '/');
+                                    System.out.println("sb is " + sb);
+                                    dateOnly = sb.toString();
+                                }
+
+                                // fixes issue of last '/' not read correctly
+                                if((sb.indexOf("/")==sb.lastIndexOf("/") && sb.lastIndexOf("/")<3)) {
+                                    sb.setCharAt(sb.lastIndexOf("/")+3, '/');
+                                    System.out.println("sb is " + sb);
+                                    dateOnly = sb.toString();
+                                }
+
 
                                 // if the date is in the form xx/xx/20xx
                                 if (dateOnly.substring(sb.lastIndexOf("/") + 1, sb.lastIndexOf("/") + 3).equals("20")) {
@@ -445,6 +460,16 @@ public class TextExtraction {
                     // get date in the form xx/xx/xxxx
                     formattedDatePotentials.add(temp[0] + "/" + temp[1] + "/" + temp[2] + lastChar);
                 }
+                // if date is in the form xx/xx/xxx usually if that last char was missed
+                if(datePotentials[i].matches("[0-9][0-9]/[0-9][0-9]/[0-9]{1}")) {
+                    String[] temp = datePotentials[i].split("/");
+                    // get the current year
+                    String tempYear = new SimpleDateFormat("yyyy").format(Calendar.getInstance().getTime());
+                    // extract the last character
+                    String lastChar = tempYear.substring(tempYear.length()-1);
+                    // get date in the form xx/xx/xxxx
+                    formattedDatePotentials.add(temp[0] + "/" + temp[1] + "/20" + temp[2] + lastChar);
+                }
             }
 
             //todays date
@@ -535,8 +560,6 @@ public class TextExtraction {
 
             br.close();
             System.out.println("TOTAL: " + cleanedText);
-            System.out.println("FIN");
-
 
             String lines[] = cleanedText.split("\\r?\\n");
             //loop through lines until text is found
@@ -544,13 +567,14 @@ public class TextExtraction {
             double[] potentialTotals = new double[lines.length];
             Arrays.fill(potentialTotals,0);
 
-            for(int i = 0; i<lines.length;i++){
+            for(int i = 0; i<lines.length;i++) {
                 System.out.println("ANS: " + lines[i]);
                 if(lines[i].matches("(\\s)*[0-9]+\\.[0-9][0-9](\\s)*")) {
                     potentialTotals[i] = Double.parseDouble(lines[i]);
                     System.out.println("potential total: " + potentialTotals[i]);
                 }
             }
+
 
             total = 0;
             for(int i=0; i<potentialTotals.length; i++){
@@ -559,24 +583,46 @@ public class TextExtraction {
                 }
             }
 
+            // subtract the largest potential from smallest and check if the result matches
+            // any other total
+            Arrays.sort(potentialTotals);
+            double smallest = 0;
+            double largest = 0;
+
+            if(potentialTotals.length>0) {
+                largest = potentialTotals[potentialTotals.length-1];
+            }
+
+            for(int i=0; i<potentialTotals.length; i++){
+                if(potentialTotals[i]>0) {
+                    if (smallest==0) {
+                        smallest = potentialTotals[i];
+                        System.out.println("smallest: " + smallest);
+                    }
+                }
+                if(smallest>0) {
+                    if(largest-smallest==potentialTotals[i]) {
+                        total = potentialTotals[i];
+                    }
+                }
+            }
+
             System.out.println("total is = " + total);
-/*
+
+
             // check if first char of potential total was read falsely
             for(int i=0; i<potentialTotals.length; i++){
-
                 String temp = String.valueOf(total);
                 temp = temp.substring(1, temp.length());
 
-                double intTemp = Double.parseDouble(temp);
+                System.out.println("pottot[i]" + temp);
 
-                System.out.println("intTemp " + intTemp);
-                System.out.println("pottot[i]" + potentialTotals[i]);
-                if(intTemp==potentialTotals[i]) {
+                double intTemp = Double.parseDouble(temp);
+                if(intTemp==potentialTotals[i] && intTemp > 0) {
                     total = intTemp;
-                    break;
                 }
             }
-*/
+
             System.out.println("TOTAL IS " + total);
         } catch (IOException i) {
             i.printStackTrace();
@@ -708,7 +754,7 @@ public class TextExtraction {
                 "pharmacy", "doctor", "health", "boots","lloyds","mccabes","hickeys"
         };
 
-        Hashtable<String,String> wordStore = new Hashtable<String,String>();
+        Hashtable<String,String> wordStore = new Hashtable<>();
 
         for (int i = 0; i < foodArray.length; i++) {
             wordStore.put(foodArray[i],"food");
