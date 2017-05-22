@@ -120,6 +120,7 @@ public class ReceiptEditActivity extends AppCompatActivity {
             recDateEditText.setText(receiptDate, TextView.BufferType.EDITABLE);
 
             ocrtextview.setText(OCRText);
+            ocrtextview.setVisibility(View.GONE);
             Log.i("prev activity: ", filePath);
             //ocrtextview.setVisibility(View.GONE);
 
@@ -295,6 +296,7 @@ public class ReceiptEditActivity extends AppCompatActivity {
         // launch the main activity
         Intent main = new Intent(ReceiptEditActivity.this, MainActivity.class);
         ReceiptEditActivity.this.startActivityForResult(main, 111);
+        finish();
     }
 
 
@@ -391,6 +393,7 @@ public class ReceiptEditActivity extends AppCompatActivity {
                         // launch the main activity
                         Intent main = new Intent(ReceiptEditActivity.this, MainActivity.class);
                         ReceiptEditActivity.this.startActivityForResult(main, 111);
+                        finish();
 
                     }
                     @Override

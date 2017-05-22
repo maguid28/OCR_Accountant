@@ -746,11 +746,11 @@ Below are images of the 4 charts:
 
 ## Blog entry 23 - User testing 1
 At the end of my first round of user tests I have discovered the following issues:
-Displaying "passwords do not match" notification falsely.
-Not allowing users to activate account.
-Case sensitive email addresses.
-Receipts being displayed mirrored when captured.
-Some fragment overlaying issues.
+* Displaying "passwords do not match" notification falsely.
+* Not allowing users to activate account.
+* Case sensitive email addresses.
+* Receipts being displayed mirrored when captured.
+* Some fragment overlaying issues.
 
 The above issues have now been resolved.
 
@@ -764,10 +764,15 @@ The images below demonstrate this process.
 
 ## Blog entry 25 - User testing 2
 At the end of my second round of user tests I have discovered the following issues:
-The Date tuple updated when user updated the date field but formattedDate tuple did not.
-The Statistics Activity crashed when there was no entries in the database.
-Category field did not update in the receipt edit activity
-The data shown on the pie chart in the Statistics activity was not made clear what it was displaying.
-List of receipts disappearing when user clicks the back button on edit receipt fragment.
+* The Date tuple updated when user updated the date field but formattedDate tuple did not.
+* The Statistics Activity crashed when there was no entries in the database.
+* Category field did not update in the receipt edit activity
+* The data shown on the pie chart in the Statistics activity was not made clear what it was displaying.
+* List of receipts disappearing when user clicks the back button on edit receipt fragment.
 
 The above issues have now been resolved.
+
+## Blog entry 26 - Unit testing
+I have built unit tests to test various parts of the application.
+In particular I have rigorously tested and debugged the text extraction class as it is the area with the most variable output as receipts can be formatted in many ways so the extraction of the title, date, total and category can vary, as well as external lighting affecting the output too.
+At this current time I have 104 tests written, all passing as of today. I will continue to test and debug this to improve accuracy of extraction until the submission date.

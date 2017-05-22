@@ -414,7 +414,7 @@ public class TextExtraction {
                 }
             }
 
-            if(datePotentials[0]!=null) {
+            if(datePotentials.length>0) {
                 String[] tempSplit = datePotentials[0].split("/");
                 String tempDate = "";
                 // removes unnessessary '/' that may have been read

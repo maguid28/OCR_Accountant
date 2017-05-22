@@ -35,26 +35,25 @@ public class ImageProcessing {
 
     private final static String TAG = "ImageProcessing";
 
-    public List<Point> drawBoundingRectangle(Mat src) {
+    List<Point> drawBoundingRectangle(Mat srcFrame) {
 
         Mat imageGrey = new Mat();
-
-        Point p1,p2,p3,p4;
+        Point p1,p2,p3;
 
         // convert to greyscale
-        Imgproc.cvtColor(src, imageGrey, Imgproc.COLOR_BGR2GRAY);
-        // used threshold instead of canny edge detection as frame rate is higher with threshold
-        //Imgproc.threshold(imageGrey, imageGrey, 150, 255.0, Imgproc.THRESH_BINARY + Imgproc.THRESH_OTSU);
+        Imgproc.cvtColor(srcFrame, imageGrey, Imgproc.COLOR_BGR2GRAY);
+
         //Set gaussian blur
         int gBlurSize = 9;
         Imgproc.GaussianBlur(imageGrey, imageGrey, new Size(gBlurSize, gBlurSize), 0);
 
-        //applied canny as it helped reduce blurring due to lower frame rate
-        //apply canny edge detection
+        // canny instead of thresholding as it helped reduce blurring due to lower frame rate
+        // apply canny edge detection
         Imgproc.Canny(imageGrey, imageGrey, 50, 140, 5, true);
         // find the contours
         List<MatOfPoint> contours = new ArrayList<>();
-        Imgproc.findContours(imageGrey, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.findContours(imageGrey, contours, new Mat(),
+                Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
 
         double maxVal = 0;
         int maxValIdx = 0;
@@ -67,23 +66,21 @@ public class ImageProcessing {
                 maxValIdx = contourIdx;
             }
         }
-        //Imgproc.drawContours(mRgba, contours, maxValIdx, new Scalar(0,255,0), 5);
 
         List<Point> points = new ArrayList<>();
-        // statement prevents app from crashing when no contours are found
+        // prevents app from crashing when no contours are found
         if(contours.size()>0) {
             Rect rect = Imgproc.boundingRect(contours.get(maxValIdx));
-            rectangle(src, rect.br(), new Point(rect.br().x - rect.width, rect.br().y - rect.height), new Scalar(37, 185, 153), 3);
+            rectangle(srcFrame, rect.br(), new Point(rect.br().x - rect.width,
+                    rect.br().y - rect.height), new Scalar(37, 185, 153), 3);
 
             p1 = new Point(rect.tl().x, rect.tl().y);
             p2 = new Point(rect.tl().x, rect.br().y);
             p3 = new Point(rect.br().x, rect.br().y);
-            p4 = new Point(rect.br().x, rect.tl().y);
 
             points.add(p1);
             points.add(p2);
             points.add(p3);
-            points.add(p4);
 
         }
         return points;
@@ -91,7 +88,7 @@ public class ImageProcessing {
 
 
 
-    public void writeToStorage(Mat result, Activity activity) {
+    void cleanImage(Mat result, Activity activity) {
 
         // temp, delete when done testing
         String pathToFile1 = tempgetOutputFile(activity).toString();
@@ -100,26 +97,20 @@ public class ImageProcessing {
         //remove noise from image
         Photo.fastNlMeansDenoising(result, result);
 
-        //resize image to x3 the size of original image
+        //resize image to x5 the size of original image
         Size size2 = new Size((result.width() * 5), (result.height() * 5));
         Imgproc.resize(result, result, size2);
 
         // convert to greyscale
         Imgproc.cvtColor(result, result, Imgproc.COLOR_RGB2GRAY);
 
-
         // changing this value increases thresholding, allowing less lines/creases in
         int c = 4;
-        // thickness of the black data let through the threshold, keep blocksize at 55 for now, will possibly try 45 later
+
+        // thickness of line
         int blockSize = 55;
-        Imgproc.adaptiveThreshold(result,result, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, blockSize, c);
-
-        //Imgproc.adaptiveThreshold(result,result, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, 55, 2);
-
-        //Bitmap imageBitmap = Bitmap.createBitmap(result.cols(), result.rows(), Bitmap.Config.ARGB_8888);
-        //Utils.matToBitmap(result, imageBitmap);
-
-        //imageBitmap = RotateBitmap(imageBitmap);
+        Imgproc.adaptiveThreshold(result,result, 255,
+                Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, blockSize, c);
 
         Core.transpose(result, result);
         Core.flip(result, result,1);
@@ -128,28 +119,21 @@ public class ImageProcessing {
 
         result = removeArtifacts(result);
 
-        //resize image to x6 the size of original image
+        // scale up image to x2 the size of original image
         Size size3 = new Size((result.width() * 2), (result.height() * 2));
         Imgproc.resize(result, result, size3);
-
-        //Mat returned = new Mat();
-        //Utils.bitmapToMat(imageBitmap, returned);
-
-        //returned = removeArtifacts(returned);
 
         String pathToFile = getOutputFile(activity).toString();
         Imgcodecs.imwrite(pathToFile, result);
     }
 
 
-    public Mat removeArtifacts(Mat srcImage){
+    private Mat removeArtifacts(Mat srcImage){
 
         Mat rgbImg = new Mat();
 
-
         Size sz = new Size((srcImage.width() * 40) / 100, (srcImage.height() * 40) / 100);
         Imgproc.resize(srcImage, rgbImg, sz);
-
 
         Mat small = new Mat();
 
@@ -161,34 +145,19 @@ public class ImageProcessing {
 
         Imgproc.morphologyEx(small, grad, Imgproc.MORPH_GRADIENT , morphKernel);
 
-        //Imgcodecs.imwrite(pathname + "_check1.jpg", grad);
-
-
-
         Mat bw = new Mat();
 
-        //Imgproc.threshold(grad, bw, 0.0, 255.0, Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);
         Imgproc.threshold(grad, bw, 0.0, 255.0, Imgproc.THRESH_OTSU);
 
         Mat connected = new Mat();
-
-        //Imgcodecs.imwrite(pathname + "_check1_1.jpg", bw);
 
         morphKernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(13,1));
 
         Imgproc.morphologyEx(bw, connected, Imgproc.MORPH_CLOSE  , morphKernel);
 
-        //Imgcodecs.imwrite(pathname + "_check2.jpg", connected);
-
-
         morphKernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(7,1));
 
         Imgproc.morphologyEx(connected, connected, Imgproc.MORPH_OPEN  , morphKernel);
-
-        //Imgcodecs.imwrite(pathname + "_check3.jpg", connected);
-
-
-
 
         Mat mask2 = Mat.zeros(bw.size(), CvType.CV_8UC1);
 
@@ -230,11 +199,6 @@ public class ImageProcessing {
 
         Mat imageROI2 = new Mat(srcImage.size(), CV_8UC3);
         Imgproc.resize(imageROI, imageROI2, size2);
-
-        //Imgcodecs.imwrite(pathname + "_check6.jpg", rgbImg);
-        //Imgcodecs.imwrite(pathname + "_ROI.jpg", imageROI);
-        //Imgcodecs.imwrite(pathname + "_MASK2.jpg", mask2);
-        //Imgcodecs.imwrite(pathname + "_MASK.jpg", mask);
 
         return imageROI;
     }

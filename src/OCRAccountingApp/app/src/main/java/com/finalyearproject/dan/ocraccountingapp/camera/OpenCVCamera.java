@@ -193,7 +193,7 @@ public class OpenCVCamera extends AppCompatActivity implements CameraBridgeViewB
             Mat mat = params[0];
             Log.d("mat:", mat.width() + "\t" + mat.height());
             ImageProcessing imageProcessing = new ImageProcessing();
-            imageProcessing.writeToStorage(mat, OpenCVCamera.this);
+            imageProcessing.cleanImage(mat, OpenCVCamera.this);
 
             return 1;
         }

@@ -157,6 +157,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
+                android:backgroundTint="@color/colorPrimaryLight"
                 android:clickable="true"
                 android:src="@drawable/camera_proceed_btn"
                 android:layout_alignParentBottom="true"

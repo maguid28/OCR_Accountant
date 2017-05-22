@@ -544,17 +544,15 @@ public class MultiChartFragment extends Fragment {
 
         ArrayList<Integer> colors = new ArrayList<Integer>();
 
-        for (int c : ColorTemplate.JOYFUL_COLORS)
-            colors.add(c);
+
         for (int c : ColorTemplate.MATERIAL_COLORS)
             colors.add(c);
-        for (int c : ColorTemplate.VORDIPLOM_COLORS)
+        for (int c : ColorTemplate.COLORFUL_COLORS)
             colors.add(c);
 
         d.setColors(colors);
 
-        PieData cd = new PieData(d);
-        return cd;
+        return new PieData(d);
     }
 
     @Override

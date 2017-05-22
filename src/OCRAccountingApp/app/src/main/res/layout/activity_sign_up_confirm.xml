@@ -76,7 +76,7 @@
         android:layout_centerHorizontal="true"
         android:textColor="@color/white"
         android:hint="Email"
-        android:inputType="textPersonName"/>
+        android:inputType="textEmailAddress"/>
 
     <Space
         android:layout_width="match_parent"

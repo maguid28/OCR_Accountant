@@ -44,5 +44,4 @@ public class TimeUtilsTest {
         output = TimeUtils.getYearFormat(mMockContext,input);
         assertEquals(expected, output);
     }
-
 }

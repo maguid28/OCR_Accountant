@@ -195,7 +195,7 @@ public class DisplayResultsFragment extends Fragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
             .setTitle(R.string.nosql_dialog_title_confirm_delete_item_text)
             .setNegativeButton(android.R.string.cancel, null);
-        builder.setMessage("Are you sure ou want to delete " + file + "?");
+        builder.setMessage("Are you sure ou want to delete this receipt??");
 
         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
