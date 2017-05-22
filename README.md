@@ -43,9 +43,6 @@
 
   XML - for the UI layout
 
-  SQL - for querying and updating the database
-
-  PHP - Bridge connection between app and external SQL database
      
 ## Programming tools to be used
   Android studio
