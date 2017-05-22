@@ -30,8 +30,6 @@ public class OCR {
 
     private String DATA_PATH = "";
 
-
-
     public String OCRImage(String img_path, Activity activity){
 
         DATA_PATH = activity.getFilesDir() + "/TesseractSample/";
@@ -44,8 +42,6 @@ public class OCR {
         return startOCR(outputFileUri);
     }
 
-
-
     private void prepareTesseract(Activity activity) {
         try {
             prepareDirectory(DATA_PATH + TESSDATA);
@@ -55,8 +51,6 @@ public class OCR {
 
         copyTessDataFiles(activity);
     }
-
-
 
     //Prepare directory on external storage
     private void prepareDirectory(String path) {
@@ -70,8 +64,6 @@ public class OCR {
             Log.i(TAG, "Created directory " + path);
         }
     }
-
-
 
     //Copy tessdata files (located on assets/tessdata) to destination directory
     private void copyTessDataFiles(Activity activity) {
@@ -106,9 +98,6 @@ public class OCR {
             Log.e(TAG, "Unable to copy files to tessdata " + e.toString());
         }
     }
-
-
-
 
     private String startOCR(Uri imgUri) {
         try {
@@ -165,10 +154,6 @@ public class OCR {
         return result;
     }
 
-
-
-
-
     private String extractText(Bitmap bitmap) {
         try {
             tessBaseApi = new TessBaseAPI();
@@ -181,14 +166,8 @@ public class OCR {
 
         tessBaseApi.init(DATA_PATH, language);
 
-        //If we only want to detect digits, uppercase and lowercase
-        //tessBaseApi.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM");
+        // we only want to detect digits, uppercase and lowercase, and some symbols
         tessBaseApi.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ1234567890€&,./- ");
-
-        //       //EXTRA SETTINGS
-        //        //blackList Example
-        //        tessBaseApi.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "!@#$%^&*()_+=-qwertyuiop[]}{POIU" +
-        //                "YTRWQasdASDfghFGHjklJKLl;L:'\"\\|~`xcvXCVbnmBNM,./<>?");
 
         Log.d(TAG, "Training file loaded");
         tessBaseApi.setImage(bitmap);

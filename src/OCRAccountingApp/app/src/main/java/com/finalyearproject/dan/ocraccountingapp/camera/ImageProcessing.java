@@ -203,7 +203,7 @@ public class ImageProcessing {
         return imageROI;
     }
 
-    public static File getOutputFile(Context context) {
+    static File getOutputFile(Context context) {
 
         File filePath;
 
@@ -222,7 +222,7 @@ public class ImageProcessing {
         return filePath;
     }
 
-    public static File tempgetOutputFile(Context context) {
+    private static File tempgetOutputFile(Context context) {
 
         File filePath;
 

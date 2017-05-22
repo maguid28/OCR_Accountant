@@ -78,8 +78,6 @@ public class PieChartItem extends ChartItem {
         l.setYEntrySpace(0f);
         l.setYOffset(0f);
 
-        // do not forget to refresh the chart
-        // holder.chart.invalidate();
         holder.chart.animateY(900);
 
         return convertView;

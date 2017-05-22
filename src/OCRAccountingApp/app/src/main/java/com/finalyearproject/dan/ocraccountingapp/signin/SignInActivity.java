@@ -32,7 +32,7 @@ public class SignInActivity extends Activity {
     TextView signupLink;
     TextView verifyAccount;
 
-    /** Start of Intent request codes owned by the Cognito User Pools app. */
+    // Start of Intent request codes owned by the Cognito User Pools app.
     private static final int REQUEST_CODE_START = 0x2970;
     /** Request code for account verification Intent. */
     private static final int VERIFICATION_REQUEST_CODE = REQUEST_CODE_START + 45;

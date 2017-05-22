@@ -19,10 +19,6 @@ import com.finalyearproject.dan.ocraccountingapp.R;
 
 import java.io.File;
 
-/**
- * This class provides a convenient method to open a file in a file viewer that
- * is appropriate for the file's content type.
- */
 public class ContentHelper {
 
     public static void openFileViewer(final Context context,

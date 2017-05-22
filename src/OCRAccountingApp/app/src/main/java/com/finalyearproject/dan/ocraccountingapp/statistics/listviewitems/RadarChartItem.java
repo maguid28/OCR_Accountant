@@ -53,12 +53,6 @@ public class RadarChartItem extends ChartItem {
         holder.chart.setWebColorInner(Color.LTGRAY);
         holder.chart.setWebAlpha(100);
 
-        // create a custom MarkerView (extend MarkerView) and specify the layout
-        // to use for it
-        //MarkerView mv = new RadarMarkerView(this, R.layout.radar_markerview);
-        //mv.setChartView(mChart); // For bounds control
-        //holder.chart.setMarker(mv); // Set the marker to the chart
-
         holder.chart.animateXY(
                 1400, 1400,
                 Easing.EasingOption.EaseInOutQuad,

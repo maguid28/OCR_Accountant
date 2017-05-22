@@ -82,8 +82,6 @@ public class MultiChartFragment extends Fragment {
         return view;
     }
 
-
-
     private void getResults() {
         // if there are more results to retrieve.
         if (!doneRetrievingResults) {
@@ -142,18 +140,7 @@ public class MultiChartFragment extends Fragment {
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-    /** adapter that supports 3 different item types */
+    // adapter that supports 4 different item types
     private class ChartDataAdapter extends ArrayAdapter<ChartItem> {
 
         public ChartDataAdapter(Context context, List<ChartItem> objects) {
@@ -198,8 +185,6 @@ public class MultiChartFragment extends Fragment {
         catagories.put("Health", 5);
         catagories.put("Other", 6);
 
-
-
         String tm = results.get(0).getFormattedDate().substring(4,6);
         int thisMonth = Integer.parseInt(tm);
         System.out.println("thismonth: " + results.get(0).getFormattedDate());
@@ -212,9 +197,7 @@ public class MultiChartFragment extends Fragment {
             System.out.println("thatmonth: " + yearResults.get(i).getFormattedDate());
             System.out.println("thatmonth: " + month);
 
-
             int findCategory = catagories.get(yearResults.get(i).getCategory());
-
 
             //if results are from current month
             if(month==thisMonth) {
@@ -267,9 +250,6 @@ public class MultiChartFragment extends Fragment {
         System.out.println("mcpair " + currentMonthCatagoryPair);
         System.out.println("prevmcpair " + previousMonthCatagoryPair);
 
-
-
-
         ArrayList<RadarEntry> entries1 = new ArrayList<RadarEntry>();
         ArrayList<RadarEntry> entries2 = new ArrayList<RadarEntry>();
 
@@ -317,16 +297,10 @@ public class MultiChartFragment extends Fragment {
         return cd;
     }
 
-
-
-
-
-
     private LineData generateDataLine() {
 
         // table to store category/total pairs
         Hashtable<Integer, Double> monthTotalpair = new Hashtable<>();
-
 
         for(int i=0; i<yearResults.size(); i++) {
             String m = yearResults.get(i).getFormattedDate().substring(4,6);
@@ -378,10 +352,6 @@ public class MultiChartFragment extends Fragment {
         LineData cd = new LineData(sets);
         return cd;
     }
-
-
-
-
 
     private BarData generateDataBar() {
 
@@ -493,8 +463,6 @@ public class MultiChartFragment extends Fragment {
                 return 0;
         }
     }
-
-
 
     private PieData generateDataPie() {
 

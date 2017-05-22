@@ -24,7 +24,7 @@ public class SetupUtil {
         copyTessDataFiles(DATA_PATH, TESSDATA, activity);
     }
 
-    //Prepare directory on external storage
+    // Prepare directory on external storage
     public void prepareDirectory(String path) {
 
         File dir = new File(path);
@@ -38,7 +38,7 @@ public class SetupUtil {
     }
 
 
-    //Copy tessdata files (located on assets/tessdata) to destination directory
+    // Copy tessdata files (located on assets/tessdata) to destination directory
     private void copyTessDataFiles(String DATA_PATH, String TESSDATA, Activity activity) {
         try {
             String fileList[] = activity.getAssets().list(TESSDATA);

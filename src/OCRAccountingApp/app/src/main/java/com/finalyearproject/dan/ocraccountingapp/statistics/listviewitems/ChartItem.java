@@ -5,11 +5,6 @@ import android.view.View;
 
 import com.github.mikephil.charting.data.ChartData;
 
-/**
- * baseclass of the chart-listview items
- * @author philipp
- *
- */
 public abstract class ChartItem {
     
     protected static final int TYPE_BARCHART = 0;

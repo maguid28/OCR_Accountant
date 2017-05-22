@@ -16,7 +16,6 @@ public class TimeUtils {
     private static final Calendar LAST_DAY_OF_TIME;
     public static final int WEEKS_OF_TIME;
 
-
     static {
         FIRST_DAY_OF_TIME = Calendar.getInstance();
         FIRST_DAY_OF_TIME.set(1900, Calendar.JANUARY, 1);
@@ -24,7 +23,6 @@ public class TimeUtils {
         LAST_DAY_OF_TIME.set(2100, Calendar.DECEMBER, 31);
         WEEKS_OF_TIME = 10487; // (int) ((LAST_DAY_OF_TIME.getTimeInMillis() - FIRST_DAY_OF_TIME.getTimeInMillis()) / (7 * 24 * 60 * 60 * 1000));
     }
-
 
     public static int getPositionForYear(Calendar year) {
         if (year != null) {
@@ -44,7 +42,6 @@ public class TimeUtils {
         cal.add(Calendar.YEAR, position);
         return cal;
     }
-
 
     //function to provide year view format
     public static String getYearFormat(Context context, long date) {

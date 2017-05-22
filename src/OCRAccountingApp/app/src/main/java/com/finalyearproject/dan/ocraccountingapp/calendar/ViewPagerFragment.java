@@ -60,12 +60,6 @@ public class ViewPagerFragment extends Fragment {
         return view;
     }
 
-
-
-
-
-
-
     private class MyPagerAdapter extends FragmentStatePagerAdapter {
 
         MyPagerAdapter(FragmentManager fragmentManager) {
@@ -94,10 +88,7 @@ public class ViewPagerFragment extends Fragment {
         }
     }
 
-
     /*-------------------------------ASYNC TASK for querying database-----------------------------*/
-
-
 
     static class MyTaskParams {
         String date1, date2;

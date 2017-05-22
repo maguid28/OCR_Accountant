@@ -18,11 +18,8 @@ import com.finalyearproject.dan.ocraccountingapp.amazon.user.signin.CognitoUserP
 import com.finalyearproject.dan.ocraccountingapp.R;
 import com.finalyearproject.dan.ocraccountingapp.signup.util.ViewHelper;
 
-/**
- * Activity to prompt for sign-up confirmation information.
- */
 public class SignUpConfirmActivity extends Activity {
-    /** Log tag. */
+
     private static final String LOG_TAG = SignUpConfirmActivity.class.getSimpleName();
 
     @Override
@@ -31,13 +28,8 @@ public class SignUpConfirmActivity extends Activity {
         setContentView(R.layout.activity_sign_up_confirm);
     }
 
-    /**
-     * Retrieve input and return to caller.
-     * @param view the Android View
-     */
     public void confirmAccount(final View view) {
-        String username =
-                ViewHelper.getStringValue(this, R.id.confirm_account_username);
+        String username = ViewHelper.getStringValue(this, R.id.confirm_account_username);
         final String verificationCode =
                 ViewHelper.getStringValue(this, R.id.confirm_account_confirmation_code);
 

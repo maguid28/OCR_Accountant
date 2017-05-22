@@ -141,13 +141,10 @@ public class NavDrawerInstaller {
         }
     }
 
-
     private Bitmap getUserImage() {
 
         final IdentityManager identityManager = AWSMobileClient.defaultMobileClient().getIdentityManager();
         return identityManager.getUserImage();
     }
-
-
 
 }

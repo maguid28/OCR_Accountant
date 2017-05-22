@@ -206,10 +206,6 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-
-
-
-
     private class OCRTask extends AsyncTask<Void, Void, String> {
 
         @Override

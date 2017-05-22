@@ -233,9 +233,6 @@ public class ReceiptEditActivity extends AppCompatActivity {
         return index;
     }
 
-
-
-
     // set up the floating action button
     public void configureFAB(){
         // open the context menu when the fab is clicked
@@ -270,8 +267,6 @@ public class ReceiptEditActivity extends AppCompatActivity {
             }
         });
     }
-
-
 
     public void updateReceipt() {
         new Thread(new Runnable() {
@@ -337,9 +332,7 @@ public class ReceiptEditActivity extends AppCompatActivity {
         }
     }
 
-
     /*--------------------------------------UPLOAD FILE-------------------------------------------*/
-
 
     public void uploadData(File filepath, final String fileName) {
         final String path = filepath.getAbsolutePath();
@@ -420,12 +413,9 @@ public class ReceiptEditActivity extends AppCompatActivity {
                 .show();
     }
 
-
     /*------------------------------------END UPLOAD FILE-----------------------------------------*/
 
-
     /*-----------------------------INSERT DATA INTO DATABASE--------------------------------------*/
-
 
     public void insertData(final String recName, final String date, final String filepath,
                            final String formattedDate, final String total, final String friendlyName, String category) {

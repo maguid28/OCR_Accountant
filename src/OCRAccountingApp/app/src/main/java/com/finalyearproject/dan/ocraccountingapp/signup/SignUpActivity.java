@@ -52,10 +52,6 @@ public class SignUpActivity extends Activity {
         });
     }
 
-    /**
-     * Retrieve input and return to caller.
-     * @param view the Android View
-     */
     // Called by onclick to button
     public void signUp(final View view) {
 

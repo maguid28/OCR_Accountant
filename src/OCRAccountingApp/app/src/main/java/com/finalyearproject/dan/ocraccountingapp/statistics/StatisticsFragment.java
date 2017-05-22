@@ -155,9 +155,6 @@ public class StatisticsFragment extends Fragment {
         return view;
     }
 
-
-
-
     public static NoSQLOperation getYearNoSQLOperation(String date1){
 
         NoSQLOperation operation = null;
@@ -182,8 +179,6 @@ public class StatisticsFragment extends Fragment {
 
         return operation;
     }
-
-
 
     public static NoSQLOperation getNoSQLOperation(String date1){
 
@@ -210,11 +205,6 @@ public class StatisticsFragment extends Fragment {
         return operation;
     }
 
-
-
-
-
-
     static class MyTaskParams {
         String date1, date2;
 
@@ -223,7 +213,6 @@ public class StatisticsFragment extends Fragment {
             this.date2 = date2;
         }
     }
-
 
     private static class QueryDatabaseTask extends AsyncTask<MyTaskParams, Void, NoSQLOperation> {
 
@@ -260,18 +249,6 @@ public class StatisticsFragment extends Fragment {
         protected void onProgressUpdate(Void... values) {}
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
     private void showResultsForOperation(final NoSQLOperation operation, final NoSQLOperation operation2) {
         // On execution complete, open the DisplayResultsFragment.
         final MultiChartFragment multiChartFragment = new MultiChartFragment();
@@ -286,7 +263,6 @@ public class StatisticsFragment extends Fragment {
         transaction.commit();
     }
 
-
     private void handleNoResultsFound() {
         ThreadUtils.runOnUiThread(new Runnable() {
             @Override
@@ -300,27 +276,6 @@ public class StatisticsFragment extends Fragment {
             }
         });
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     void configureSpinners(View view) {
 
@@ -377,7 +332,6 @@ public class StatisticsFragment extends Fragment {
         return index;
     }
 
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -386,7 +340,4 @@ public class StatisticsFragment extends Fragment {
         if (f != null)
             getFragmentManager().beginTransaction().remove(f).commit();
     }
-
-
-
 }

@@ -125,8 +125,6 @@ public class TextExtraction {
         return title;
     }
 
-
-
     private String correctWord(String line, final String DATA_PATH) {
 
         //final String DATA_PATH = activity.getFilesDir() + "/TesseractSample/tessdata/";
@@ -161,7 +159,6 @@ public class TextExtraction {
         }
         return correctedLine;
     }
-
 
     private void createWordCountMap(String filename) throws IOException {
         File file = new File(filename);
@@ -257,34 +254,6 @@ public class TextExtraction {
     public String toString() {
         return "SpellChecker [wordFrequencyMap=" + wordFrequencyMap + "]";
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     public String getDate(String dirPath) {
         String date = "";
@@ -508,11 +477,6 @@ public class TextExtraction {
     }
 
 
-
-
-
-
-
     public String getTotal(String dirPath) {
         double total = 0;
 
@@ -720,11 +684,6 @@ public class TextExtraction {
         }
         return extractedPrice;
     }
-
-
-
-
-
 
     public String getCategory(String dirPath, String titleCorrect) {
 
